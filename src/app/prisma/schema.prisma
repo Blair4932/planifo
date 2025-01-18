@@ -1,0 +1,22 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // or "postgresql", "mysql", etc., depending on your setup
+  url      = "file:./dev.db" // Path to your SQLite database
+}
+
+model User {
+  id        Int      @id @default(autoincrement()) // Primary key
+  username  String   @unique                      // Username must be unique
+  password  String                                 // Hashed password
+  email     String   @unique                      // users email
+  createdAt DateTime @default(now())              // Timestamp of creation
+}
