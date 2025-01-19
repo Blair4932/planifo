@@ -9,11 +9,11 @@ export default function HomePage() {
     const token = localStorage.getItem("authToken");
 
     if (token) {
-      router.push("/pinboard"); // Redirect to pinboard if logged in
+      router.push("/pinboard");
     } else {
-      router.push("/login"); // Redirect to login if not logged in
+      router.push("/register");
     }
   }, [router]);
 
-  return null; // Render nothing while redirecting
+  return null;
 }

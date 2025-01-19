@@ -38,9 +38,19 @@ export default function Dashboard() {
       {error && <p>{error}</p>}
       {user ? (
         <div>
-          <h1>Hey, {user.username}!</h1>
-          <div className="flex flex-col justify-center items-center">
-            <div className="flex justify-center items-center gap-14 mt-24">
+          <div className=" text-white flex justify-between items-center h-28 bg-cyan-700 ">
+            <h1 className="text-[45px] font-extralight ml-7">
+              Hey, {user.username}!
+            </h1>
+            <div
+              className="bg-white rounded-full p-3 mr-7 cursor-pointer"
+              onClick={() => router.push("/desk")}
+            >
+              <img src="/assets/desk.png" className="h-16" />
+            </div>
+          </div>
+          <div className="flex flex-col justify-center items-center bg-cyan-900 h-96">
+            <div className="flex justify-center items-center gap-28">
               <img
                 src="assets/post-it(1).png"
                 className="h-40 transition-transform transform hover:scale-110 cursor-pointer"
@@ -58,14 +68,14 @@ export default function Dashboard() {
                 src="assets/image.png"
                 className="h-40 transition-transform transform hover:scale-110 cursor-pointer"
               />
-              {user.username === "admin" && (
-                <img
-                  src="assets/admin.png"
-                  className="h-40 transition-transform transform hover:scale-110 cursor-pointer"
-                />
-              )}
+              <img
+                src="assets/admin.png"
+                className="h-40 transition-transform transform hover:scale-110 cursor-pointer"
+              />
             </div>
-            <h1 className="text-[30px] mt-[40px]">Continue Working:</h1>
+          </div>
+          <div className="text-white">
+            <h2 className="text-[30px] ml-7 mt-7">Continue Working:</h2>
           </div>
         </div>
       ) : (

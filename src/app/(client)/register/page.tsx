@@ -48,12 +48,20 @@ export default function RegisterPage() {
               or keeping that <br />
               streak alive, your personal LifeLine account is here to help!
             </p>
-            <button
-              onClick={handleStartSignup}
-              className="mt-5 mb-48 border-2 border-pink-300 text-[20px] w-40 h-10 rounded-md hover:bg-pink-300 transition-all"
-            >
-              Join
-            </button>
+            <div className="flex items-center justify-center mt-3 mb-48 gap-3">
+              <button
+                onClick={handleStartSignup}
+                className="border-2 border-pink-400 text-[20px] w-40 h-10 rounded-md bg-pink-400 transition-all"
+              >
+                Join
+              </button>
+              <button
+                onClick={() => router.push("/login")}
+                className="border-2 border-pink-500 text-[20px] w-40 h-10 rounded-md hover:bg-pink-500 transition-all"
+              >
+                Login
+              </button>
+            </div>
           </div>
         </div>
       ) : (
@@ -101,10 +109,16 @@ export default function RegisterPage() {
               {failed && <div className="text-red-500 mt-2">{error}</div>}
               <button
                 onClick={handleRegistration}
-                className="mt-5 mb-48 border-2 border-pink-300 text-[20px] w-40 h-10 rounded-md hover:bg-pink-300 transition-all"
+                className="mt-5 border-2 border-pink-300 text-[20px] w-40 h-10 rounded-md hover:bg-pink-300 transition-all"
               >
                 Join
               </button>
+              <p
+                className="mb-48 mt-2 text-[12px] cursor-pointer"
+                onClick={() => router.push("/login")}
+              >
+                Already have an account?
+              </p>
             </div>
           </div>
         </div>

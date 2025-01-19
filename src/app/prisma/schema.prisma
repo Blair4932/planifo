@@ -18,5 +18,18 @@ model User {
   username  String   @unique                      // Username must be unique
   password  String                                 // Hashed password
   email     String   @unique                      // users email
+  notes     Note[]                                // Users notes
   createdAt DateTime @default(now())              // Timestamp of creation
+}
+
+model Note {
+  id          Int      @id @default(autoincrement()) // Primary key
+  title       String                                // Note title (no unique constraint)
+  content     String?                               // The content of the note
+  userId      Int                                    // Foreign key for the user who created the note
+  createdAt   DateTime @default(now())              // Timestamp of creation
+  lastUpdatedAt DateTime @updatedAt                 // Timestamp of last update
+
+  // Relationship with User model
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

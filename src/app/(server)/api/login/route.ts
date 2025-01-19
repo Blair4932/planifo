@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server";
-import prisma from "@/src/app/prisma/lib/prisma"; // Prisma client
+import prisma from "@/src/app/prisma/lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export async function POST(req: Request) {
-  const { username, password } = await req.json(); // Get username and password from the request
+  const { username, password } = await req.json();
 
   try {
-    // Find the user by username
     const user = await prisma.user.findUnique({
       where: { username },
+      include: {
+        notes: true,
+      },
     });
 
     if (!user) {
@@ -19,7 +21,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Validate password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -29,15 +30,15 @@ export async function POST(req: Request) {
       );
     }
 
-    // At this point, the user is valid, so we can create the JWT
     const token = jwt.sign(
       {
         id: user.id,
         username: user.username,
-        email: user.email, // Include the email from the user data
+        email: user.email,
+        notes: user.notes,
       },
-      process.env.JWT_SECRET!, // Secret key
-      { expiresIn: "1d" } // Token expiration (1 day)
+      process.env.JWT_SECRET!,
+      { expiresIn: "1d" }
     );
 
     return NextResponse.json({ message: "Login successful", token });
