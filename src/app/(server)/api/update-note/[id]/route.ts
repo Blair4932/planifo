@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/src/app/prisma/lib/prisma";
 
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: Request, { params }: any) {
   const { id } = params;
 
   try {
