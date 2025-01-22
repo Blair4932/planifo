@@ -11,11 +11,20 @@ export async function middleware(req: NextRequest) {
       const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
       console.log("User info decoded from JWT:", decoded);
 
-      req.user = decoded;
+      const requestHeaders = new Headers(req.headers);
+      requestHeaders.set("x-user", JSON.stringify(decoded));
+
+      const response = NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
 
       if (pathname === "/") {
         return NextResponse.redirect(new URL("/pinboard", req.url));
       }
+
+      return response;
     } catch (err) {
       console.error("Invalid token:", err);
     }
