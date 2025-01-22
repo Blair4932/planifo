@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite" // or "postgresql", "mysql", etc., depending on your setup
-  url      = "file:./dev.db" // Path to your SQLite database
+  provider = "sqlite"
+  url      = "file:./prisma/dev.db"
 }
 
 model User {
