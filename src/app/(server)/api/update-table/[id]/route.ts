@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/src/app/prisma/lib/prisma";
+import prisma from "@/prisma/lib/prisma";
 
 export async function PUT(req: Request, context: any) {
   const { id } = await context.params;

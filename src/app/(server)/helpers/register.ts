@@ -1,4 +1,4 @@
-import prisma from "@/src/app/prisma/lib/prisma";
+import prisma from "@/prisma/lib/prisma";
 import bcrypt from "bcrypt";
 
 export async function registerUser(
