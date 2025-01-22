@@ -1,0 +1,37 @@
+-- CreateTable
+CREATE TABLE "Table" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "title" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastUpdatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Table_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Row" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "tableId" INTEGER NOT NULL,
+    "rowIndex" INTEGER NOT NULL,
+    CONSTRAINT "Row_tableId_fkey" FOREIGN KEY ("tableId") REFERENCES "Table" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Column" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "tableId" INTEGER NOT NULL,
+    "header" TEXT,
+    "columnIndex" INTEGER NOT NULL,
+    CONSTRAINT "Column_tableId_fkey" FOREIGN KEY ("tableId") REFERENCES "Table" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Cell" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "rowId" INTEGER NOT NULL,
+    "columnId" INTEGER NOT NULL,
+    "value" TEXT,
+    "backgroundColor" TEXT,
+    CONSTRAINT "Cell_rowId_fkey" FOREIGN KEY ("rowId") REFERENCES "Row" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "Cell_columnId_fkey" FOREIGN KEY ("columnId") REFERENCES "Column" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);

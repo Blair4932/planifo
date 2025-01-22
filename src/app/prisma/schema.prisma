@@ -19,12 +19,13 @@ model User {
   password  String                                 // Hashed password
   email     String   @unique                      // users email
   notes     Note[]                                // Users notes
+  tables    Table[]                               // Users tables
   createdAt DateTime @default(now())              // Timestamp of creation
 }
 
 model Note {
   id          Int      @id @default(autoincrement()) // Primary key
-  title       String                                // Note title (no unique constraint)
+  title       String                                // Note title
   content     String?                               // The content of the note
   userId      Int                                    // Foreign key for the user who created the note
   createdAt   DateTime @default(now())              // Timestamp of creation
@@ -33,3 +34,45 @@ model Note {
   // Relationship with User model
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model Table {
+  id          Int       @id @default(autoincrement()) // Primary key
+  title       String                                 // Table title
+  rows        Row[]                                  // Relationship to rows
+  columns     Column[]                               // Relationship to column
+  userId      Int                                   // Foreign key for the user who created the table
+  createdAt   DateTime @default(now())              // Timestamp of creation
+  lastUpdatedAt DateTime @updatedAt                 // Timestamp of last update
+
+
+  // Relationship with User model
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Row {
+  id        Int       @id @default(autoincrement()) // Primary key
+  tableId   Int                                    // Foreign key to Table
+  table     Table     @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  cells     Cell[]                                 // Relationship to cells
+  rowIndex  Int                                    // Row index for ordering
+}
+
+model Column {
+  id         Int       @id @default(autoincrement()) // Primary key
+  tableId    Int                                    // Foreign key to Table
+  table      Table     @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  header     String?                                // Optional column header
+  cells     Cell[]                                 // Relationship to cells
+  columnIndex Int                                   // Column index for ordering
+}
+
+model Cell {
+  id             Int       @id @default(autoincrement()) // Primary key
+  rowId          Int                                    // Foreign key to Row
+  row            Row      @relation(fields: [rowId], references: [id], onDelete: Cascade)
+  columnId       Int                                    // Foreign key to Column
+  column         Column   @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  value          String?                                // The content of the cell (e.g., text, number)
+  backgroundColor String?                               // Background color (USE HEX)
+}
+

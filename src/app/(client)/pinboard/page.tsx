@@ -63,6 +63,7 @@ export default function Dashboard() {
               <img
                 src="assets/cells.png"
                 className="h-40 transition-transform transform hover:scale-110 cursor-pointer"
+                onClick={() => router.push("/tables")}
               />
               <img
                 src="assets/image.png"

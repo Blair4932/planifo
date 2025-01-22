@@ -38,7 +38,7 @@ export default function RegisterPage() {
         <div className=" text-white flex items-center justify-center h-svh">
           <div className="flex flex-col justify-center items-center">
             <img src="/assets/life.png" className="h-64" />
-            <h1 className="font-light text-[40px]">Welcome to LifeLine</h1>
+            <h1 className="font-light text-[40px]">Welcome to Manifo</h1>
             <p className="font-light text-center text-[20px]">
               Join millions of users today in turning their life into more than
               just a 'what if'
@@ -46,7 +46,7 @@ export default function RegisterPage() {
             <p className="font-extralight text-center mt-3">
               Whether it's getting your life back on track to meet your goals,
               or keeping that <br />
-              streak alive, your personal LifeLine account is here to help!
+              streak alive, your personal Manifo account is here to help!
             </p>
             <div className="flex items-center justify-center mt-3 mb-48 gap-3">
               <button
@@ -71,7 +71,7 @@ export default function RegisterPage() {
               <img src="/assets/edit.png" className="h-80 ml-28" />
               <h1 className="font-light text-[40px]">Let's get started!</h1>
               <p>
-                Fill in the details in the signup panel to hop on your LifeLine
+                Fill in the details in the signup panel to get to your Manifo
               </p>
             </div>
             <div className="flex flex-col justify-start items-center rounded-md w-[350px] h-[400px]">

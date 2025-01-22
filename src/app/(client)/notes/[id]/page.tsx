@@ -103,7 +103,9 @@ export default function NoteDetails() {
       if (res.ok) {
         router.push("/notes");
       }
-    } catch (e) {}
+    } catch (e) {
+      console.error('Error deleting note: ', e)
+    }
   };
 
   useEffect(() => {

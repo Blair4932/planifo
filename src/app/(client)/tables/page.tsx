@@ -4,21 +4,21 @@ import jwt_decode from "jwt-decode";
 import { useRouter } from "next/navigation";
 import Modal from "./modal";
 
-export default function Notes() {
+export default function Tables() {
   const [user, setUser] = useState<any>(null);
-  const [notes, setNotes] = useState<any[]>([]);
-  const [filteredNotes, setFilteredNotes] = useState<any[]>([]);
+  const [tables, setTables] = useState<any[]>([]);
+  const [filteredTables, setFilteredTables] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [noteTitle, setNoteTitle] = useState("");
+  const [tableTitle, setTableTitle] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isGridView, setIsGridView] = useState(true);
 
   const router = useRouter();
 
   const toggleShowModal = () => {
-    setNoteTitle("");
+    setTableTitle("");
     setShowModal(!showModal);
   };
 
@@ -26,9 +26,9 @@ export default function Notes() {
     setIsGridView(!isGridView);
   };
 
-  const fetchNotes = async (userId: number) => {
+  const fetchTables = async (userId: number) => {
     try {
-      const res = await fetch("/api/get-notes", {
+      const res = await fetch("/api/get-tables", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -38,71 +38,70 @@ export default function Notes() {
 
       if (res.ok) {
         const data = await res.json();
-        setNotes(data.notes);
-        setFilteredNotes(data.notes);
+        setTables(data.tables);
+        setFilteredTables(data.tables);
       } else {
-        console.error("Failed to fetch notes");
+        console.error("Failed to fetch tables");
       }
     } catch (error) {
-      console.error("Error fetching notes:", error);
+      console.error("Error fetching tables:", error);
     }
   };
 
-  const createNote = async () => {
-    if (!noteTitle.trim()) {
+  const createTable = async () => {
+    if (!tableTitle.trim()) {
       return;
     }
 
     try {
-      const res = await fetch("/api/create-note", {
+      const res = await fetch("/api/create-table", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: noteTitle,
-          content: "",
+          title: tableTitle,
           userId: user?.id,
         }),
       });
 
       if (res.ok) {
         setShowModal(false);
-        setNoteTitle("");
+        setTableTitle("");
 
-        await fetchNotes(user?.id);
+        await fetchTables(user?.id);
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to create note.");
+        alert(data.error || "Failed to create table.");
       }
     } catch (error) {
-      console.error("Error creating note:", error);
+      console.error("Error creating table:", error);
       alert("An unexpected error occurred.");
     }
   };
 
-  const filterNotes = (query: string) => {
+  const filterTables = (query: string) => {
     setSearchQuery(query);
-    const filtered = notes.filter((note: any) =>
-      note.title.toLowerCase().includes(query.toLowerCase())
+    const filtered = tables.filter((table: any) =>
+      table.title.toLowerCase().includes(query.toLowerCase())
     );
-    setFilteredNotes(filtered);
+    setFilteredTables(filtered);
   };
 
-  const deleteNote = async (noteId: number) => {
+  const deleteTable = async (tableId: number) => {
     try {
-      const res = await fetch(`/api/delete-note/${noteId}`, {
+      const res = await fetch(`/api/delete-table/${tableId}`, {
         method: "DELETE",
       });
 
       if (res.ok) {
-        setNotes(notes.filter((note: any) => note.id !== noteId));
-        setFilteredNotes(
-          filteredNotes.filter((note: any) => note.id !== noteId)
+        setTables(tables.filter((table: any) => table.id !== tableId));
+        setFilteredTables(
+          filteredTables.filter((table: any) => table.id !== tableId)
         );
       } else {
-        console.error("Failed to delete note");
+        console.error("Failed to delete table");
       }
     } catch (error) {
-      console.error("Error deleting note:", error);
+      console.error("Error deleting table:", error);
     }
   };
 
@@ -113,7 +112,7 @@ export default function Notes() {
       try {
         const decoded: any = jwt_decode(token);
         setUser(decoded);
-        fetchNotes(decoded.id);
+        fetchTables(decoded.id);
       } catch (err) {
         console.error("Invalid token:", err);
         setError("Token is invalid or expired.");
@@ -144,23 +143,23 @@ export default function Notes() {
   return (
     <div className="">
       {/* Header */}
-      <div className="bg-yellow-600 p-4 mb-4">
+      <div className="bg-cyan-600 p-4 mb-4">
         <p className="cursor-pointer" onClick={() => router.push("/pinboard")}>
           Back
         </p>
         <div className=" flex justify-between items-center mb-6">
-          <h1 className="text-3xl text-[40px] ml-7 mt-4 text-white">Notes</h1>
+          <h1 className="text-3xl text-[40px] ml-7 mt-4 text-white">Tables</h1>
           <div className="flex items-center gap-4">
             <input
               type="text"
               placeholder="Search by title..."
               value={searchQuery}
-              onChange={(e) => filterNotes(e.target.value)}
+              onChange={(e) => filterTables(e.target.value)}
               className="border border-gray-300 rounded-md px-4 py-2 focus:ring-2 text-black focus:ring-blue-500"
             />
             <button
               onClick={toggleView}
-              className="p-2 bg-yellow-400 text-white rounded-md shadow-md hover:bg-yellow-500 transition"
+              className="p-2 bg-blue-800 text-white rounded-md shadow-md hover:bg-blue-900 transition"
             >
               {isGridView ? "List View" : "Grid View"}
             </button>
@@ -168,32 +167,32 @@ export default function Notes() {
         </div>
       </div>
 
-      {/* Notes */}
+      {/* Tables */}
       <div
         className={`${
           isGridView ? "grid grid-cols-4 gap-6" : "flex flex-col gap-4"
         }`}
       >
-        {filteredNotes.length > 0 ? (
-          filteredNotes.map((note: any) => (
+        {filteredTables.length > 0 ? (
+          filteredTables.map((table: any) => (
             <div
-              key={note.id}
-              onClick={() => router.push(`/notes/${note.id}`)}
-              className={`relative p-4 border border-yellow-400 rounded-md cursor-pointer shadow-sm hover:shadow-md transition transform hover:scale-105 ${
+              key={table.id}
+              onClick={() => router.push(`/tables/${table.id}`)}
+              className={`relative p-4 border border-cyan-800 rounded-md cursor-pointer shadow-sm hover:shadow-md transition transform hover:scale-105 ${
                 !isGridView ? "ml-10 mr-10" : "ml-7 mr-7"
               }`}
             >
               <div className="flex items-center gap-3">
                 <img
-                  src="assets/post-it(1).png"
-                  alt="Note Icon"
+                  src="assets/cells.png"
+                  alt="Table Icon"
                   className="w-6 h-6"
                 />
-                <h3 className="font-bold text-lg">{note.title}</h3>
+                <h3 className="font-bold text-lg">{table.title}</h3>
               </div>
               {isGridView ? (
                 <p className=" mt-2 text-sm">
-                  {note.content?.slice(0, 50) || "No content..."}
+                  {table.createdAt?.slice(0, 50) || "..."}
                 </p>
               ) : null}
 
@@ -201,7 +200,7 @@ export default function Notes() {
               <div
                 onClick={(e) => {
                   e.stopPropagation();
-                  deleteNote(note.id);
+                  deleteTable(table.id);
                 }}
                 className="absolute top-2 right-2 cursor-pointer p-1 text-white rounded-full hover:bg-red-600 transition"
               >
@@ -214,7 +213,7 @@ export default function Notes() {
             {loading ? (
               <div className="border-t-4 border-blue-600 border-solid w-16 h-16 rounded-full animate-spin mx-auto"></div>
             ) : (
-              "No notes found"
+              "No tables found"
             )}
           </div>
         )}
@@ -223,7 +222,7 @@ export default function Notes() {
       {/* Floating Action Button */}
       <button
         onClick={toggleShowModal}
-        className=" text-[50px] fixed bottom-10 right-10 bg-yellow-400 text-white w-20 rounded-full shadow-lg hover:bg-yellow-500 transition"
+        className=" text-[50px] fixed bottom-10 right-10 bg-blue-800 text-white w-20 rounded-full shadow-lg hover:bg-blue-900 transition"
       >
         +
       </button>
@@ -231,9 +230,9 @@ export default function Notes() {
       <Modal
         showModal={showModal}
         handleCloseModal={handleCloseModal}
-        noteTitle={noteTitle}
-        setNoteTitle={setNoteTitle}
-        createNote={createNote}
+        tableTitle={tableTitle}
+        setTableTitle={setTableTitle}
+        createTable={createTable}
       />
     </div>
   );
