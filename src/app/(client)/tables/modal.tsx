@@ -2,7 +2,7 @@ import React from "react";
 
 interface ModalProps {
   showModal: boolean;
-  handleCloseModal: (e: React.MouseEvent<HTMLDivElement>) => void;
+  handleCloseModal: (e: any) => void;
   tableTitle: string;
   setTableTitle: React.Dispatch<React.SetStateAction<string>>;
   createTable: () => void;

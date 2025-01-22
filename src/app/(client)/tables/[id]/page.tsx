@@ -127,7 +127,7 @@ export default function TableDetails() {
     }));
   };
 
-  const deleteTable = async (tableId: number) => {
+  const deleteTable = async (tableId: any) => {
     try {
       const res = await fetch(`/api/delete-table/${table.id}`, {
         method: "DELETE",

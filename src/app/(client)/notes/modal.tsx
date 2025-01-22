@@ -2,7 +2,7 @@ import React from "react";
 
 interface ModalProps {
   showModal: boolean;
-  handleCloseModal: (e: React.MouseEvent<HTMLDivElement>) => void;
+  handleCloseModal: (e: any) => void;
   noteTitle: string;
   setNoteTitle: React.Dispatch<React.SetStateAction<string>>;
   createNote: () => void;
