@@ -8,7 +8,7 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
 async function main() {
   const user = await prisma.user.create({
-    data: { name: "test", password: "password", email: "test@manifo.uk" },
+    data: { username: "test", password: "password", email: "test@manifo.uk" },
   });
 }
 
