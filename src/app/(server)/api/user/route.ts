@@ -10,10 +10,8 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Verify the token and extract user information
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
 
-    // Send the user data as JSON response
     return NextResponse.json({ user: decoded });
   } catch (err) {
     console.error("Token verification failed:", err);
