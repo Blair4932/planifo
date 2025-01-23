@@ -15,7 +15,7 @@ datasource db {
 
 model User {
   id        Int      @id @default(autoincrement()) // Primary key
-  username  String                                  // Username must be unique
+  username  String   @unique                               // Username must be unique
   password  String                                 // Hashed password
   email     String   @unique                      // users email
   notes     Note[]                                // Users notes
