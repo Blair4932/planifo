@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import { useRouter } from "next/navigation";
 import Modal from "./modal";
+import { toast } from "react-toastify";
 
 export default function Tables() {
   const [user, setUser] = useState<any>(null);
@@ -72,12 +73,15 @@ export default function Tables() {
 
         await fetchTables(user?.id);
       } else {
+        toast.error("Failed to create table");
         const data = await res.json();
-        alert(data.error || "Failed to create table.");
+        console.error("Failed to create table:" + data.error);
       }
     } catch (error) {
       console.error("Error creating table:", error);
-      alert("An unexpected error occurred.");
+      toast.error(
+        "An unexpected error occurred. Try again. If this continues, contact admin@manifo.uk"
+      );
     }
   };
 

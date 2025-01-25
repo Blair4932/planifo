@@ -97,7 +97,9 @@ export default function TableDetails() {
       }
     } catch (error) {
       console.error("Error saving table:", error);
-      alert("An unexpected error occurred.");
+      toast.error(
+        "An unexpected error occurred. Try again. If this continues, contact admin@manifo.uk"
+      );
     } finally {
       setSaving(false);
     }
@@ -470,15 +472,6 @@ export default function TableDetails() {
             >
               Delete Table
             </button>
-
-            {/* Back to Tables Button (Always enabled) */}
-            <button
-              onClick={() => router.push("/tables")}
-              className="w-full mt-4 bg-gray-800 text-white py-2 rounded-md hover:bg-gray-950 transition"
-            >
-              Back to Tables
-            </button>
-
             {/* Error Message */}
             {error && <p className="text-red-600">{error}</p>}
           </ul>

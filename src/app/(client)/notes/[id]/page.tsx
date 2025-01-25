@@ -211,12 +211,6 @@ export default function NoteDetails() {
           >
             Delete
           </button>
-          <button
-            onClick={() => router.push("/notes")}
-            className="w-full mt-4 bg-gray-800 text-white py-2 rounded-md hover:bg-gray-950 transition"
-          >
-            Back to Notes
-          </button>
           {error && <p className="text-red-600">{error}</p>}
         </div>
       </div>

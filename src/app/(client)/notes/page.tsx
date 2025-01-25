@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import { useRouter } from "next/navigation";
 import Modal from "./modal";
+import { toast } from "react-toastify";
 
 export default function Notes() {
   const [user, setUser] = useState<any>(null);
@@ -42,6 +43,7 @@ export default function Notes() {
         setNotes(data.notes);
         setFilteredNotes(data.notes);
       } else {
+        toast.error("Failed to fetch notes");
         console.error("Failed to fetch notes");
       }
     } catch (error) {
@@ -73,12 +75,13 @@ export default function Notes() {
 
         await fetchNotes(user?.id);
       } else {
-        const data = await res.json();
-        alert(data.error || "Failed to create note.");
+        toast.error("Failed to create note");
       }
     } catch (error) {
+      toast.error(
+        "An unexpected error occurred. Try again. If this continues, contact admin@manifo.uk"
+      );
       console.error("Error creating note:", error);
-      alert("An unexpected error occurred.");
     }
   };
 
