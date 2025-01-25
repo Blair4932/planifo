@@ -3,7 +3,7 @@ import prisma from "@/prisma/lib/prisma";
 export async function createNote(
   title: string,
   content: string | null,
-  userId: number
+  userId: string
 ) {
   if (!title) {
     throw new Error("Title is required.");
@@ -22,7 +22,6 @@ export async function createNote(
       },
     });
 
-    console.log("Created Note:", newNote);
     return newNote;
   } catch (error) {
     console.error("Error creating note:", error);

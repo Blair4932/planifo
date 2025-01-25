@@ -6,7 +6,7 @@ export async function GET(req: Request, { params }: any) {
 
   try {
     const table = await prisma.table.findUnique({
-      where: { id: parseInt(id, 10) },
+      where: { id },
       include: {
         rows: {
           include: {

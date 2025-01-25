@@ -13,7 +13,7 @@ export async function GET(req: Request) {
 
   try {
     const tables = await prisma.table.findMany({
-      where: { userId: parseInt(userId) },
+      where: { userId },
     });
 
     return NextResponse.json({ tables });

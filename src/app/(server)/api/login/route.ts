@@ -7,10 +7,7 @@ export async function POST(req: Request) {
   try {
     const { username, password } = await req.json();
 
-    console.log("Input received:", username, password);
-
     if (!username || !password) {
-      console.log("Validation failed: Missing username or password");
       return NextResponse.json(
         { error: "Username and password are required" },
         { status: 400 }
@@ -25,10 +22,7 @@ export async function POST(req: Request) {
       },
     });
 
-    console.log("User found:", user);
-
     if (!user) {
-      console.log("User not found for username:", username);
       return NextResponse.json(
         { error: "Invalid username or password" },
         { status: 401 }
@@ -36,7 +30,6 @@ export async function POST(req: Request) {
     }
 
     if (!user.password) {
-      console.log("Password missing for user:", username);
       return NextResponse.json(
         { error: "Password is missing for this user" },
         { status: 500 }
@@ -44,7 +37,6 @@ export async function POST(req: Request) {
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log("Password validation:", isPasswordValid);
 
     if (!isPasswordValid) {
       return NextResponse.json(
@@ -54,7 +46,6 @@ export async function POST(req: Request) {
     }
 
     if (!process.env.JWT_SECRET) {
-      console.log("JWT_SECRET is not defined");
       return NextResponse.json(
         { error: "Server misconfiguration: Missing JWT_SECRET" },
         { status: 500 }
@@ -72,8 +63,6 @@ export async function POST(req: Request) {
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
-
-    console.log("JWT generated successfully");
 
     return NextResponse.json({
       message: "Login successful",

@@ -2,6 +2,9 @@
 import { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import { useRouter, useParams } from "next/navigation";
+import { v4 as uuidv4 } from "uuid";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function TableDetails() {
   const [table, setTable] = useState<any>(null);
@@ -9,11 +12,13 @@ export default function TableDetails() {
   const [user, setUser] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
   const [selectedCell, setSelectedCell] = useState<any>(null);
   const [selectedColumn, setSelectedColumn] = useState<any>(null);
   const [editedHeader, setEditedHeader] = useState("");
   const [editedValue, setEditedValue] = useState("");
   const [editedBackgroundColor, setEditedBackgroundColor] = useState("");
+
   const params = useParams();
   const router = useRouter();
 
@@ -38,6 +43,7 @@ export default function TableDetails() {
   }, [router]);
 
   const fetchTableDetails = async () => {
+    setLoading(true);
     try {
       if (params.id) {
         const res = await fetch(`/api/get-tables/${params.id}`, {
@@ -46,6 +52,10 @@ export default function TableDetails() {
 
         if (res.ok) {
           const data = await res.json();
+          data.table.columns.sort(
+            (a: any, b: any) => a.columnIndex - b.columnIndex
+          );
+          data.table.rows.sort((a: any, b: any) => a.rowIndex - b.rowIndex);
           setTable(data.table);
           const cellsArr = [];
           data.table.rows.forEach((row) => {
@@ -67,26 +77,29 @@ export default function TableDetails() {
   };
 
   const saveTable = async () => {
+    setSaving(true);
     try {
       const res = await fetch(`/api/update-table/${params.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: table.title,
-          columns: table.columns,
-          rows: table.rows,
+          columns: table.columns.sort((a, b) => a.columnIndex - b.columnIndex),
+          rows: table.rows.sort((a, b) => a.rowIndex - b.rowIndex),
         }),
       });
 
       if (res.ok) {
-        console.log("Table updated successfully");
+        toast.success("Table saved successfully!");
       } else {
-        console.error("Failed to save note.");
-        setError("Failed to save note");
+        console.error("Failed to save table.");
+        setError("Failed to save table");
       }
     } catch (error) {
-      console.error("Error saving note:", error);
+      console.error("Error saving table:", error);
       alert("An unexpected error occurred.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -99,11 +112,7 @@ export default function TableDetails() {
     }));
   };
 
-  const updateCellValue = (cellId: number, value: string) => {
-    setCells((prevCells: any[]) =>
-      prevCells.map((cell) => (cell.id === cellId ? { ...cell, value } : cell))
-    );
-
+  const updateCellValue = (cellId: string, value: string) => {
     setTable((prevTable: any) => ({
       ...prevTable,
       rows: prevTable.rows.map((row: any) => ({
@@ -115,7 +124,7 @@ export default function TableDetails() {
     }));
   };
 
-  const updateCellBackground = (cellId: number, backgroundColor: string) => {
+  const updateCellBackground = (cellId: any, backgroundColor: any) => {
     setTable((prevTable: any) => ({
       ...prevTable,
       rows: prevTable.rows.map((row: any) => ({
@@ -125,6 +134,66 @@ export default function TableDetails() {
         ),
       })),
     }));
+  };
+
+  const deleteColumn = async () => {
+    if (!selectedColumn) return;
+
+    try {
+      const res = await fetch(`/api/delete-column/${selectedColumn.id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setTable((prevTable) => ({
+          ...prevTable,
+          columns: prevTable.columns.filter(
+            (column) => column.id !== selectedColumn.id
+          ),
+          rows: prevTable.rows.map((row) => ({
+            ...row,
+            cells: row.cells.filter(
+              (cell, index) =>
+                index !==
+                prevTable.columns.findIndex(
+                  (col) => col.id === selectedColumn.id
+                )
+            ),
+          })),
+        }));
+
+        setSelectedColumn(null);
+      } else {
+        console.error("Failed to delete column");
+      }
+    } catch (error) {
+      console.error("Error deleting column:", error);
+    }
+  };
+
+  const deleteRow = async () => {
+    if (!selectedCell) return;
+
+    try {
+      const res = await fetch(`/api/delete-row/${selectedCell.rowId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setTable((prevTable) => ({
+          ...prevTable,
+          rows: prevTable.rows.filter((row) =>
+            row.cells.every((cell) => cell.id !== selectedCell.id)
+          ),
+        }));
+
+        setSelectedCell(null);
+      } else {
+        console.error("Failed to delete row");
+      }
+    } catch (error) {
+      console.error("Error deleting row:", error);
+    }
   };
 
   const deleteTable = async (tableId: any) => {
@@ -143,6 +212,82 @@ export default function TableDetails() {
     }
   };
 
+  const addColumn = () => {
+    const columnId = uuidv4();
+
+    setTable((prevTable) => {
+      const newColumnCells = prevTable.rows.map((row) => {
+        const cellId = uuidv4();
+        return {
+          id: cellId,
+          value: "",
+          backgroundColor: "#ffffff",
+          rowId: row.id,
+          columnId: columnId,
+        };
+      });
+
+      const newTable = {
+        ...prevTable,
+        columns: [
+          ...prevTable.columns,
+          {
+            id: columnId,
+            header: "New Column",
+            columnIndex: prevTable.columns.length,
+            cells: newColumnCells,
+          },
+        ],
+        rows: prevTable.rows.map((row, rowIndex) => ({
+          ...row,
+          cells: [
+            ...row.cells,
+            {
+              id: newColumnCells[rowIndex].id,
+              value: "",
+              backgroundColor: "#ffffff",
+              rowId: row.id,
+              columnId: columnId,
+            },
+          ],
+        })),
+      };
+
+      return newTable;
+    });
+  };
+
+  const addRow = () => {
+    const rowId = uuidv4();
+
+    setTable((prevTable) => {
+      const newRowCells = prevTable.columns.map((col) => {
+        const cellId = uuidv4();
+        return {
+          id: cellId,
+          value: "",
+          backgroundColor: "#ffffff",
+          rowId: rowId,
+          columnId: col.id,
+        };
+      });
+
+      const newTable = {
+        ...prevTable,
+        rows: [
+          ...prevTable.rows,
+          {
+            id: rowId,
+            rowIndex: prevTable.rows.length,
+            cells: newRowCells,
+          },
+        ],
+      };
+
+      return newTable;
+    });
+  };
+
   useEffect(() => {
     fetchTableDetails();
   }, [params.id]);
@@ -150,7 +295,7 @@ export default function TableDetails() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="border-t-4 border-blue-600 border-solid w-16 h-16 rounded-full animate-spin"></div>
+        <div className="border-t-4 border-white border-solid w-16 h-16 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -164,125 +309,181 @@ export default function TableDetails() {
   }
 
   return (
-    <div className="flex gap-16 flex-col lg:flex-row p-4 max-w-full mx-auto pt-24">
-      {/* Table View */}
-      <div className="ml-8 flex-1 p-4 border border-yellow-400 rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-4 text-left">{table.title}</h1>
-        <div className="overflow-auto">
-          <table className="table-auto w-full border-collapse border border-gray-300">
-            <thead>
-              <tr>
-                {table.columns.map((column: any) => (
-                  <th
-                    key={column.id}
-                    className="border border-gray-300 p-2 bg-gray-100"
-                  >
-                    <input
-                      type="text"
-                      value={
-                        selectedColumn?.id === column.id
-                          ? editedHeader
-                          : column.header || ""
-                      }
-                      onClick={() => {
-                        setSelectedColumn(column);
-                        setEditedHeader(column.header || "");
-                      }}
-                      onChange={(e) => setEditedHeader(e.target.value)}
-                      onBlur={() => {
-                        updateHeaderValue(column.id, editedHeader);
-                      }}
-                      className="bg-transparent w-full border-none outline-none text-center"
-                      placeholder="Header"
-                    />
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {table.rows.map((row: any) => (
-                <tr key={row.id}>
-                  {row.cells.map((cell: any) => (
-                    <td
-                      key={cell.id}
-                      className={`border border-gray-300 p-4 cursor-pointer ${
-                        selectedCell?.id === cell.id ? "bg-blue-100" : ""
-                      }`}
-                      onClick={() => {
-                        setSelectedCell(cell);
-                        setEditedValue(cell.value || "");
-                        setEditedBackgroundColor(
-                          cell.backgroundColor || "#ffffff"
-                        );
-                      }}
-                      style={{
-                        backgroundColor: cell.backgroundColor || "#ffffff",
-                      }}
+    <>
+      <div className="bg-cyan-600 p-4 mb-4">
+        <p className="cursor-pointer" onClick={() => router.push("/pinboard")}>
+          Pinboard
+        </p>
+        <div className=" flex justify-between items-center mb-3">
+          <h1
+            className="text-3xl text-[40px] ml-7 mt-4 text-white cursor-pointer"
+            onClick={() => router.push("/tables")}
+          >
+            Tables
+          </h1>
+        </div>
+      </div>
+      <div className="flex gap-16 flex-col lg:flex-row p-4 max-w-full mx-auto pt-24">
+        {/* Table View */}
+        <div className="ml-8 flex-1 p-4 border border-yellow-400 rounded-lg shadow-md">
+          <h1 className="text-3xl text-white font-bold mb-4 text-left">
+            {table.title}
+          </h1>
+          <div className="overflow-auto">
+            <table className="table-auto w-full border-collapse border border-gray-300">
+              <thead>
+                <tr>
+                  {table.columns.map((column: any) => (
+                    <th
+                      key={column.id}
+                      className="border border-gray-300 p-2 bg-gray-100"
                     >
                       <input
                         type="text"
-                        value={cell.value || ""}
-                        onChange={(e) =>
-                          updateCellValue(cell.id, e.target.value)
-                        }
+                        value={column.header || ""}
+                        onChange={(e) => setEditedHeader(e.target.value)}
                         className="bg-transparent w-full border-none outline-none text-center"
+                        placeholder="Header"
                       />
-                    </td>
+                    </th>
                   ))}
+                  <th>
+                    <button
+                      className="bg-green-500 text-white px-2 py-1 rounded-md"
+                      onClick={addColumn}
+                    >
+                      + Add Column
+                    </button>
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
 
-      {/* Details Pane */}
-      <div className="w-full mr-8 lg:w-64 mt-6 lg:mt-0 lg:ml-6 p-4 border border-yellow-400 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Cell Details</h2>
-        {selectedCell ? (
-          <ul className="space-y-2 text-gray-700">
-            <li>
-              <strong>Row:</strong> {selectedCell.rowId}
-            </li>
-            <li>
-              <strong>Column:</strong> {selectedCell.columnId}
-            </li>
-            <li>
-              <strong>Background Color:</strong>
-              <input
-                type="color"
-                value={editedBackgroundColor}
-                onChange={(e) =>
-                  updateCellBackground(selectedCell.id, e.target.value)
-                }
-                className="ml-2"
-              />
-            </li>
+              <tbody>
+                {table.rows.map((row: any) => (
+                  <tr key={row.id}>
+                    {row.cells.map((cell: any) => (
+                      <td
+                        key={cell.id}
+                        className={`border border-gray-300 p-4 cursor-pointer ${
+                          selectedCell?.id === cell.id ? "bg-blue-100" : ""
+                        }`}
+                        onClick={() => {
+                          setSelectedCell(cell);
+                          setEditedValue(cell.value || "");
+                          setEditedBackgroundColor(
+                            cell.backgroundColor || "#ffffff"
+                          );
+                        }}
+                        style={{
+                          backgroundColor: cell.backgroundColor || "#ffffff",
+                        }}
+                      >
+                        <input
+                          type="text"
+                          value={cell.value || ""}
+                          onChange={(e) =>
+                            updateCellValue(cell.id, e.target.value)
+                          }
+                          className="bg-transparent w-full border-none outline-none text-center"
+                        />
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+                <tr>
+                  <td>
+                    <button
+                      className="bg-green-500 text-white px-2 py-1 rounded-md w-[100%]"
+                      onClick={addRow}
+                    >
+                      + Add Row
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Details Pane */}
+        <div className="w-full mr-8 lg:w-64 mt-6 lg:mt-0 lg:ml-6 p-4 border border-yellow-400 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">Cell Details</h2>
+          <ul className="space-y-5 text-gray-700 ">
+            {/* Background color for selected cell */}
+            {selectedCell && (
+              <li className="flex items-center text-white">
+                <span>Background Color:</span>
+                <input
+                  type="color"
+                  value={editedBackgroundColor}
+                  onChange={(e) =>
+                    updateCellBackground(selectedCell.id, e.target.value)
+                  }
+                  className={`ml-2 ${
+                    !selectedCell ? "disabled:opacity-50" : ""
+                  }`}
+                  disabled={!selectedCell}
+                />
+              </li>
+            )}
+
+            {/* Save Table Button (Always enabled) */}
             <button
               onClick={saveTable}
-              className="w-full mt-6 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+              className="w-full mt-6 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
             >
-              Save
+              {saving ? (
+                <div className="w-4 h-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto"></div>
+              ) : (
+                "Save"
+              )}
             </button>
 
+            {/* Delete Row Button (Enabled if a regular cell is selected) */}
+            <button
+              disabled={!selectedCell || selectedColumn}
+              onClick={deleteRow}
+              className={`w-full mt-4 py-2 rounded-md ${
+                !selectedCell || selectedColumn
+                  ? "bg-gray-300"
+                  : "bg-yellow-400 text-white"
+              } hover:bg-yellow-400 transition`}
+            >
+              Delete Row
+            </button>
+
+            {/* Delete Column Button (Enabled if a column header is selected) */}
+            <button
+              disabled={!selectedColumn}
+              onClick={deleteColumn}
+              className={`w-full mt-4 py-2 rounded-md ${
+                !selectedColumn ? "bg-gray-300" : "bg-yellow-400 text-white"
+              } hover:bg-yellow-400 transition`}
+            >
+              Delete Column
+            </button>
+
+            {/* Delete Table Button (Always enabled) */}
             <button
               onClick={deleteTable}
-              className="w-full mt-4 text-white bg-red-500 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition"
+              className="w-full mt-4 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition"
             >
-              Delete
+              Delete Table
             </button>
+
+            {/* Back to Tables Button (Always enabled) */}
             <button
               onClick={() => router.push("/tables")}
               className="w-full mt-4 bg-gray-800 text-white py-2 rounded-md hover:bg-gray-950 transition"
             >
               Back to Tables
             </button>
+
+            {/* Error Message */}
             {error && <p className="text-red-600">{error}</p>}
           </ul>
-        ) : (
-          <p className="text-gray-600">Select a cell to edit its details.</p>
-        )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

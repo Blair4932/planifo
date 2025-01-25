@@ -27,6 +27,7 @@ export default function Notes() {
   };
 
   const fetchNotes = async (userId: number) => {
+    setLoading(true);
     try {
       const res = await fetch("/api/get-notes", {
         method: "GET",
@@ -45,6 +46,8 @@ export default function Notes() {
       }
     } catch (error) {
       console.error("Error fetching notes:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -123,8 +126,6 @@ export default function Notes() {
       setError("No token found.");
       router.push("/login");
     }
-
-    setLoading(false);
   }, [router]);
 
   const handleCloseModal = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -133,12 +134,14 @@ export default function Notes() {
     }
   };
 
+  const LoadingSpinner = () => (
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="border-t-4 border-white border-solid w-16 h-16 rounded-full animate-spin"></div>
+    </div>
+  );
+
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="border-t-4 border-blue-600 border-solid w-16 h-16 rounded-full animate-spin"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -192,7 +195,7 @@ export default function Notes() {
                 <h3 className="font-bold text-lg">{note.title}</h3>
               </div>
               {isGridView ? (
-                <p className=" mt-2 text-sm">
+                <p className=" text-gray-300 mt-2 text-sm">
                   {note.content?.slice(0, 50) || "No content..."}
                 </p>
               ) : null}

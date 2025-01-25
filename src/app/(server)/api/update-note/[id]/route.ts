@@ -15,7 +15,7 @@ export async function PUT(req: Request, { params }: any) {
     }
 
     const updatedNote = await prisma.note.update({
-      where: { id: parseInt(id, 10) },
+      where: { id },
       data: { content },
     });
 

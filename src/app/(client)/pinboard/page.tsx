@@ -42,6 +42,9 @@ export default function Dashboard() {
             <h1 className="text-[45px] font-extralight ml-7">
               Hey, {user.username}!
             </h1>
+            <h3 className=" ml-[68%] cursor-pointer">
+              <a href="mailto:admin@manifo.uk">Report a bug</a>
+            </h3>
             <div
               className="bg-white rounded-full p-3 mr-7 cursor-pointer"
               onClick={() => router.push("/desk")}

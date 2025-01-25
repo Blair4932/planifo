@@ -1,7 +1,7 @@
 import prisma from "@/prisma/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function createTable(title: string, userId: number) {
+export async function createTable(title: string, userId: string) {
   if (!title) {
     throw new Error("Failed to create table: Table title is required");
   } else if (!userId) {

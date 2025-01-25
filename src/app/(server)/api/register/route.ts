@@ -10,5 +10,4 @@ export async function POST(req: Request) {
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
-  //empty commit
 }

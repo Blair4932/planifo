@@ -9,7 +9,6 @@ export async function middleware(req: NextRequest) {
   if (token) {
     try {
       const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
-      console.log("User info decoded from JWT:", decoded);
 
       const requestHeaders = new Headers(req.headers);
       requestHeaders.set("x-user", JSON.stringify(decoded));

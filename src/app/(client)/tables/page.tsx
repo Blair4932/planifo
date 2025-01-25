@@ -14,6 +14,7 @@ export default function Tables() {
   const [tableTitle, setTableTitle] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isGridView, setIsGridView] = useState(true);
+  const [noTablesTimeout, setNoTablesTimeout] = useState(false);
 
   const router = useRouter();
 
@@ -40,6 +41,8 @@ export default function Tables() {
         const data = await res.json();
         setTables(data.tables);
         setFilteredTables(data.tables);
+        setLoading(false);
+        setNoTablesTimeout(false);
       } else {
         console.error("Failed to fetch tables");
       }
@@ -113,6 +116,15 @@ export default function Tables() {
         const decoded: any = jwt_decode(token);
         setUser(decoded);
         fetchTables(decoded.id);
+
+        const timeout = setTimeout(() => {
+          if (tables.length === 0) {
+            setNoTablesTimeout(true);
+            setLoading(false);
+          }
+        }, 5000);
+
+        return () => clearTimeout(timeout);
       } catch (err) {
         console.error("Invalid token:", err);
         setError("Token is invalid or expired.");
@@ -122,23 +134,13 @@ export default function Tables() {
       setError("No token found.");
       router.push("/login");
     }
-
-    setLoading(false);
-  }, [router]);
+  }, [router, tables]);
 
   const handleCloseModal = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       setShowModal(false);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="border-t-4 border-blue-600 border-solid w-16 h-16 rounded-full animate-spin"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="">
@@ -173,7 +175,14 @@ export default function Tables() {
           isGridView ? "grid grid-cols-4 gap-6" : "flex flex-col gap-4"
         }`}
       >
-        {filteredTables.length > 0 ? (
+        {loading ? (
+          <div className=" absolute flex justify-center items-center w-full h-[60%]">
+            <div className="border-t-4 border-white border-solid w-16 h-16 rounded-full animate-spin"></div>
+          </div>
+        ) : noTablesTimeout ? (
+          <div className="text-center text-gray-600">No tables found</div>
+        ) : (
+          filteredTables.length > 0 &&
           filteredTables.map((table: any) => (
             <div
               key={table.id}
@@ -196,7 +205,7 @@ export default function Tables() {
                 </p>
               ) : null}
 
-              {/* Delete Buttn */}
+              {/* Delete Button */}
               <div
                 onClick={(e) => {
                   e.stopPropagation();
@@ -208,14 +217,6 @@ export default function Tables() {
               </div>
             </div>
           ))
-        ) : (
-          <div className="text-center text-gray-600">
-            {loading ? (
-              <div className="border-t-4 border-blue-600 border-solid w-16 h-16 rounded-full animate-spin mx-auto"></div>
-            ) : (
-              "No tables found"
-            )}
-          </div>
         )}
       </div>
 

@@ -13,7 +13,7 @@ export async function DELETE(req: Request, { params }: any) {
     }
 
     await prisma.note.delete({
-      where: { id: parseInt(id, 10) },
+      where: { id },
     });
 
     return NextResponse.json(

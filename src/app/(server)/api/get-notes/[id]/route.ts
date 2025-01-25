@@ -6,7 +6,7 @@ export async function GET(req: Request, { params }: any) {
 
   try {
     const note = await prisma.note.findUnique({
-      where: { id: parseInt(id, 10) },
+      where: { id },
     });
 
     if (!note) {

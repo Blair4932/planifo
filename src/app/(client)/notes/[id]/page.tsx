@@ -2,11 +2,14 @@
 import { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import { useRouter, useParams } from "next/navigation";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function NoteDetails() {
   const [note, setNote] = useState<any>(null);
   const [user, setUser] = useState("");
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [editedContent, setEditedContent] = useState("");
   const [editedTitle, setEditedTitle] = useState("");
@@ -35,6 +38,7 @@ export default function NoteDetails() {
   }, [router]);
 
   const fetchNoteDetails = async () => {
+    setLoading(true);
     try {
       if (params.id) {
         const res = await fetch(`/api/get-notes/${params.id}`, {
@@ -64,6 +68,7 @@ export default function NoteDetails() {
   };
 
   const saveNote = async () => {
+    setSaving(true);
     try {
       const res = await fetch(`/api/update-note/${params.id}`, {
         method: "PUT",
@@ -80,13 +85,15 @@ export default function NoteDetails() {
           title: editedTitle,
           content: editedContent,
         }));
+        toast.success("Note Saved Successfully");
       } else {
+        toast.error("Failed to save: Note cannot be empty");
         console.error("Failed to save note.");
-        setError("Failed to save note");
       }
     } catch (error) {
       console.error("Error saving note:", error);
-      alert("An unexpected error occurred.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -104,7 +111,7 @@ export default function NoteDetails() {
         router.push("/notes");
       }
     } catch (e) {
-      console.error('Error deleting note: ', e)
+      console.error("Error deleting note: ", e);
     }
   };
 
@@ -115,7 +122,7 @@ export default function NoteDetails() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="border-t-4 border-blue-600 border-solid w-16 h-16 rounded-full animate-spin"></div>
+        <div className="border-t-4 border-white border-solid w-16 h-16 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -133,64 +140,86 @@ export default function NoteDetails() {
   }
 
   return (
-    <div className="flex gap-16 flex-col lg:flex-row p-4 max-w-full mx-auto pt-24">
-      {/* Note Content Section */}
-      <div className="ml-8 flex-1 p-4 border border-yellow-400 rounded-lg shadow-md">
-        {/* Editable Title */}
-        <input
-          type="text"
-          value={editedTitle}
-          onChange={(e) => setEditedTitle(e.target.value)}
-          className="text-3xl font-bold mb-4 text-left bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 w-full"
-          placeholder="Title"
-        />
-        <textarea
-          value={editedContent}
-          onChange={(e) => setEditedContent(e.target.value)}
-          className="text-black w-full h-[400px] p-4 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="No content"
-          readOnly={false}
-        />
+    <>
+      <div className="bg-yellow-600 p-4 mb-4">
+        <p className="cursor-pointer" onClick={() => router.push("/pinboard")}>
+          Pinboard
+        </p>
+        <div className=" flex justify-between items-center mb-3 cursor-pointer">
+          <h1
+            className="text-3xl text-[40px] ml-7 mt-4 text-white"
+            onClick={() => {
+              router.push("/notes");
+            }}
+          >
+            Notes
+          </h1>
+        </div>
       </div>
 
-      {/* Details Pane */}
-      <div className="w-full mr-8 lg:w-64 mt-6 lg:mt-0 lg:ml-6 p-4 border border-yellow-400 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Details</h2>
-        <ul className="space-y-2 text-gray-700">
-          <li>
-            <strong>Created:</strong>{" "}
-            {new Date(note.createdAt).toLocaleString()}
-          </li>
-          <li>
-            <strong>Last Modified:</strong>{" "}
-            {new Date(note.lastUpdatedAt).toLocaleString()}
-          </li>
-          <li>
-            <strong>Character Count:</strong> {editedContent.length}
-          </li>
-        </ul>
+      <div className="flex gap-16 flex-col lg:flex-row p-4 max-w-full mx-auto pt-24">
+        {/* Note Content Section */}
+        <div className="ml-8 flex-1 p-4 border border-yellow-400 rounded-lg shadow-md">
+          {/* Editable Title */}
+          <input
+            type="text"
+            value={editedTitle}
+            onChange={(e) => setEditedTitle(e.target.value)}
+            className="text-3xl font-bold mb-4 text-left bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            placeholder="Title"
+          />
+          <textarea
+            value={editedContent}
+            onChange={(e) => setEditedContent(e.target.value)}
+            className="text-black w-full h-[400px] p-4 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="No content"
+            readOnly={false}
+          />
+        </div>
 
-        <button
-          onClick={saveNote}
-          className="w-full mt-6 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
-        >
-          Save
-        </button>
+        {/* Details Pane */}
+        <div className="w-full mr-8 lg:w-64 mt-6 lg:mt-0 lg:ml-6 p-4 border border-yellow-400 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">Details</h2>
+          <ul className="space-y-2 text-gray-700">
+            <li>
+              <strong>Created:</strong>{" "}
+              {new Date(note.createdAt).toLocaleString()}
+            </li>
+            <li>
+              <strong>Last Modified:</strong>{" "}
+              {new Date(note.lastUpdatedAt).toLocaleString()}
+            </li>
+            <li>
+              <strong>Character Count:</strong> {editedContent.length}
+            </li>
+          </ul>
 
-        <button
-          onClick={deleteNote}
-          className="w-full mt-4 text-white bg-red-500 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition"
-        >
-          Delete
-        </button>
-        <button
-          onClick={() => router.push("/notes")}
-          className="w-full mt-4 bg-gray-800 text-white py-2 rounded-md hover:bg-gray-950 transition"
-        >
-          Back to Notes
-        </button>
-        {error && <p className="text-red-600">{error}</p>}
+          <button
+            onClick={saveNote}
+            className="w-full mt-6 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+          >
+            {saving ? (
+              <div className="w-4 h-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto"></div>
+            ) : (
+              "Save"
+            )}
+          </button>
+
+          <button
+            onClick={deleteNote}
+            className="w-full mt-4 text-white bg-red-500 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition"
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => router.push("/notes")}
+            className="w-full mt-4 bg-gray-800 text-white py-2 rounded-md hover:bg-gray-950 transition"
+          >
+            Back to Notes
+          </button>
+          {error && <p className="text-red-600">{error}</p>}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
