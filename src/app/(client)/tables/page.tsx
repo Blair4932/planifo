@@ -147,7 +147,7 @@ export default function Tables() {
   };
 
   return (
-    <div className="">
+    <div className="text-white">
       {/* Header */}
       <div className="bg-cyan-600 p-4 mb-4">
         <p className="cursor-pointer" onClick={() => router.push("/pinboard")}>
@@ -191,8 +191,8 @@ export default function Tables() {
             <div
               key={table.id}
               onClick={() => router.push(`/tables/${table.id}`)}
-              className={`relative p-4 border border-cyan-800 rounded-md cursor-pointer shadow-sm hover:shadow-md transition transform hover:scale-105 ${
-                !isGridView ? "ml-10 mr-10" : "ml-7 mr-7"
+              className={`relative p-4 border border-cyan-800 rounded-md cursor-pointer shadow-sm hover:shadow-md transition transform hover:scale-[102%] ${
+                !isGridView ? "ml-20 mr-20" : "ml-10 mr-10"
               }`}
             >
               <div className="flex items-center gap-3">
