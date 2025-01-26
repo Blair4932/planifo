@@ -137,6 +137,7 @@ export default function Dashboard() {
               <img
                 src="assets/calendar.png"
                 className="h-40 transition-transform transform hover:scale-110 cursor-pointer"
+                onClick={() => router.push("/construction")}
               />
               <img
                 src="assets/cells.png"
@@ -146,10 +147,12 @@ export default function Dashboard() {
               <img
                 src="assets/image.png"
                 className="h-40 transition-transform transform hover:scale-110 cursor-pointer"
+                onClick={() => router.push("/construction")}
               />
               <img
                 src="assets/admin.png"
                 className="h-40 transition-transform transform hover:scale-110 cursor-pointer"
+                onClick={() => router.push("/construction")}
               />
             </div>
           </div>
