@@ -18,6 +18,7 @@ export function useTableLogic() {
   const [editedHeader, setEditedHeader] = useState("");
   const [editedValue, setEditedValue] = useState("");
   const [editedBackgroundColor, setEditedBackgroundColor] = useState("");
+  const [calculateOverlayVisible, setCalculateOverlayVisible] = useState(false); // New state to control the overlay visibility
 
   const params = useParams();
   const router = useRouter();
@@ -42,6 +43,9 @@ export function useTableLogic() {
     setLoading(false);
   }, [router]);
 
+  /**
+   * Fetches details of opened table
+   */
   const fetchTableDetails = async () => {
     setLoading(true);
     try {
@@ -76,6 +80,9 @@ export function useTableLogic() {
     }
   };
 
+  /**
+   * saves table
+   */
   const saveTable = async () => {
     setSaving(true);
     try {
@@ -105,11 +112,19 @@ export function useTableLogic() {
     }
   };
 
+  /**
+   * resets selected cells
+   */
   const resetSelection = () => {
     setSelectedCell(null);
     setSelectedColumn(null);
   };
 
+  /**
+   * updates the table headers value
+   * @param columnId selected column id
+   * @param value header value
+   */
   const updateHeaderValue = (columnId: number, value: string) => {
     setTable((prevTable: any) => ({
       ...prevTable,
@@ -119,6 +134,11 @@ export function useTableLogic() {
     }));
   };
 
+  /**
+   * updates the selected cell value
+   * @param cellId selected cell id
+   * @param value cell value
+   */
   const updateCellValue = (cellId: string, value: string) => {
     setTable((prevTable: any) => ({
       ...prevTable,
@@ -137,6 +157,11 @@ export function useTableLogic() {
     }));
   };
 
+  /**
+   * updates cell background colour
+   * @param cellId selected cell id
+   * @param backgroundColor selected cells background colour
+   */
   const updateCellBackground = (cellId: any, backgroundColor: any) => {
     setTable((prevTable: any) => ({
       ...prevTable,
@@ -149,6 +174,10 @@ export function useTableLogic() {
     }));
   };
 
+  /**
+   * calls to delete selected table column
+   * @returns
+   */
   const deleteColumn = async () => {
     if (!selectedColumn) return;
 
@@ -184,6 +213,10 @@ export function useTableLogic() {
     }
   };
 
+  /**
+   * calls to delete selected table row
+   * @returns
+   */
   const deleteRow = async () => {
     if (!selectedCell) return;
 
@@ -209,6 +242,10 @@ export function useTableLogic() {
     }
   };
 
+  /**
+   * calls to delete opened table
+   * @param tableId opened table id
+   */
   const deleteTable = async (tableId: any) => {
     try {
       const res = await fetch(`/api/delete-table/${table.id}`, {
@@ -225,6 +262,9 @@ export function useTableLogic() {
     }
   };
 
+  /**
+   * adds column to opened table
+   */
   const addColumn = () => {
     const columnId = uuidv4();
 
@@ -270,6 +310,9 @@ export function useTableLogic() {
     });
   };
 
+  /**
+   * adds row to opened table
+   */
   const addRow = () => {
     const rowId = uuidv4();
 
@@ -301,6 +344,73 @@ export function useTableLogic() {
     });
   };
 
+  /**
+   * toggles calculate view in detail pane
+   */
+  const handleCalculateButtonClick = () => {
+    setCalculateOverlayVisible(!calculateOverlayVisible);
+  };
+
+  /**
+   * handles table calculations
+   * @param operation + or -
+   * @returns
+   */
+  const handleOverlayOptionClick = (operation: string) => {
+    let total = 0;
+
+    for (let cell of columnCells) {
+      const numericValue = Number(cell.value);
+
+      if (isNaN(numericValue)) {
+        toast.error("Calculations can only be performed on numbers");
+        return;
+      }
+
+      if (operation === "+") {
+        total += numericValue;
+      } else if (operation === "-") {
+        total -= numericValue;
+      }
+    }
+
+    addRow();
+    const targetColumnId = table.columns[0].id;
+    updateNewRowWithCalculatedValue(total, targetColumnId);
+    setCalculateOverlayVisible(false);
+  };
+
+  /**
+   * Updates the newly added row with the calculated total in the relevant column
+   * @param total The result of the calculation
+   */
+  const updateNewRowWithCalculatedValue = (
+    total: number,
+    targetColumnId: string
+  ) => {
+    const newRow = table.rows[table.rows.length - 1];
+
+    setTable((prevTable: any) => {
+      const updatedRows = prevTable.rows.map((row: any) => {
+        if (row.id === newRow.id) {
+          const updatedCells = row.cells.map((cell: any) => {
+            if (cell.columnId === targetColumnId) {
+              return { ...cell, value: total.toString() };
+            }
+            return cell;
+          });
+          return { ...row, cells: updatedCells };
+        }
+        return row;
+      });
+
+      return { ...prevTable, rows: updatedRows };
+    });
+  };
+
+  /**
+   * fetches table id
+   */
   useEffect(() => {
     fetchTableDetails();
   }, [params.id]);
@@ -314,27 +424,24 @@ export function useTableLogic() {
     addColumn,
     selectedCell,
     setSelectedCell,
-    editedValue,
-    setEditedValue,
-    setEditedBackgroundColor,
-    fetchTableDetails,
     saving,
     addRow,
     deleteTable,
     deleteColumn,
     deleteRow,
     updateCellBackground,
-    updateHeaderValue,
-    user,
-    cells,
-    editedHeader,
     editedBackgroundColor,
-    params,
     router,
     setEditedHeader,
     selectedColumn,
     setSelectedColumn,
     resetSelection,
+    calculateOverlayVisible,
+    setCalculateOverlayVisible,
+    handleCalculateButtonClick,
+    handleOverlayOptionClick,
+    columnCells,
+    setColumnCells,
   };
 }
 export * from "./tableLogic";

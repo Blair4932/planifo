@@ -1,7 +1,7 @@
-"use client";
-import "react-toastify/dist/ReactToastify.css";
-import * as TableLogic from "./tableLogic";
-import { DefaultDeserializer } from "v8";
+'use client';
+import 'react-toastify/dist/ReactToastify.css';
+import * as TableLogic from './tableLogic';
+import { DefaultDeserializer } from 'v8';
 
 export default function TablePage() {
   const {
@@ -13,27 +13,24 @@ export default function TablePage() {
     addColumn,
     selectedCell,
     setSelectedCell,
-    editedValue,
-    setEditedValue,
-    setEditedBackgroundColor,
-    fetchTableDetails,
     saving,
     addRow,
     deleteTable,
     deleteColumn,
     deleteRow,
     updateCellBackground,
-    updateHeaderValue,
-    user,
-    cells,
-    editedHeader,
     editedBackgroundColor,
-    params,
     router,
     setEditedHeader,
     selectedColumn,
     setSelectedColumn,
     resetSelection,
+    calculateOverlayVisible,
+    setCalculateOverlayVisible,
+    handleCalculateButtonClick,
+    handleOverlayOptionClick,
+    columnCells,
+    setColumnCells,
   } = TableLogic.useTableLogic();
   if (loading) {
     return (
@@ -54,13 +51,13 @@ export default function TablePage() {
   return (
     <>
       <div className="bg-cyan-600 p-4 mb-4">
-        <p className="cursor-pointer" onClick={() => router.push("/pinboard")}>
+        <p className="cursor-pointer" onClick={() => router.push('/pinboard')}>
           Pinboard
         </p>
         <div className=" flex justify-between items-center mb-3">
           <h1
             className="text-3xl text-[40px] ml-7 mt-4 text-white cursor-pointer"
-            onClick={() => router.push("/tables")}
+            onClick={() => router.push('/tables')}
           >
             Tables
           </h1>
@@ -83,10 +80,11 @@ export default function TablePage() {
                     >
                       <input
                         type="text"
-                        value={column.header || ""}
+                        value={column.header || ''}
                         onClick={() => {
                           resetSelection();
                           setSelectedColumn(column);
+                          setColumnCells(column.cells);
                         }}
                         onChange={(e) => setEditedHeader(e.target.value)}
                         className="bg-transparent w-full border-none outline-none text-center"
@@ -117,18 +115,18 @@ export default function TablePage() {
                           setSelectedCell(cell);
                         }}
                         style={{
-                          backgroundColor: cell.backgroundColor || "#ffffff",
+                          backgroundColor: cell.backgroundColor || '#ffffff',
                           outline:
                             selectedCell?.id === cell.id ||
                             (selectedColumn &&
                               selectedColumn.id === cell.columnId)
-                              ? "2px solid #3b82f6"
-                              : "none",
+                              ? '2px solid #3b82f6'
+                              : 'none',
                         }}
                       >
                         <input
                           type="text"
-                          value={cell.value || ""}
+                          value={cell.value || ''}
                           onChange={(e) =>
                             updateCellValue(cell.id, e.target.value)
                           }
@@ -155,72 +153,89 @@ export default function TablePage() {
 
         {/* Details Pane */}
         <div className="w-full mr-8 lg:w-64 mt-6 lg:mt-0 lg:ml-6 p-4 border border-yellow-400 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Cell Details</h2>
-          <ul className="space-y-5 text-gray-700 ">
-            {/* Background color for selected cell */}
-            {selectedCell && (
-              <li className="flex items-center text-white">
-                <span>Background Color:</span>
-                <input
-                  type="color"
-                  value={editedBackgroundColor}
-                  onChange={(e) =>
-                    updateCellBackground(selectedCell.id, e.target.value)
-                  }
-                  className={`ml-2 ${
-                    !selectedCell ? "disabled:opacity-50" : ""
-                  }`}
-                  disabled={!selectedCell}
-                />
-              </li>
-            )}
+          {calculateOverlayVisible ? (
+            <div className="w-[100%]">
+              <h2 className=" text-white text-xl font-semibold mb-4">
+                Cell Details
+              </h2>
+              <div className="flex flex-col justify-between gap-7">
+                <button
+                  onClick={() => handleOverlayOptionClick('+')}
+                  className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 transition"
+                >
+                  Add total
+                </button>
+                <button
+                  onClick={() => handleOverlayOptionClick('-')}
+                  className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 transition"
+                >
+                  Subtract total
+                </button>
+              </div>
+              <button
+                onClick={handleCalculateButtonClick}
+                className="text-white mt-[115%]"
+              >
+                Back
+              </button>
+            </div>
+          ) : (
+            <div>
+              <h2 className=" text-white text-xl font-semibold mb-4">
+                Cell Details
+              </h2>
+              <ul className="space-y-5 text-gray-700 ">
+                {/* Background color for selected cell */}
+                {selectedCell && (
+                  <li className="flex items-center text-white">
+                    <span>Background Color:</span>
+                    <input
+                      type="color"
+                      value={editedBackgroundColor}
+                      onChange={(e) =>
+                        updateCellBackground(selectedCell.id, e.target.value)
+                      }
+                      className={`ml-2 ${
+                        !selectedCell ? 'disabled:opacity-50' : ''
+                      }`}
+                      disabled={!selectedCell}
+                    />
+                  </li>
+                )}
 
-            {/* Save Table Button (Always enabled) */}
-            <button
-              onClick={saveTable}
-              className="w-full mt-6 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
-            >
-              {saving ? (
-                <div className="w-4 h-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto"></div>
-              ) : (
-                "Save"
-              )}
-            </button>
+                {/* Save Table Button (Always enabled) */}
+                <button
+                  onClick={saveTable}
+                  className="w-full mt-6 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
+                >
+                  {saving ? (
+                    <div className="w-4 h-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto"></div>
+                  ) : (
+                    'Save'
+                  )}
+                </button>
 
-            {/* Delete Row Button (Enabled if a regular cell is selected) */}
-            <button
-              disabled={!selectedCell || selectedColumn}
-              onClick={deleteRow}
-              className={`w-full mt-4 py-2 rounded-md ${
-                !selectedCell || selectedColumn
-                  ? "bg-gray-300"
-                  : "bg-yellow-400 text-white"
-              } hover:bg-yellow-400 transition`}
-            >
-              Delete Row
-            </button>
+                {/* Calculate Button */}
+                <button
+                  onClick={handleCalculateButtonClick}
+                  className="w-full mt-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition relative"
+                >
+                  Calculate
+                </button>
 
-            {/* Delete Column Button (Enabled if a column header is selected) */}
-            <button
-              disabled={!selectedColumn}
-              onClick={deleteColumn}
-              className={`w-full mt-4 py-2 rounded-md ${
-                !selectedColumn ? "bg-gray-300" : "bg-yellow-400 text-white"
-              } hover:bg-yellow-400 transition`}
-            >
-              Delete Column
-            </button>
-
-            {/* Delete Table Button (Always enabled) */}
-            <button
-              onClick={deleteTable}
-              className="w-full mt-4 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition"
-            >
-              Delete Table
-            </button>
-            {/* Error Message */}
-            {error && <p className="text-red-600">{error}</p>}
-          </ul>
+                {/* Delete Table Button (Always enabled) */}
+                <button
+                  onClick={deleteTable}
+                  className="w-full mt-4 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition"
+                >
+                  Delete Table
+                </button>
+                {/* Error Message */}
+                {error && <p className="text-red-600">{error}</p>}
+              </ul>
+            </div>
+          )}
+          <div></div>
         </div>
       </div>
     </>
