@@ -18,7 +18,7 @@ export function useTableLogic() {
   const [editedHeader, setEditedHeader] = useState("");
   const [editedValue, setEditedValue] = useState("");
   const [editedBackgroundColor, setEditedBackgroundColor] = useState("");
-  const [calculateOverlayVisible, setCalculateOverlayVisible] = useState(false); // New state to control the overlay visibility
+  const [calculateOverlayVisible, setCalculateOverlayVisible] = useState(false);
 
   const params = useParams();
   const router = useRouter();

@@ -176,17 +176,15 @@ export default function Notes() {
 
       {/* Notes */}
       <div
-        className={`${
-          isGridView ? "grid grid-cols-4 gap-6" : "flex flex-col gap-4"
-        }`}
+        className={`${isGridView ? "grid grid-cols-4" : "flex flex-col gap-4"}`}
       >
         {filteredNotes.length > 0 ? (
           filteredNotes.map((note: any) => (
             <div
               key={note.id}
               onClick={() => router.push(`/notes/${note.id}`)}
-              className={`relative p-4 border border-yellow-400 rounded-md cursor-pointer shadow-sm hover:shadow-md transition transform hover:scale-105 ${
-                !isGridView ? "ml-10 mr-10" : "ml-7 mr-7"
+              className={`relative p-4 border border-yellow-400 rounded-md cursor-pointer shadow-sm hover:shadow-md transition transform hover:scale-[102%] ${
+                !isGridView ? "ml-20 mr-20" : "ml-9 mr-9"
               }`}
             >
               <div className="flex items-center gap-3">
