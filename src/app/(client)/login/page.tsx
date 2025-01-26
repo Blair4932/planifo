@@ -7,6 +7,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [failed, setFailed] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Track loading state
   const router = useRouter();
 
   useEffect(() => {
@@ -17,6 +18,8 @@ export default function LoginPage() {
   }, []);
 
   const handleLogin = async () => {
+    setIsLoading(true); // Set loading to true when starting the login process
+
     const res = await fetch("/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -24,10 +27,10 @@ export default function LoginPage() {
     });
 
     const data = await res.json();
+    setIsLoading(false); // Set loading to false when the request is complete
 
     if (res.ok) {
       localStorage.removeItem("username");
-
       localStorage.setItem("authToken", data.token);
       router.push("/pinboard");
     } else {
@@ -37,29 +40,36 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col justify-center items-center text-white">
       <h1 className="text-[45px] mt-60">Login</h1>
       <input
-        className="text-center border-2 h-10 rounded-md"
+        className="text-center border-2 h-10 rounded-md text-black"
         type="text"
         placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
       />
       <input
-        className="text-center border-2 h-10 rounded-md mt-2"
+        className="text-center border-2 h-10 rounded-md mt-2 text-black"
         type="password"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
       {failed && <div className="text-red-500 mt-2">{error}</div>}
+
       <button
-        className="text-white bg-blue-600 border-0 p-1 pl-9 pr-9 mt-2 rounded-md"
+        className="w-40 h-8 text-white bg-blue-600 border-0 p-1 pl-9 pr-9 mt-2 rounded-md"
         onClick={handleLogin}
+        disabled={isLoading} // Disable the button when loading
       >
-        Login
+        {isLoading ? (
+          <div className="border-t-4 border-white border-solid rounded-full w-6 h-6 animate-spin mx-auto"></div>
+        ) : (
+          "Login"
+        )}
       </button>
+
       <p
         className="font-extralight text-[12px] mt-2 cursor-pointer"
         onClick={() => router.push("/register")}

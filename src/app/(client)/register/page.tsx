@@ -8,10 +8,12 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [failed, setFailed] = useState(false);
   const [error, setError] = useState("");
-  const [signupStarted, setSignupStarted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Track loading state
   const router = useRouter();
 
   const handleRegistration = async () => {
+    setIsLoading(true); // Set loading to true when starting the registration process
+
     const res = await fetch("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -19,6 +21,8 @@ export default function RegisterPage() {
     });
 
     const data = await res.json();
+    setIsLoading(false); // Set loading to false when the request is complete
+
     if (res.ok) {
       localStorage.setItem("username", username);
       router.push("/login");
@@ -28,53 +32,98 @@ export default function RegisterPage() {
     }
   };
 
-  const handleStartSignup = () => {
-    setSignupStarted(true);
-  };
-
   return (
     <>
-      {!signupStarted ? (
-        <div className=" text-white flex items-center justify-center h-svh">
-          <div className="flex flex-col justify-center items-center">
-            <img src="/assets/life.png" className="h-64" />
-            <h1 className="font-light text-[40px]">Welcome to Manifo</h1>
-            <p className="font-light text-center text-[20px]">
+      <div className="text-white flex justify-between items-center h-28 bg-cyan-700">
+        <h1 className="text-[45px] font-extralight ml-7">Manifo.uk</h1>
+        <h3 className="mr-10 cursor-pointer">
+          <a href="mailto:admin@manifo.uk">Report a bug</a>
+        </h3>
+      </div>
+
+      {/* Container for background and content */}
+      <div className="relative text-white flex justify-center items-center min-h-screen bg-cyan-900">
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-20"
+          style={{
+            backgroundImage: "url('/assets/plan.jpg')",
+            objectFit: "cover",
+          }}
+        ></div>
+
+        {/* Content Area */}
+        <div className="relative z-10 text-white flex justify-center items-center w-full h-full">
+          {/* Left Side */}
+          <div className="flex flex-col items-center justify-center w-[40%] p-8 mb-56">
+            <img
+              src="/assets/life.png"
+              className="h-32 mb-4"
+              alt="Manifo Logo"
+            />
+            <h1 className="text-4xl font-light mb-4">Manifo</h1>
+            <p className="text-center font-extralight mb-8">
               Join millions of users today in turning their life into more than
-              just a 'what if'
+              just a 'what if'.
             </p>
-            <p className="font-extralight text-center mt-3">
-              Whether it's getting your life back on track to meet your goals,
-              or keeping that <br />
-              streak alive, your personal Manifo account is here to help!
-            </p>
-            <div className="flex items-center justify-center mt-3 mb-48 gap-3">
-              <button
-                onClick={handleStartSignup}
-                className="border-2 border-pink-400 text-[20px] w-40 h-10 rounded-md bg-pink-400 transition-all"
-              >
-                Join
-              </button>
-              <button
-                onClick={() => router.push("/login")}
-                className="border-2 border-pink-500 text-[20px] w-40 h-10 rounded-md hover:bg-pink-500 transition-all"
-              >
-                Login
-              </button>
+            <div className="flex flex-col gap-6 items-start w-full">
+              {/* Icon 1 */}
+              <div className="flex items-center gap-4">
+                <img src="assets/post-it(1).png" className="h-16" alt="Icon" />
+                <div>
+                  <span className="text-lg font-semibold">Notes</span>
+                  <p className="text-sm">
+                    Create and organize your notes easily.
+                  </p>
+                </div>
+              </div>
+
+              {/* Icon 2 */}
+              <div className="flex items-center gap-4">
+                <img src="assets/cells.png" className="h-16" alt="Icon" />
+                <div>
+                  <span className="text-lg font-semibold">Tables</span>
+                  <p className="text-sm">
+                    Manage and organize your data in tables.
+                  </p>
+                </div>
+              </div>
+
+              {/* Icon 3 */}
+              <div className="flex items-center gap-4">
+                <img
+                  src="assets/calendar.png"
+                  className="h-16 cursor-pointer"
+                  alt="Icon"
+                />
+                <div>
+                  <span className="text-lg font-semibold">Calendar</span>
+                  <p className="text-sm">
+                    Stay on top of your events and tasks.
+                  </p>
+                </div>
+              </div>
+
+              {/* Icon 4 */}
+              <div className="flex items-center gap-4">
+                <img
+                  src="assets/image.png"
+                  className="h-16 cursor-pointer"
+                  alt="Icon"
+                />
+                <div>
+                  <span className="text-lg font-semibold">Gallery</span>
+                  <p className="text-sm">
+                    Store and view your photos in one place.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <div className=" text-white flex items-center justify-center h-svh w-svw">
-          <div className="flex gap-80">
-            <div className="flex flex-col justify-center items-center">
-              <img src="/assets/edit.png" className="h-80 ml-28" />
-              <h1 className="font-light text-[40px]">Let's get started!</h1>
-              <p>
-                Fill in the details in the signup panel to get to your Manifo
-              </p>
-            </div>
-            <div className="flex flex-col justify-start items-center rounded-md w-[350px] h-[400px]">
+
+          {/* Right Side */}
+          <div className="flex flex-col justify-center items-center w-[50%] p-8">
+            <div className="flex flex-col justify-start items-center rounded-md w-[350px]">
               <h2 className="font-light text-[30px] mt-5">Register</h2>
               <p className="text-[15px] font-extralight">
                 Type in details below
@@ -87,7 +136,7 @@ export default function RegisterPage() {
                 onChange={(e) => {
                   setEmail(e.target.value);
                 }}
-              ></input>
+              />
               <input
                 className="border-2 border-cyan-600 bg-transparent p-1 rounded-md w-72 mt-4 text-center"
                 type="username"
@@ -96,7 +145,7 @@ export default function RegisterPage() {
                 onChange={(e) => {
                   setUsername(e.target.value);
                 }}
-              ></input>
+              />
               <input
                 className="border-2 border-cyan-600 bg-transparent p-1 rounded-md w-72 mt-4 text-center"
                 type="password"
@@ -105,14 +154,20 @@ export default function RegisterPage() {
                 onChange={(e) => {
                   setPassword(e.target.value);
                 }}
-              ></input>
+              />
               {failed && <div className="text-red-500 mt-2">{error}</div>}
+
               <button
                 onClick={handleRegistration}
                 className="mt-5 border-2 border-pink-300 text-[20px] w-40 h-10 rounded-md hover:bg-pink-300 transition-all"
               >
-                Join
+                {isLoading ? (
+                  <div className="border-t-4 border-white border-solid rounded-full w-7 h-7 animate-spin mx-auto"></div>
+                ) : (
+                  "Join"
+                )}
               </button>
+
               <p
                 className="mb-48 mt-2 text-[12px] cursor-pointer"
                 onClick={() => router.push("/login")}
@@ -122,7 +177,15 @@ export default function RegisterPage() {
             </div>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white p-4">
+        <div className="flex justify-between items-center">
+          <p className="text-sm">© 2025 Manifo.uk - All rights reserved</p>
+          <p className="text-sm">Contact: admin@manifo.uk</p>
+        </div>
+      </footer>
     </>
   );
 }
