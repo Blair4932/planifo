@@ -188,7 +188,7 @@ export default function NoteDetails() {
     <div className="flex flex-col lg:flex-row h-screen bg-yellow-50">
       {/* Sidebar */}
       <div className="w-full lg:w-1/4 bg-yellow-900 p-6 text-white">
-        <h2 className="text-2xl font-bold mb-6">Recently Worked On Notes:</h2>
+        <h2 className="text-2xl font-bold mb-6">Recently Worked On Notes</h2>
         <div className="space-y-4">
           {recentNotes.length > 0 ? (
             recentNotes.map((recentNote) => (
@@ -212,7 +212,7 @@ export default function NoteDetails() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-8 overflow-y-auto">
+      <div className="flex-1 p-8 overflow-y-auto text-black">
         <div className="flex justify-between items-center mb-8">
           <h1
             className="text-3xl font-bold text-yellow-900 cursor-pointer underline"

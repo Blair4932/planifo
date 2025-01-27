@@ -121,7 +121,7 @@ export default function TablePage() {
     <div className="flex flex-col lg:flex-row h-screen bg-cyan-50">
       {/* Sidebar */}
       <div className="w-full lg:w-1/4 bg-cyan-900 p-6 text-white">
-        <h2 className="text-2xl font-bold mb-6">Recently Worked On</h2>
+        <h2 className="text-2xl font-bold mb-6">Recently Worked On Tables</h2>
         <div className="space-y-4">
           {recentTables.length > 0 ? (
             recentTables.map((recentTable) => (
