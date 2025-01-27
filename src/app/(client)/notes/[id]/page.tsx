@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function NoteDetails() {
   const [note, setNote] = useState<any>(null);
+  const [recentNotes, setRecentNotes] = useState<any[]>([]);
   const [user, setUser] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -67,6 +68,49 @@ export default function NoteDetails() {
     }
   };
 
+  const fetchRecentNotes = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        throw new Error("No token found.");
+      }
+
+      const decoded: any = jwt_decode(token);
+      const userId = decoded.id;
+
+      if (!userId) {
+        throw new Error("userId not found in token.");
+      }
+
+      const res = await fetch("/api/get-notes", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          userId: userId.toString(),
+        },
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        const sortedNotes = data.notes
+          .filter((note: any) => note.id !== params.id)
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.lastUpdatedAt).getTime() -
+              new Date(a.lastUpdatedAt).getTime()
+          )
+          .slice(0, 5);
+
+        setRecentNotes(sortedNotes);
+      } else {
+        console.error("Failed to fetch recent notes:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching recent notes:", error);
+    }
+  };
+
   const saveNote = async () => {
     setSaving(true);
     try {
@@ -117,12 +161,13 @@ export default function NoteDetails() {
 
   useEffect(() => {
     fetchNoteDetails();
+    fetchRecentNotes();
   }, [params.id]);
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="border-t-4 border-white border-solid w-16 h-16 rounded-full animate-spin"></div>
+        <div className="border-t-4 border-yellow-500 border-solid w-16 h-16 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -140,66 +185,73 @@ export default function NoteDetails() {
   }
 
   return (
-    <>
-      <div className="bg-yellow-600 p-4 mb-4">
-        <p className="cursor-pointer" onClick={() => router.push("/pinboard")}>
-          Pinboard
-        </p>
-        <div className=" flex justify-between items-center mb-3 cursor-pointer">
-          <h1
-            className="text-3xl text-[40px] ml-7 mt-4 text-white"
-            onClick={() => {
-              router.push("/notes");
-            }}
-          >
-            Notes
-          </h1>
+    <div className="flex flex-col lg:flex-row h-screen bg-yellow-50">
+      {/* Sidebar */}
+      <div className="w-full lg:w-1/4 bg-yellow-900 p-6 text-white">
+        <h2 className="text-2xl font-bold mb-6">Recently Worked On Notes</h2>
+        <div className="space-y-4">
+          {recentNotes.length > 0 ? (
+            recentNotes.map((recentNote) => (
+              <div
+                key={recentNote.id}
+                className="p-4 bg-yellow-800 rounded-md cursor-pointer hover:bg-yellow-700 transition-colors"
+                onClick={() => router.push(`/notes/${recentNote.id}`)}
+              >
+                <h3 className="text-lg font-semibold truncate">
+                  {recentNote.title || "Untitled"}
+                </h3>
+                <p className="text-sm truncate text-yellow-200">
+                  {recentNote.content || "No content available"}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p className="text-yellow-400">No recent notes found.</p>
+          )}
         </div>
       </div>
 
-      <div className="flex gap-16 flex-col lg:flex-row p-4 max-w-full mx-auto pt-24">
-        {/* Note Content Section */}
-        <div className="ml-8 flex-1 p-4 border border-yellow-400 rounded-lg shadow-md">
-          {/* Editable Title */}
+      {/* Main Content */}
+      <div className="flex-1 p-8 overflow-y-auto text-black">
+        <div className="flex justify-between items-center mb-8">
+          <h1
+            className="text-3xl font-bold text-yellow-900 cursor-pointer underline"
+            onClick={() => router.push("/notes")}
+          >
+            Notes
+          </h1>
+          <button
+            onClick={() => router.push("/pinboard")}
+            className="text-sm text-yellow-600 hover:underline"
+          >
+            Back to Pinboard
+          </button>
+        </div>
+
+        <div className="p-6 bg-white rounded-lg shadow-md border border-yellow-200">
           <input
             type="text"
             value={editedTitle}
             onChange={(e) => setEditedTitle(e.target.value)}
-            className="text-3xl font-bold mb-4 text-left bg-transparent border-none outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            className="text-3xl font-bold mb-4 text-left bg-transparent border-none outline-none focus:ring-2 focus:ring-yellow-500 w-full"
             placeholder="Title"
           />
           <textarea
             value={editedContent}
             onChange={(e) => setEditedContent(e.target.value)}
-            className="text-black w-full h-[400px] p-4 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full h-96 p-4 border border-yellow-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-yellow-500"
             placeholder="No content"
-            readOnly={false}
           />
         </div>
 
-        {/* Details Pane */}
-        <div className="w-full mr-8 lg:w-64 mt-6 lg:mt-0 lg:ml-6 p-4 border border-yellow-400 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Details</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>
-              <strong>Created:</strong>{" "}
-              {new Date(note.createdAt).toLocaleString()}
-            </li>
-            <li>
-              <strong>Last Modified:</strong>{" "}
-              {new Date(note.lastUpdatedAt).toLocaleString()}
-            </li>
-            <li>
-              <strong>Character Count:</strong> {editedContent.length}
-            </li>
-          </ul>
-
+        <div className="mt-8 flex items-center gap-4">
           <button
             onClick={saveNote}
-            className="w-full mt-6 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+            disabled={saving}
+            className="px-6 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition disabled:bg-yellow-400"
           >
             {saving ? (
-              <div className="w-4 h-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto"></div>
+              <div className="w-4 h-4 border-t-4 border-white border-solid rounded-full animate-spin mx-auto"></div>
             ) : (
               "Save"
             )}
@@ -207,13 +259,27 @@ export default function NoteDetails() {
 
           <button
             onClick={deleteNote}
-            className="w-full mt-4 text-white bg-red-500 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition"
+            className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
           >
             Delete
           </button>
-          {error && <p className="text-red-600">{error}</p>}
+        </div>
+
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold text-yellow-900 mb-4">Details</h2>
+          <ul className="space-y-2 text-yellow-800">
+            <li>
+              <strong>Created:</strong> {new Date(note.createdAt).toLocaleString()}
+            </li>
+            <li>
+              <strong>Last Modified:</strong> {new Date(note.lastUpdatedAt).toLocaleString()}
+            </li>
+            <li>
+              <strong>Character Count:</strong> {editedContent.length}
+            </li>
+          </ul>
         </div>
       </div>
-    </>
+    </div>
   );
 }
