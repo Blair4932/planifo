@@ -8,11 +8,11 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [failed, setFailed] = useState(false);
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Track loading state
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleRegistration = async () => {
-    setIsLoading(true); // Set loading to true when starting the registration process
+    setIsLoading(true);
 
     const res = await fetch("/api/register", {
       method: "POST",
@@ -21,7 +21,7 @@ export default function RegisterPage() {
     });
 
     const data = await res.json();
-    setIsLoading(false); // Set loading to false when the request is complete
+    setIsLoading(false);
 
     if (res.ok) {
       localStorage.setItem("username", username);

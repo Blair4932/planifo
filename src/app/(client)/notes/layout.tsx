@@ -3,5 +3,5 @@ export default function RegisterLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div className={` text-white bg-cyan-700 h-svh`}>{children}</div>;
+  return <div className={` text-white bg-gray-800 h-svh`}>{children}</div>;
 }

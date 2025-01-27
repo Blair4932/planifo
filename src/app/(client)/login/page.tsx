@@ -7,7 +7,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [failed, setFailed] = useState(false);
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Track loading state
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export default function LoginPage() {
   }, []);
 
   const handleLogin = async () => {
-    setIsLoading(true); // Set loading to true when starting the login process
+    setIsLoading(true);
 
     const res = await fetch("/api/login", {
       method: "POST",
@@ -27,7 +27,7 @@ export default function LoginPage() {
     });
 
     const data = await res.json();
-    setIsLoading(false); // Set loading to false when the request is complete
+    setIsLoading(false);
 
     if (res.ok) {
       localStorage.removeItem("username");
@@ -61,7 +61,7 @@ export default function LoginPage() {
       <button
         className="w-40 h-8 text-white bg-blue-600 border-0 p-1 pl-9 pr-9 mt-2 rounded-md"
         onClick={handleLogin}
-        disabled={isLoading} // Disable the button when loading
+        disabled={isLoading}
       >
         {isLoading ? (
           <div className="border-t-4 border-white border-solid rounded-full w-6 h-6 animate-spin mx-auto"></div>

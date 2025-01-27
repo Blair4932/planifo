@@ -1,7 +1,9 @@
 'use client';
 import 'react-toastify/dist/ReactToastify.css';
 import * as TableLogic from './tableLogic';
-import { DefaultDeserializer } from 'v8';
+import { useEffect, useState } from 'react';
+import jwt_decode from 'jwt-decode';
+import { useRouter } from 'next/navigation';
 
 export default function TablePage() {
   const {
@@ -32,10 +34,77 @@ export default function TablePage() {
     columnCells,
     setColumnCells,
   } = TableLogic.useTableLogic();
+
+  const [recentTables, setRecentTables] = useState<any[]>([]);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      try {
+        const decoded: any = jwt_decode(token);
+        setUser(decoded);
+      } catch (err) {
+        console.error('Invalid token:', err);
+        router.push('/login');
+      }
+    } else {
+      router.push('/login');
+    }
+  }, [router]);
+
+  const fetchRecentTables = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('No token found.');
+      }
+
+      const decoded: any = jwt_decode(token);
+      const userId = decoded.id;
+
+      if (!userId) {
+        throw new Error('userId not found in token.');
+      }
+
+      const res = await fetch('/api/get-tables', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          userId: userId.toString(),
+        },
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        const sortedTables = data.tables
+          .filter((t: any) => t.id !== table?.id)
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.lastUpdatedAt).getTime() -
+              new Date(a.lastUpdatedAt).getTime()
+          )
+          .slice(0, 5);
+
+        setRecentTables(sortedTables);
+      } else {
+        console.error('Failed to fetch recent tables:', data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching recent tables:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchRecentTables();
+    }
+  }, [user, table?.id]);
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="border-t-4 border-white border-solid w-16 h-16 rounded-full animate-spin"></div>
+        <div className="border-t-4 border-cyan-500 border-solid w-16 h-16 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -49,34 +118,61 @@ export default function TablePage() {
   }
 
   return (
-    <>
-      <div className="bg-cyan-600 p-4 mb-4">
-        <p className="cursor-pointer" onClick={() => router.push('/pinboard')}>
-          Pinboard
-        </p>
-        <div className=" flex justify-between items-center mb-3">
+    <div className="flex flex-col lg:flex-row h-screen bg-cyan-50">
+      {/* Sidebar */}
+      <div className="w-full lg:w-1/4 bg-cyan-900 p-6 text-white">
+        <h2 className="text-2xl font-bold mb-6">Recently Worked On</h2>
+        <div className="space-y-4">
+          {recentTables.length > 0 ? (
+            recentTables.map((recentTable) => (
+              <div
+                key={recentTable.id}
+                className="p-4 bg-cyan-800 rounded-md cursor-pointer hover:bg-cyan-700 transition-colors"
+                onClick={() => router.push(`/tables/${recentTable.id}`)}
+              >
+                <h3 className="text-lg font-semibold truncate">
+                  {recentTable.title || 'Untitled'}
+                </h3>
+                <p className="text-sm truncate text-cyan-200">
+                  {recentTable.description || 'No description available'}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p className="text-cyan-400">No recent tables found.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 p-8 overflow-y-auto">
+        <div className="flex justify-between items-center mb-8">
           <h1
-            className="text-3xl text-[40px] ml-7 mt-4 text-white cursor-pointer"
+            className="text-3xl font-bold text-cyan-900 cursor-pointer"
             onClick={() => router.push('/tables')}
           >
             Tables
           </h1>
+          <button
+            onClick={() => router.push('/pinboard')}
+            className="text-sm text-cyan-600 hover:underline"
+          >
+            Back to Pinboard
+          </button>
         </div>
-      </div>
-      <div className="flex gap-16 flex-col lg:flex-row p-4 max-w-full mx-auto pt-24">
-        {/* Table View */}
-        <div className="ml-8 flex-1 p-4 border border-yellow-400 rounded-lg shadow-md">
-          <h1 className="text-3xl text-white font-bold mb-4 text-left">
+
+        <div className="p-6 bg-white rounded-lg shadow-md border border-cyan-200">
+          <h1 className="text-3xl font-bold mb-4 text-left text-cyan-900">
             {table.title}
           </h1>
           <div className="overflow-auto">
-            <table className="table-auto w-full border-collapse border border-gray-300">
+            <table className="table-auto w-full border-collapse border border-cyan-300">
               <thead>
                 <tr>
                   {table.columns.map((column: any) => (
                     <th
                       key={column.id}
-                      className="border border-gray-300 p-2 bg-gray-100"
+                      className="border border-cyan-300 p-2 bg-cyan-100"
                     >
                       <input
                         type="text"
@@ -94,7 +190,7 @@ export default function TablePage() {
                   ))}
                   <th>
                     <button
-                      className="bg-green-500 text-white px-2 py-1 rounded-md"
+                      className="bg-cyan-500 text-white px-2 py-1 rounded-md"
                       onClick={addColumn}
                     >
                       + Add Column
@@ -109,7 +205,7 @@ export default function TablePage() {
                     {row.cells.map((cell: any) => (
                       <td
                         key={cell.id}
-                        className="border border-gray-300 p-4 cursor-pointer"
+                        className="border border-cyan-300 p-4 cursor-pointer"
                         onClick={() => {
                           resetSelection();
                           setSelectedCell(cell);
@@ -120,7 +216,7 @@ export default function TablePage() {
                             selectedCell?.id === cell.id ||
                             (selectedColumn &&
                               selectedColumn.id === cell.columnId)
-                              ? '2px solid #3b82f6'
+                              ? '2px solid #06b6d4'
                               : 'none',
                         }}
                       >
@@ -139,7 +235,7 @@ export default function TablePage() {
                 <tr>
                   <td>
                     <button
-                      className="bg-green-500 text-white px-2 py-1 rounded-md w-[100%]"
+                      className="bg-cyan-500 text-white px-2 py-1 rounded-md w-[100%]"
                       onClick={addRow}
                     >
                       + Add Row
@@ -152,92 +248,52 @@ export default function TablePage() {
         </div>
 
         {/* Details Pane */}
-        <div className="w-full mr-8 lg:w-64 mt-6 lg:mt-0 lg:ml-6 p-4 border border-yellow-400 rounded-lg shadow-md">
-          {calculateOverlayVisible ? (
-            <div className="w-[100%]">
-              <h2 className=" text-white text-xl font-semibold mb-4">
-                Cell Details
-              </h2>
-              <div className="flex flex-col justify-between gap-7">
-                <button
-                  onClick={() => handleOverlayOptionClick('+')}
-                  className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 transition"
-                >
-                  Add total
-                </button>
-                <button
-                  onClick={() => handleOverlayOptionClick('-')}
-                  className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 transition"
-                >
-                  Subtract total
-                </button>
-              </div>
-              <button
-                onClick={handleCalculateButtonClick}
-                className="text-white mt-[115%]"
-              >
-                Back
-              </button>
-            </div>
-          ) : (
-            <div>
-              <h2 className=" text-white text-xl font-semibold mb-4">
-                Cell Details
-              </h2>
-              <ul className="space-y-5 text-gray-700 ">
-                {/* Background color for selected cell */}
-                {selectedCell && (
-                  <li className="flex items-center text-white">
-                    <span>Background Color:</span>
-                    <input
-                      type="color"
-                      value={editedBackgroundColor}
-                      onChange={(e) =>
-                        updateCellBackground(selectedCell.id, e.target.value)
-                      }
-                      className={`ml-2 ${
-                        !selectedCell ? 'disabled:opacity-50' : ''
-                      }`}
-                      disabled={!selectedCell}
-                    />
-                  </li>
-                )}
+        <div className="mt-8 p-6 bg-white rounded-lg shadow-md border border-cyan-200">
+          <h2 className="text-xl font-semibold text-cyan-900 mb-4">
+            Table Details
+          </h2>
+          <ul className="space-y-5 text-cyan-800">
+            {selectedCell && (
+              <li className="flex items-center">
+                <span>Background Color:</span>
+                <input
+                  type="color"
+                  value={editedBackgroundColor}
+                  onChange={(e) =>
+                    updateCellBackground(selectedCell.id, e.target.value)
+                  }
+                  className="ml-2"
+                />
+              </li>
+            )}
 
-                {/* Save Table Button (Always enabled) */}
-                <button
-                  onClick={saveTable}
-                  className="w-full mt-6 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
-                >
-                  {saving ? (
-                    <div className="w-4 h-4 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto"></div>
-                  ) : (
-                    'Save'
-                  )}
-                </button>
+            <button
+              onClick={saveTable}
+              className="w-full mt-6 py-2 rounded-md bg-cyan-600 text-white hover:bg-cyan-700 transition"
+            >
+              {saving ? (
+                <div className="w-4 h-4 border-t-4 border-cyan-500 border-solid rounded-full animate-spin mx-auto"></div>
+              ) : (
+                'Save'
+              )}
+            </button>
 
-                {/* Calculate Button */}
-                <button
-                  onClick={handleCalculateButtonClick}
-                  className="w-full mt-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition relative"
-                >
-                  Calculate
-                </button>
+            <button
+              onClick={handleCalculateButtonClick}
+              className="w-full mt-4 py-2 rounded-md bg-cyan-400 text-white hover:bg-cyan-500 transition"
+            >
+              Calculate
+            </button>
 
-                {/* Delete Table Button (Always enabled) */}
-                <button
-                  onClick={deleteTable}
-                  className="w-full mt-4 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition"
-                >
-                  Delete Table
-                </button>
-                {/* Error Message */}
-                {error && <p className="text-red-600">{error}</p>}
-              </ul>
-            </div>
-          )}
-          <div></div>
+            <button
+              onClick={deleteTable}
+              className="w-full mt-4 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition"
+            >
+              Delete Table
+            </button>
+          </ul>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -71,7 +71,7 @@ export default function Dashboard() {
 
       const rows = [];
       for (let i = 0; i < continueWorking.length; i += 6) {
-        rows.push(continueWorking.slice(i, i + 6));
+        rows.push(continueWorking.slice(i, i + 5));
       }
 
       setResume(rows);
