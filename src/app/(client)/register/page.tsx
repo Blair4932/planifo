@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("");
@@ -34,32 +35,48 @@ export default function RegisterPage() {
 
   return (
     <>
-      <div className="text-white flex justify-between items-center h-28 bg-cyan-700">
+      {/* Header */}
+      <motion.header
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-white flex justify-between items-center h-28 bg-cyan-700 shadow-lg"
+      >
         <h1 className="text-[45px] font-extralight ml-7">Manifo.uk</h1>
-        <h3 className="mr-10 cursor-pointer">
+        <h3 className="mr-10 cursor-pointer hover:text-pink-300 transition-colors">
           <a href="mailto:admin@manifo.uk">Report a bug</a>
         </h3>
-      </div>
+      </motion.header>
 
-      {/* Container for background and content */}
-      <div className="relative text-white flex justify-center items-center min-h-screen bg-cyan-900">
+      {/* Main Content */}
+      <div className="relative text-white flex justify-center items-center min-h-screen bg-cyan-900 overflow-hidden">
         {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-20"
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.2 }}
+          transition={{ duration: 1 }}
+          className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage: "url('/assets/plan.jpg')",
             objectFit: "cover",
           }}
-        ></div>
+        ></motion.div>
 
         {/* Content Area */}
         <div className="relative z-10 text-white flex justify-center items-center w-full h-full">
           {/* Left Side */}
-          <div className="flex flex-col items-center justify-center w-[40%] p-8 mb-56">
-            <img
+          <motion.div
+            initial={{ opacity: 0, x: -100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex flex-col items-center justify-center w-[45%] p-8 mb-56"
+          >
+            <motion.img
               src="/assets/life.png"
               className="h-32 mb-4"
               alt="Manifo Logo"
+              whileHover={{ scale: 1.1 }}
+              transition={{ type: "spring", stiffness: 300 }}
             />
             <h1 className="text-4xl font-light mb-4">Manifo</h1>
             <p className="text-center font-extralight mb-8">
@@ -68,7 +85,11 @@ export default function RegisterPage() {
             </p>
             <div className="flex flex-col gap-6 items-start w-full">
               {/* Icon 1 */}
-              <div className="flex items-center gap-4">
+              <motion.div
+                className="flex items-center gap-4"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <img src="assets/post-it(1).png" className="h-16" alt="Icon" />
                 <div>
                   <span className="text-lg font-semibold">Notes</span>
@@ -76,10 +97,14 @@ export default function RegisterPage() {
                     Create and organize your notes easily.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Icon 2 */}
-              <div className="flex items-center gap-4">
+              <motion.div
+                className="flex items-center gap-4"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <img src="assets/cells.png" className="h-16" alt="Icon" />
                 <div>
                   <span className="text-lg font-semibold">Tables</span>
@@ -87,10 +112,14 @@ export default function RegisterPage() {
                     Manage and organize your data in tables.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Icon 3 */}
-              <div className="flex items-center gap-4">
+              <motion.div
+                className="flex items-center gap-4"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <img
                   src="assets/calendar.png"
                   className="h-16 cursor-pointer"
@@ -102,10 +131,14 @@ export default function RegisterPage() {
                     Stay on top of your events and tasks.
                   </p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Icon 4 */}
-              <div className="flex items-center gap-4">
+              <motion.div
+                className="flex items-center gap-4"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <img
                   src="assets/image.png"
                   className="h-16 cursor-pointer"
@@ -117,75 +150,93 @@ export default function RegisterPage() {
                     Store and view your photos in one place.
                   </p>
                 </div>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Side */}
-          <div className="flex flex-col justify-center items-center w-[50%] p-8">
-            <div className="flex flex-col justify-start items-center rounded-md w-[350px]">
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex flex-col justify-center items-center w-[50%] p-8"
+          >
+            <div className="flex flex-col justify-start items-center rounded-md h-[40%] w-[350px] bg-cyan-800/50 backdrop-blur-sm p-6 shadow-lg">
               <h2 className="font-light text-[30px] mt-5">Register</h2>
               <p className="text-[15px] font-extralight">
                 Type in details below
               </p>
-              <input
-                className="border-2 border-cyan-600 bg-transparent p-1 rounded-md w-72 mt-4 text-center"
+              <motion.input
+                className="border-2 border-cyan-600 bg-transparent p-2 rounded-md w-72 mt-4 text-center focus:outline-none focus:border-pink-300 transition-colors"
                 type="email"
                 placeholder="Email"
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
+                onChange={(e) => setEmail(e.target.value)}
+                whileFocus={{ scale: 1.05 }}
               />
-              <input
-                className="border-2 border-cyan-600 bg-transparent p-1 rounded-md w-72 mt-4 text-center"
+              <motion.input
+                className="border-2 border-cyan-600 bg-transparent p-2 rounded-md w-72 mt-4 text-center focus:outline-none focus:border-pink-300 transition-colors"
                 type="username"
                 placeholder="Username"
                 value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                }}
+                onChange={(e) => setUsername(e.target.value)}
+                whileFocus={{ scale: 1.05 }}
               />
-              <input
-                className="border-2 border-cyan-600 bg-transparent p-1 rounded-md w-72 mt-4 text-center"
+              <motion.input
+                className="border-2 border-cyan-600 bg-transparent p-2 rounded-md w-72 mt-4 text-center focus:outline-none focus:border-pink-300 transition-colors"
                 type="password"
                 placeholder="Password"
                 value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
+                onChange={(e) => setPassword(e.target.value)}
+                whileFocus={{ scale: 1.05 }}
               />
-              {failed && <div className="text-red-500 mt-2">{error}</div>}
+              {failed && (
+                <motion.div
+                  className="text-red-500 mt-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  {error}
+                </motion.div>
+              )}
 
-              <button
+              <motion.button
                 onClick={handleRegistration}
-                className="mt-5 border-2 border-pink-300 text-[20px] w-40 h-10 rounded-md hover:bg-pink-300 transition-all"
+                className="mt-5 border-2 border-pink-300 text-[20px] w-40 h-10 rounded-md hover:bg-pink-300 hover:text-cyan-900 transition-all"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {isLoading ? (
                   <div className="border-t-4 border-white border-solid rounded-full w-7 h-7 animate-spin mx-auto"></div>
                 ) : (
                   "Join"
                 )}
-              </button>
+              </motion.button>
 
-              <p
-                className="mb-48 mt-2 text-[12px] cursor-pointer"
+              <motion.p
+                className="mb-48 mt-2 text-[12px] cursor-pointer hover:text-pink-300 transition-colors"
                 onClick={() => router.push("/login")}
+                whileHover={{ scale: 1.05 }}
               >
                 Already have an account?
-              </p>
+              </motion.p>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white p-4">
+      <motion.footer
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-gray-800 text-white p-4 shadow-lg"
+      >
         <div className="flex justify-between items-center">
           <p className="text-sm">© 2025 Manifo.uk - All rights reserved</p>
           <p className="text-sm">Contact: admin@manifo.uk</p>
         </div>
-      </footer>
+      </motion.footer>
     </>
   );
 }

@@ -20,6 +20,7 @@ model User {
   email     String   @unique              // User's email
   notes     Note[]                             // User's notes
   tables    Table[]                            // User's tables
+  events    Event[]                         // User's events
   createdAt DateTime @default(now())         // Timestamp of creation
 }
 
@@ -73,4 +74,17 @@ model Cell {
   column         Column  @relation(fields: [columnId], references: [id], onDelete: Cascade)
   value          String?                               // The content of the cell (e.g., text, number)
   backgroundColor String?                             // Background color (USE HEX)
+}
+
+model Event {
+  id          String   @id @default(uuid()) // UUID for Event ID
+  title       String                       // Event title
+  description String                       // Event description
+  duration    Int                          // Duration in minutes
+  startTime   String                     // Event start time
+  endTime     String                     // Event end time
+  date        DateTime                     // Date of the event
+  userId      String                       // User who created the event
+  user        User     @relation(fields: [userId], references: [id]) // Relation to User
+  createdAt   DateTime @default(now())     // Timestamp of creation
 }
