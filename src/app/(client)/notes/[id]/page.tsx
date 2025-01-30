@@ -185,16 +185,16 @@ export default function NoteDetails() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen bg-yellow-50">
+    <div className="flex flex-col lg:flex-row h-screen bg-yellow-900">
       {/* Sidebar */}
-      <div className="w-full lg:w-1/4 bg-yellow-900 p-6 text-white">
+      <div className="w-full lg:w-1/4 bg-yellow-700 p-6 text-yellow-100">
         <h2 className="text-2xl font-bold mb-6">Recently Worked On Notes</h2>
         <div className="space-y-4">
           {recentNotes.length > 0 ? (
             recentNotes.map((recentNote) => (
               <div
                 key={recentNote.id}
-                className="p-4 bg-yellow-800 rounded-md cursor-pointer hover:bg-yellow-700 transition-colors"
+                className="p-4 bg-yellow-700 rounded-md cursor-pointer hover:bg-yellow-600 transition-colors"
                 onClick={() => router.push(`/notes/${recentNote.id}`)}
               >
                 <h3 className="text-lg font-semibold truncate">
@@ -212,34 +212,34 @@ export default function NoteDetails() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-8 overflow-y-auto text-black">
+      <div className="flex-1 p-8 overflow-y-auto text-yellow-100">
         <div className="flex justify-between items-center mb-8">
           <h1
-            className="text-3xl font-bold text-yellow-900 cursor-pointer underline"
+            className="text-3xl font-bold text-yellow-100 cursor-pointer underline"
             onClick={() => router.push("/notes")}
           >
             Notes
           </h1>
           <button
             onClick={() => router.push("/pinboard")}
-            className="text-sm text-yellow-600 hover:underline"
+            className="text-sm text-yellow-400 hover:underline"
           >
             Back to Pinboard
           </button>
         </div>
 
-        <div className="p-6 bg-white rounded-lg shadow-md border border-yellow-200">
+        <div className="p-6 bg-yellow-800 rounded-lg shadow-md border border-yellow-700">
           <input
             type="text"
             value={editedTitle}
             onChange={(e) => setEditedTitle(e.target.value)}
-            className="text-3xl font-bold mb-4 text-left bg-transparent border-none outline-none focus:ring-2 focus:ring-yellow-500 w-full"
+            className="text-3xl font-bold mb-4 text-left bg-transparent border-none outline-none focus:ring-2 focus:ring-yellow-500 w-full text-yellow-100 placeholder-yellow-400"
             placeholder="Title"
           />
           <textarea
             value={editedContent}
             onChange={(e) => setEditedContent(e.target.value)}
-            className="w-full h-96 p-4 border border-yellow-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            className="w-full h-96 p-4 border border-yellow-600 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-yellow-800 text-yellow-100 placeholder-yellow-400"
             placeholder="No content"
           />
         </div>
@@ -248,10 +248,10 @@ export default function NoteDetails() {
           <button
             onClick={saveNote}
             disabled={saving}
-            className="px-6 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition disabled:bg-yellow-400"
+            className="px-6 py-2 bg-yellow-600 text-yellow-100 rounded-md hover:bg-yellow-700 transition disabled:bg-yellow-800 disabled:cursor-not-allowed"
           >
             {saving ? (
-              <div className="w-4 h-4 border-t-4 border-white border-solid rounded-full animate-spin mx-auto"></div>
+              <div className="w-4 h-4 border-t-4 border-yellow-100 border-solid rounded-full animate-spin mx-auto"></div>
             ) : (
               "Save"
             )}
@@ -259,20 +259,24 @@ export default function NoteDetails() {
 
           <button
             onClick={deleteNote}
-            className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+            className="px-6 py-2 bg-red-600 text-yellow-100 rounded-md hover:bg-red-700 transition"
           >
             Delete
           </button>
         </div>
 
         <div className="mt-8">
-          <h2 className="text-xl font-semibold text-yellow-900 mb-4">Details</h2>
-          <ul className="space-y-2 text-yellow-800">
+          <h2 className="text-xl font-semibold text-yellow-100 mb-4">
+            Details
+          </h2>
+          <ul className="space-y-2 text-yellow-200">
             <li>
-              <strong>Created:</strong> {new Date(note.createdAt).toLocaleString()}
+              <strong>Created:</strong>{" "}
+              {new Date(note.createdAt).toLocaleString()}
             </li>
             <li>
-              <strong>Last Modified:</strong> {new Date(note.lastUpdatedAt).toLocaleString()}
+              <strong>Last Modified:</strong>{" "}
+              {new Date(note.lastUpdatedAt).toLocaleString()}
             </li>
             <li>
               <strong>Character Count:</strong> {editedContent.length}
