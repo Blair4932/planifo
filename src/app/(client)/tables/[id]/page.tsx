@@ -235,7 +235,7 @@ export default function TablePage() {
                 <tr>
                   <td>
                     <button
-                      className="bg-cyan-600 text-cyan-100 px-2 py-1 rounded-md w-[100%]"
+                      className="bg-cyan-600 text-gray-800 px-2 py-1 rounded-md w-[100%]"
                       onClick={addRow}
                     >
                       + Add Row
