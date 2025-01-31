@@ -40,20 +40,20 @@ export default function RegisterPage() {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-white flex justify-between items-center h-28 bg-cyan-700 shadow-lg"
+        className="text-gray-200 flex justify-between items-center h-28 bg-gray-900 shadow-lg"
       >
         <h1 className="text-[45px] font-extralight ml-7">Manifo.uk</h1>
-        <h3 className="mr-10 cursor-pointer hover:text-pink-300 transition-colors">
+        <h3 className="mr-10 cursor-pointer hover:text-teal-400 transition-colors">
           <a href="mailto:admin@manifo.uk">Report a bug</a>
         </h3>
       </motion.header>
 
       {/* Main Content */}
-      <div className="relative text-white flex justify-center items-center min-h-screen bg-cyan-900 overflow-hidden">
+      <div className="relative text-gray-200 flex justify-center items-center min-h-screen bg-gray-800 overflow-hidden">
         {/* Background Image */}
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.2 }}
+          animate={{ opacity: 0.1 }}
           transition={{ duration: 1 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{
@@ -63,7 +63,7 @@ export default function RegisterPage() {
         ></motion.div>
 
         {/* Content Area */}
-        <div className="relative z-10 text-white flex justify-center items-center w-full h-full">
+        <div className="relative z-10 text-gray-200 flex justify-center items-center w-full h-full">
           {/* Left Side */}
           <motion.div
             initial={{ opacity: 0, x: -100 }}
@@ -161,13 +161,13 @@ export default function RegisterPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-col justify-center items-center w-[50%] p-8"
           >
-            <div className="flex flex-col justify-start items-center rounded-md h-[40%] w-[350px] bg-cyan-800/50 backdrop-blur-sm p-6 shadow-lg">
+            <div className="flex flex-col justify-start items-center rounded-md h-[40%] w-[350px] bg-gray-700/50 backdrop-blur-sm p-6 shadow-lg">
               <h2 className="font-light text-[30px] mt-5">Register</h2>
               <p className="text-[15px] font-extralight">
                 Type in details below
               </p>
               <motion.input
-                className="border-2 border-cyan-600 bg-transparent p-2 rounded-md w-72 mt-4 text-center focus:outline-none focus:border-pink-300 transition-colors"
+                className="border-2 border-gray-600 bg-transparent p-2 rounded-md w-72 mt-4 text-center focus:outline-none focus:border-teal-400 transition-colors"
                 type="email"
                 placeholder="Email"
                 value={email}
@@ -175,7 +175,7 @@ export default function RegisterPage() {
                 whileFocus={{ scale: 1.05 }}
               />
               <motion.input
-                className="border-2 border-cyan-600 bg-transparent p-2 rounded-md w-72 mt-4 text-center focus:outline-none focus:border-pink-300 transition-colors"
+                className="border-2 border-gray-600 bg-transparent p-2 rounded-md w-72 mt-4 text-center focus:outline-none focus:border-teal-400 transition-colors"
                 type="username"
                 placeholder="Username"
                 value={username}
@@ -183,7 +183,7 @@ export default function RegisterPage() {
                 whileFocus={{ scale: 1.05 }}
               />
               <motion.input
-                className="border-2 border-cyan-600 bg-transparent p-2 rounded-md w-72 mt-4 text-center focus:outline-none focus:border-pink-300 transition-colors"
+                className="border-2 border-gray-600 bg-transparent p-2 rounded-md w-72 mt-4 text-center focus:outline-none focus:border-teal-400 transition-colors"
                 type="password"
                 placeholder="Password"
                 value={password}
@@ -202,7 +202,7 @@ export default function RegisterPage() {
 
               <motion.button
                 onClick={handleRegistration}
-                className="mt-5 border-2 border-pink-300 text-[20px] w-40 h-10 rounded-md hover:bg-pink-300 hover:text-cyan-900 transition-all"
+                className="mt-5 border-2 border-teal-400 text-[20px] w-40 h-10 rounded-md hover:bg-teal-400 hover:text-gray-900 transition-all"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -214,7 +214,7 @@ export default function RegisterPage() {
               </motion.button>
 
               <motion.p
-                className="mb-48 mt-2 text-[12px] cursor-pointer hover:text-pink-300 transition-colors"
+                className="mb-48 mt-2 text-[12px] cursor-pointer hover:text-teal-400 transition-colors"
                 onClick={() => router.push("/login")}
                 whileHover={{ scale: 1.05 }}
               >
@@ -230,7 +230,7 @@ export default function RegisterPage() {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-gray-800 text-white p-4 shadow-lg"
+        className="bg-gray-900 text-gray-200 p-4 shadow-lg"
       >
         <div className="flex justify-between items-center">
           <p className="text-sm">© 2025 Manifo.uk - All rights reserved</p>

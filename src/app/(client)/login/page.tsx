@@ -41,33 +41,41 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-cyan-700 to-cyan-900 overflow-hidden">
+    <div className="relative flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
       {/* Background Animation */}
       <motion.div
-        className="absolute inset-0 bg-cover bg-center opacity-20"
+        className="absolute inset-0 bg-cover bg-center opacity-10"
         style={{
           backgroundImage: "url('/assets/plan.jpg')",
           objectFit: "cover",
         }}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 0.2 }}
+        animate={{ opacity: 0.1 }}
         transition={{ duration: 1 }}
       ></motion.div>
 
       {/* Login Container */}
       <motion.div
-        className="relative z-10 bg-cyan-800/50 backdrop-blur-sm rounded-lg shadow-2xl p-8 w-[90%] max-w-md"
+        className="relative z-10 bg-gray-700/50 backdrop-blur-sm rounded-lg shadow-2xl p-8 w-[90%] max-w-md"
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.2 }}
       >
         <motion.h1
-          className="text-4xl font-light text-center mb-6 text-white"
+          className="text-4xl font-light text-center flex justify-center mb-6 text-gray-200 font-sans cursor-pointer"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
+          onClick={() => router.push("/register")}
         >
-          Login
+          Your Manifo
+          <motion.img
+            src="assets/layers(1).png"
+            className="h-11 px-5"
+            initial={{ scale: 0.7 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.6 }}
+          />
         </motion.h1>
 
         {/* Username Input */}
@@ -78,7 +86,7 @@ export default function LoginPage() {
           transition={{ duration: 0.5, delay: 0.6 }}
         >
           <input
-            className="w-full p-2 rounded-md bg-transparent border-2 border-cyan-600 text-white placeholder-cyan-300 focus:outline-none focus:border-pink-300 transition-colors"
+            className="w-full p-2 rounded-md bg-transparent border-2 border-gray-600 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-teal-400 transition-colors"
             type="text"
             placeholder="Username"
             value={username}
@@ -94,7 +102,7 @@ export default function LoginPage() {
           transition={{ duration: 0.5, delay: 0.8 }}
         >
           <input
-            className="w-full p-2 rounded-md bg-transparent border-2 border-cyan-600 text-white placeholder-cyan-300 focus:outline-none focus:border-pink-300 transition-colors"
+            className="w-full p-2 rounded-md bg-transparent border-2 border-gray-600 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-teal-400 transition-colors"
             type="password"
             placeholder="Password"
             value={password}
@@ -115,7 +123,7 @@ export default function LoginPage() {
 
         {/* Login Button */}
         <motion.button
-          className="w-full p-2 rounded-md bg-pink-300 text-cyan-900 font-semibold hover:bg-pink-400 transition-colors flex items-center justify-center"
+          className="w-full p-2 rounded-md bg-teal-400 text-gray-900 font-semibold hover:bg-teal-500 transition-colors flex items-center justify-center"
           onClick={handleLogin}
           disabled={isLoading}
           whileHover={{ scale: 1.05 }}
@@ -125,7 +133,7 @@ export default function LoginPage() {
           transition={{ duration: 0.5, delay: 1 }}
         >
           {isLoading ? (
-            <div className="border-t-4 border-cyan-900 border-solid rounded-full w-6 h-6 animate-spin"></div>
+            <div className="border-t-4 border-gray-900 border-solid rounded-full w-6 h-6 animate-spin"></div>
           ) : (
             "Login"
           )}
@@ -139,13 +147,13 @@ export default function LoginPage() {
           transition={{ duration: 0.5, delay: 1.2 }}
         >
           <p
-            className="text-sm text-cyan-300 cursor-pointer hover:text-pink-300 transition-colors"
+            className="text-sm text-gray-400 cursor-pointer hover:text-teal-400 transition-colors"
             onClick={() => router.push("/register")}
           >
             Don't have an account?
           </p>
           <p
-            className="text-sm text-cyan-300 cursor-pointer hover:text-pink-300 transition-colors"
+            className="text-sm text-gray-400 cursor-pointer hover:text-teal-400 transition-colors"
             onClick={() => router.push("/")}
           >
             Forgot password?
@@ -157,7 +165,7 @@ export default function LoginPage() {
       {/* Post-it Notes */}
       <motion.img
         src="/assets/post-it(1).png"
-        className="absolute top-10 left-10 h-24 opacity-70"
+        className="absolute top-10 left-10 h-24 opacity-50"
         alt="Post-it"
         initial={{ y: -20, rotate: -10 }}
         animate={{ y: 0, rotate: 10 }}
@@ -170,7 +178,7 @@ export default function LoginPage() {
       />
       <motion.img
         src="/assets/post-it(1).png"
-        className="absolute top-40 left-1/4 h-20 opacity-70"
+        className="absolute top-40 left-1/4 h-20 opacity-50"
         alt="Post-it"
         initial={{ y: -30, rotate: 5 }}
         animate={{ y: 0, rotate: -5 }}
@@ -185,7 +193,7 @@ export default function LoginPage() {
       {/* Calendars */}
       <motion.img
         src="/assets/calendar.png"
-        className="absolute bottom-20 right-10 h-24 opacity-70"
+        className="absolute bottom-20 right-10 h-24 opacity-50"
         alt="Calendar"
         initial={{ y: 20, rotate: 10 }}
         animate={{ y: 0, rotate: -10 }}
@@ -198,7 +206,7 @@ export default function LoginPage() {
       />
       <motion.img
         src="/assets/calendar.png"
-        className="absolute bottom-40 right-1/4 h-20 opacity-70"
+        className="absolute bottom-40 right-1/4 h-20 opacity-50"
         alt="Calendar"
         initial={{ y: 30, rotate: -5 }}
         animate={{ y: 0, rotate: 5 }}
@@ -213,7 +221,7 @@ export default function LoginPage() {
       {/* Tables */}
       <motion.img
         src="/assets/cells.png"
-        className="absolute top-1/4 right-10 h-24 opacity-70"
+        className="absolute top-1/4 right-10 h-24 opacity-50"
         alt="Table"
         initial={{ y: -20, rotate: -5 }}
         animate={{ y: 0, rotate: 5 }}
@@ -226,7 +234,7 @@ export default function LoginPage() {
       />
       <motion.img
         src="/assets/cells.png"
-        className="absolute top-1/2 left-10 h-20 opacity-70"
+        className="absolute top-1/2 left-10 h-20 opacity-50"
         alt="Table"
         initial={{ y: 20, rotate: 10 }}
         animate={{ y: 0, rotate: -10 }}
@@ -241,7 +249,7 @@ export default function LoginPage() {
       {/* Gallery Images */}
       <motion.img
         src="/assets/image.png"
-        className="absolute bottom-10 left-1/4 h-24 opacity-70"
+        className="absolute bottom-10 left-1/4 h-24 opacity-50"
         alt="Gallery"
         initial={{ y: -20, rotate: -10 }}
         animate={{ y: 0, rotate: 10 }}
@@ -254,7 +262,7 @@ export default function LoginPage() {
       />
       <motion.img
         src="/assets/image.png"
-        className="absolute bottom-[80%] right-1/4 h-20 opacity-70"
+        className="absolute bottom-[80%] right-1/4 h-20 opacity-50"
         alt="Gallery"
         initial={{ y: 30, rotate: 5 }}
         animate={{ y: 0, rotate: -5 }}

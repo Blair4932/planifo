@@ -104,30 +104,34 @@ export default function Dashboard() {
 
   return (
     <div>
-      {error && <p>{error}</p>}
+      {error && <p className="text-red-500">{error}</p>}
       {user ? (
         <div>
-          <div className="text-white flex justify-between items-center h-28 bg-cyan-700">
+          {/* Header */}
+          <div className="text-gray-200 flex justify-between items-center h-28 bg-cyan-950 shadow-lg">
             <h1 className="text-[45px] font-extralight ml-7">
               Hey, {user.username}!
             </h1>
-            <h3 className="ml-[68%] cursor-pointer">
+            <h3 className="ml-[68%] cursor-pointer hover:text-teal-400 transition-colors">
               <a href="mailto:admin@manifo.uk">Report a bug</a>
             </h3>
             <div
-              className="bg-white rounded-full p-3 mr-7 cursor-pointer"
+              className="bg-gray-200 rounded-full p-3 mr-7 cursor-pointer hover:bg-teal-400 transition-colors"
               onClick={() => router.push("/desk")}
             >
               <img src="/assets/desk.png" className="h-16" />
             </div>
           </div>
-          <div className="flex flex-col justify-center items-center bg-cyan-900 h-[500px] relative">
+
+          {/* Main Content */}
+          <div className="flex flex-col justify-center items-center bg-gray-800 h-[500px] relative">
             {/* Background Image with low opacity */}
             <div
-              className="absolute inset-0 bg-cover bg-center opacity-20"
+              className="absolute inset-0 bg-cover bg-center opacity-10"
               style={{ backgroundImage: "url('/assets/plan.jpg')" }}
             ></div>
 
+            {/* Icons */}
             <div className="flex justify-center items-center gap-28 relative z-10 p-6">
               <img
                 src="assets/post-it(1).png"
@@ -157,15 +161,17 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <h2 className="text-[30px] ml-7 mt-7 text-white">
+          {/* Continue Working Section */}
+          <h2 className="text-[30px] ml-7 mt-7 text-gray-200">
             Continue Working:
           </h2>
 
-          <div className="text-white flex justify-center items-center">
+          {/* Items Grid */}
+          <div className="text-gray-200 flex justify-center items-center">
             <div className="space-y-4 mt-4">
               {/* Render the rows of items */}
               {isFetchingData ? (
-                <div className="border-t-4 border-white border-solid w-16 h-16 rounded-full animate-spin mx-auto"></div>
+                <div className="border-t-4 border-gray-200 border-solid w-16 h-16 rounded-full animate-spin mx-auto"></div>
               ) : (
                 resume.map((row, rowIndex) => (
                   <div key={rowIndex} className="flex space-x-4">
@@ -176,7 +182,7 @@ export default function Dashboard() {
                           key={index}
                           onClick={() => handleClick(item.id, isNote)}
                           className={`flex items-center p-6 rounded-lg shadow-md cursor-pointer transform transition-all duration-300 
-                          ${isNote ? "border-yellow-500" : "border-blue-500"} border-[2px] bg-transparent hover:scale-105 w-[300px]`}
+                          ${isNote ? "border-yellow-500" : "border-blue-500"} border-[2px] bg-gray-700/50 hover:bg-gray-600/50 hover:scale-105 w-[300px]`}
                         >
                           <img
                             src={
@@ -214,7 +220,7 @@ export default function Dashboard() {
           </div>
         </div>
       ) : (
-        <p>Loading...</p>
+        <p className="text-gray-200">Loading...</p>
       )}
     </div>
   );
