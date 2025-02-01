@@ -68,8 +68,6 @@ export default function Dashboard() {
 
       const eventsData = await eventsResponse.json();
 
-      console.log(eventsData);
-
       let continueWorking = notesData.notes.concat(tablesData.tables);
 
       continueWorking.sort((a, b) => {
@@ -239,7 +237,9 @@ export default function Dashboard() {
                                   }).format(new Date(item.lastUpdatedAt))}
                                 </p>
                               ) : (
-                                <p className="text-sm text-gray-400">Today</p>
+                                <p className="text-sm text-gray-400">
+                                  Today at {item.startTime}
+                                </p>
                               )}
                               {type !== "note" && item.content && (
                                 <p className="text-sm text-gray-300 mt-2">
