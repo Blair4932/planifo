@@ -4,6 +4,7 @@ import jwt_decode from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { apps } from "../(global-components)/apps";
+import { format } from "date-fns";
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
@@ -56,6 +57,19 @@ export default function Dashboard() {
       });
       const tablesData = await tablesResponse.json();
 
+      const date = format(new Date(), "yyyy-MM-dd");
+      const eventsResponse = await fetch("/api/events/get-events", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          data: JSON.stringify({ date, userId }),
+        },
+      });
+
+      const eventsData = await eventsResponse.json();
+
+      console.log(eventsData);
+
       let continueWorking = notesData.notes.concat(tablesData.tables);
 
       continueWorking.sort((a, b) => {
@@ -66,10 +80,11 @@ export default function Dashboard() {
       });
 
       continueWorking = continueWorking.slice(0, 18);
+      const mergedData = [...eventsData.events, ...continueWorking];
 
       const rows = [];
-      for (let i = 0; i < continueWorking.length; i += 6) {
-        rows.push(continueWorking.slice(i, i + 5));
+      for (let i = 0; i < mergedData.length; i += 5) {
+        rows.push(mergedData.slice(i, i + 5));
       }
 
       setResume(rows);
@@ -81,8 +96,12 @@ export default function Dashboard() {
     }
   };
 
-  const handleClick = (id: string, isNote: boolean) => {
-    if (isNote) {
+  const handleClick = (id: string, type: string) => {
+    if (type === "event") {
+      router.push("/calendar");
+      return;
+    }
+    if (type === "note") {
       router.push(`/notes/${id}`);
     } else {
       router.push(`/tables/${id}`);
@@ -171,39 +190,58 @@ export default function Dashboard() {
                       className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6"
                     >
                       {row.map((item, index) => {
-                        const isNote = "content" in item;
+                        const type =
+                          "content" in item
+                            ? "note"
+                            : "date" in item
+                              ? "event"
+                              : "table";
+
                         return (
                           <motion.div
                             key={index}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => handleClick(item.id, isNote)}
+                            onClick={() => handleClick(item.id, type)}
                             className={`flex items-center p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300 
-                            ${isNote ? "border-yellow-500" : "border-blue-500"} border-2 bg-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50`}
+                ${type === "note" ? "border-yellow-500" : type === "event" ? "border-red-600" : "border-blue-500"} 
+                border-2 bg-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50`}
                           >
                             <img
                               src={
-                                isNote
+                                type === "note"
                                   ? "assets/post-it(1).png"
-                                  : "assets/cells.png"
+                                  : type === "event"
+                                    ? "assets/calendar.png"
+                                    : "assets/cells.png"
                               }
-                              alt={isNote ? "Note" : "Table"}
+                              alt={
+                                type === "note"
+                                  ? "Note"
+                                  : type === "event"
+                                    ? "Event"
+                                    : "Table"
+                              }
                               className="w-12 h-12 mr-4"
                             />
-                            <div>
+                            <div className="flex flex-col justify-start w-full">
                               <h3 className="text-lg font-semibold">
                                 {item.title}
                               </h3>
-                              <p className="text-sm text-gray-400">
-                                {new Intl.DateTimeFormat("en-GB", {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                }).format(new Date(item.lastUpdatedAt))}
-                              </p>
-                              {!isNote && item.content && (
+                              {type !== "event" ? (
+                                <p className="text-sm text-gray-400">
+                                  {new Intl.DateTimeFormat("en-GB", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                  }).format(new Date(item.lastUpdatedAt))}
+                                </p>
+                              ) : (
+                                <p className="text-sm text-gray-400">Today</p>
+                              )}
+                              {type !== "note" && item.content && (
                                 <p className="text-sm text-gray-300 mt-2">
                                   {item.content.slice(0, 25)}...
                                 </p>

@@ -1,11 +1,11 @@
 export const fetchEvents = async (date: string, userId: string) => {
   try {
     const res = await fetch("/api/events/get-events", {
-      method: "POST",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
+        data: JSON.stringify({ date, userId }),
       },
-      body: JSON.stringify({ date, userId }), // Pass the user ID
     });
 
     if (!res.ok) {
