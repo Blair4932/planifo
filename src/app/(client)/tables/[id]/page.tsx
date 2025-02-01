@@ -103,8 +103,8 @@ export default function TablePage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="border-t-4 border-cyan-500 border-solid w-16 h-16 rounded-full animate-spin"></div>
+      <div className="flex justify-center items-center min-h-screen bg-gray-900">
+        <div className="border-t-4 border-teal-500 border-solid w-16 h-16 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -118,61 +118,64 @@ export default function TablePage() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen bg-cyan-900">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-900 text-gray-100">
       {/* Sidebar */}
-      <div className="w-full lg:w-1/4 bg-cyan-800 p-6 text-cyan-100">
-        <h2 className="text-2xl font-bold mb-6">Recently Worked On Tables</h2>
+      <div className="w-full lg:w-1/4 bg-gray-800 p-6 border-r border-gray-700">
+        <h2 className="text-2xl font-bold mb-6 text-teal-400">
+          Recently Worked On Tables
+        </h2>
         <div className="space-y-4">
           {recentTables.length > 0 ? (
             recentTables.map((recentTable) => (
               <div
                 key={recentTable.id}
-                className="p-4 bg-cyan-700 rounded-md cursor-pointer hover:bg-cyan-600 transition-colors"
+                className="p-4 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors"
                 onClick={() => router.push(`/tables/${recentTable.id}`)}
               >
-                <h3 className="text-lg font-semibold truncate">
+                <h3 className="text-lg font-semibold truncate text-teal-300">
                   {recentTable.title || "Untitled"}
                 </h3>
-                <p className="text-sm truncate text-cyan-300">
+                <p className="text-sm truncate text-gray-300">
                   {recentTable.description || "No description available"}
                 </p>
               </div>
             ))
           ) : (
-            <p className="text-cyan-400">No recent tables found.</p>
+            <p className="text-gray-400">No recent tables found.</p>
           )}
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-8 overflow-y-auto bg-cyan-900">
+      <div className="flex-1 p-8 overflow-y-auto">
         <div className="flex justify-between items-center mb-8">
           <h1
-            className="text-3xl font-bold text-cyan-100 cursor-pointer"
+            className="text-3xl font-bold text-teal-400 cursor-pointer hover:underline"
             onClick={() => router.push("/tables")}
           >
             Tables
           </h1>
           <button
             onClick={() => router.push("/pinboard")}
-            className="text-sm text-cyan-400 hover:underline"
+            className="text-sm text-teal-400 hover:underline"
           >
             Back to Pinboard
           </button>
         </div>
 
-        <div className="p-6 bg-cyan-800 rounded-lg shadow-md border border-cyan-700">
-          <h1 className="text-3xl font-bold mb-4 text-left text-cyan-100">
+        {/* Table Editor */}
+        <div className="p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
+          <h1 className="text-3xl font-bold mb-4 text-left text-teal-400">
             {table.title}
           </h1>
           <div className="overflow-auto">
-            <table className="table-auto w-full border-collapse border border-cyan-600">
+            <table className="table-auto w-full border-collapse border border-gray-600">
               <thead>
                 <tr>
                   {table.columns.map((column: any) => (
                     <th
                       key={column.id}
-                      className="border border-cyan-600 p-2 bg-cyan-700"
+                      className="border border-gray-600 p-2 bg-gray-700"
                     >
                       <input
                         type="text"
@@ -183,14 +186,14 @@ export default function TablePage() {
                           setColumnCells(column.cells);
                         }}
                         onChange={(e) => setEditedHeader(e.target.value)}
-                        className="bg-transparent w-full border-none outline-none text-center text-cyan-100"
+                        className="bg-transparent w-full border-none outline-none text-center text-teal-400 placeholder-teal-600"
                         placeholder="Header"
                       />
                     </th>
                   ))}
                   <th>
                     <button
-                      className="bg-cyan-600 text-cyan-100 px-2 py-1 rounded-md"
+                      className="bg-teal-500 text-gray-900 px-2 py-1 rounded-md hover:bg-teal-600 transition"
                       onClick={addColumn}
                     >
                       + Add Column
@@ -205,7 +208,7 @@ export default function TablePage() {
                     {row.cells.map((cell: any) => (
                       <td
                         key={cell.id}
-                        className="border border-cyan-600 p-4 cursor-pointer"
+                        className="border border-gray-600 p-4 cursor-pointer"
                         onClick={() => {
                           resetSelection();
                           setSelectedCell(cell);
@@ -226,7 +229,7 @@ export default function TablePage() {
                           onChange={(e) =>
                             updateCellValue(cell.id, e.target.value)
                           }
-                          className="bg-transparent w-full border-none outline-none text-center text-cyan-100"
+                          className="bg-transparent w-full border-none outline-none text-center text-gray-100"
                         />
                       </td>
                     ))}
@@ -235,7 +238,7 @@ export default function TablePage() {
                 <tr>
                   <td>
                     <button
-                      className="bg-cyan-600 text-gray-800 px-2 py-1 rounded-md w-[100%]"
+                      className="bg-teal-500 text-gray-900 px-2 py-1 rounded-md w-[100%] hover:bg-teal-600 transition"
                       onClick={addRow}
                     >
                       + Add Row
@@ -248,11 +251,11 @@ export default function TablePage() {
         </div>
 
         {/* Details Pane */}
-        <div className="mt-8 p-6 bg-cyan-800 rounded-lg shadow-md border border-cyan-700">
-          <h2 className="text-xl font-semibold text-cyan-100 mb-4">
+        <div className="mt-8 p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
+          <h2 className="text-xl font-semibold text-teal-400 mb-4">
             Table Details
           </h2>
-          <ul className="space-y-5 text-cyan-200">
+          <ul className="space-y-5 text-gray-300">
             {selectedCell && (
               <li className="flex items-center">
                 <span>Background Color:</span>
@@ -269,10 +272,10 @@ export default function TablePage() {
 
             <button
               onClick={saveTable}
-              className="w-full mt-6 py-2 rounded-md bg-cyan-600 text-cyan-100 hover:bg-cyan-700 transition"
+              className="w-full mt-6 py-2 rounded-md bg-teal-500 text-gray-900 hover:bg-teal-600 transition"
             >
               {saving ? (
-                <div className="w-4 h-4 border-t-4 border-cyan-500 border-solid rounded-full animate-spin mx-auto"></div>
+                <div className="w-4 h-4 border-t-4 border-gray-900 border-solid rounded-full animate-spin mx-auto"></div>
               ) : (
                 "Save"
               )}
@@ -280,14 +283,14 @@ export default function TablePage() {
 
             <button
               onClick={handleCalculateButtonClick}
-              className="w-full mt-4 py-2 rounded-md bg-cyan-500 text-cyan-100 hover:bg-cyan-600 transition"
+              className="w-full mt-4 py-2 rounded-md bg-teal-400 text-gray-900 hover:bg-teal-500 transition"
             >
               Calculate
             </button>
 
             <button
               onClick={deleteTable}
-              className="w-full mt-4 bg-red-600 text-cyan-100 py-2 rounded-md hover:bg-red-700 transition"
+              className="w-full mt-4 bg-red-600 text-gray-100 py-2 rounded-md hover:bg-red-700 transition"
             >
               Delete Table
             </button>

@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { apps } from "../(global-components)/apps";
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
@@ -33,10 +35,6 @@ export default function Dashboard() {
     setLoading(false);
   }, [router]);
 
-  /**
-   * fetches and sorts the continue working section
-   * @param userId
-   */
   const sortContinueWorking = async (userId: string) => {
     setIsFetchingData(true);
     try {
@@ -83,11 +81,6 @@ export default function Dashboard() {
     }
   };
 
-  /**
-   * handles clicking an item in continue working to redirect to the file
-   * @param id id of the file
-   * @param isNote boolean to determine if it is a note (will have to change when events are added)
-   */
   const handleClick = (id: string, isNote: boolean) => {
     if (isNote) {
       router.push(`/notes/${id}`);
@@ -98,129 +91,136 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="border-t-4 border-white border-solid w-16 h-16 rounded-full animate-spin mx-auto"></div>
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="border-t-4 border-teal-400 border-solid w-16 h-16 rounded-full animate-spin"></div>
+      </div>
     );
   }
 
   return (
-    <div>
-      {error && <p className="text-red-500">{error}</p>}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-200">
+      {error && <p className="text-red-500 text-center py-4">{error}</p>}
       {user ? (
         <div>
           {/* Header */}
-          <div className="text-gray-200 flex justify-between items-center h-28 bg-cyan-950 shadow-lg">
-            <h1 className="text-[45px] font-extralight ml-7">
-              Hey, {user.username}!
-            </h1>
-            <h3 className="ml-[68%] cursor-pointer hover:text-teal-400 transition-colors">
-              <a href="mailto:admin@manifo.uk">Report a bug</a>
-            </h3>
-            <div
-              className="bg-gray-200 rounded-full p-3 mr-7 cursor-pointer hover:bg-teal-400 transition-colors"
-              onClick={() => router.push("/desk")}
-            >
-              <img src="/assets/desk.png" className="h-16" />
+          <header className="bg-gray-900/70 backdrop-blur-md shadow-lg fixed w-full z-50">
+            <div className="container mx-auto flex justify-between items-center h-28 px-6">
+              <h1 className="text-4xl font-extralight">
+                Hey, <span className="text-teal-400">{user.username}</span>!
+              </h1>
+              <div className="flex items-center gap-6">
+                <a
+                  href="mailto:admin@manifo.uk"
+                  className="text-gray-300 hover:text-teal-400 transition-colors"
+                >
+                  Report a bug
+                </a>
+                <div
+                  className="bg-gray-200 rounded-full p-3 cursor-pointer hover:bg-teal-400 transition-colors"
+                  onClick={() => router.push("/desk")}
+                >
+                  <img src="/assets/desk.png" className="h-12" alt="Desk" />
+                </div>
+              </div>
             </div>
-          </div>
+          </header>
 
           {/* Main Content */}
-          <div className="flex flex-col justify-center items-center bg-gray-800 h-[500px] relative">
-            {/* Background Image with low opacity */}
-            <div
-              className="absolute inset-0 bg-cover bg-center opacity-10"
-              style={{ backgroundImage: "url('/assets/plan.jpg')" }}
-            ></div>
+          <main className="pt-28">
+            {/* Floating Icons Section */}
+            <section className="relative h-[500px] flex justify-center items-center">
+              {/* Background Image */}
+              <div
+                className="absolute inset-0 bg-cover bg-center opacity-10"
+                style={{ backgroundImage: "url('/assets/plan.jpg')" }}
+              ></div>
 
-            {/* Icons */}
-            <div className="flex justify-center items-center gap-28 relative z-10 p-6">
-              <img
-                src="assets/post-it(1).png"
-                className="h-40 transition-transform transform hover:scale-110 cursor-pointer"
-                onClick={() => router.push("/notes")}
-              />
-              <img
-                src="assets/calendar.png"
-                className="h-40 transition-transform transform hover:scale-110 cursor-pointer"
-                onClick={() => router.push("/calender")}
-              />
-              <img
-                src="assets/cells.png"
-                className="h-40 transition-transform transform hover:scale-110 cursor-pointer"
-                onClick={() => router.push("/tables")}
-              />
-              <img
-                src="assets/image.png"
-                className="h-40 transition-transform transform hover:scale-110 cursor-pointer"
-                onClick={() => router.push("/construction")}
-              />
-              <img
-                src="assets/admin.png"
-                className="h-40 transition-transform transform hover:scale-110 cursor-pointer"
-                onClick={() => router.push("/construction")}
-              />
-            </div>
-          </div>
+              {/* Icons Grid */}
+              <div className="relative z-10 grid grid-cols-2 md:grid-cols-6 gap-8 p-6">
+                {Object.values(apps).map((app, index) => (
+                  <motion.div
+                    key={index}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex flex-col justify-center items-center cursor-pointer relative"
+                    onClick={() => router.push(app.route)}
+                  >
+                    {/* App Image */}
+                    <img
+                      src={app.iconFilepath}
+                      alt={app.route.replace("/", "")}
+                      className="h-32 opacity-80 hover:opacity-100 transition-opacity z-10"
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </section>
 
-          {/* Continue Working Section */}
-          <h2 className="text-[30px] ml-7 mt-7 text-gray-200">
-            Continue Working:
-          </h2>
-
-          {/* Items Grid */}
-          <div className="text-gray-200 flex justify-center items-center">
-            <div className="space-y-4 mt-4">
-              {/* Render the rows of items */}
-              {isFetchingData ? (
-                <div className="border-t-4 border-gray-200 border-solid w-16 h-16 rounded-full animate-spin mx-auto"></div>
-              ) : (
-                resume.map((row, rowIndex) => (
-                  <div key={rowIndex} className="flex space-x-4">
-                    {row.map((item, index) => {
-                      const isNote = "content" in item;
-                      return (
-                        <div
-                          key={index}
-                          onClick={() => handleClick(item.id, isNote)}
-                          className={`flex items-center p-6 rounded-lg shadow-md cursor-pointer transform transition-all duration-300 
-                          ${isNote ? "border-yellow-500" : "border-blue-500"} border-[2px] bg-gray-700/50 hover:bg-gray-600/50 hover:scale-105 w-[300px]`}
-                        >
-                          <img
-                            src={
-                              isNote
-                                ? "assets/post-it(1).png"
-                                : "assets/cells.png"
-                            }
-                            alt={isNote ? "Note" : "Table"}
-                            className="w-16 h-16 mr-6"
-                          />
-                          <div>
-                            <h3 className="text-xl mb-2">{item.title}</h3>
-                            <p className="text-sm mb-3">
-                              {new Intl.DateTimeFormat("en-GB", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                day: "2-digit",
-                                month: "long",
-                                year: "numeric",
-                              }).format(new Date(item.lastUpdatedAt))}
-                            </p>
-                            {!isNote && item.content && (
-                              <p className="text-sm text-gray-300">
-                                {item.content.slice(0, 25)}...
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
+            {/* Continue Working Section */}
+            <section className="container mx-auto px-6 py-12">
+              <h2 className="text-3xl font-light mb-8">Continue Working:</h2>
+              <div className="space-y-6">
+                {isFetchingData ? (
+                  <div className="flex justify-center">
+                    <div className="border-t-4 border-teal-400 border-solid w-16 h-16 rounded-full animate-spin"></div>
                   </div>
-                ))
-              )}
-            </div>
-          </div>
+                ) : (
+                  resume.map((row, rowIndex) => (
+                    <div
+                      key={rowIndex}
+                      className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6"
+                    >
+                      {row.map((item, index) => {
+                        const isNote = "content" in item;
+                        return (
+                          <motion.div
+                            key={index}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleClick(item.id, isNote)}
+                            className={`flex items-center p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300 
+                            ${isNote ? "border-yellow-500" : "border-blue-500"} border-2 bg-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50`}
+                          >
+                            <img
+                              src={
+                                isNote
+                                  ? "assets/post-it(1).png"
+                                  : "assets/cells.png"
+                              }
+                              alt={isNote ? "Note" : "Table"}
+                              className="w-12 h-12 mr-4"
+                            />
+                            <div>
+                              <h3 className="text-lg font-semibold">
+                                {item.title}
+                              </h3>
+                              <p className="text-sm text-gray-400">
+                                {new Intl.DateTimeFormat("en-GB", {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                }).format(new Date(item.lastUpdatedAt))}
+                              </p>
+                              {!isNote && item.content && (
+                                <p className="text-sm text-gray-300 mt-2">
+                                  {item.content.slice(0, 25)}...
+                                </p>
+                              )}
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  ))
+                )}
+              </div>
+            </section>
+          </main>
         </div>
       ) : (
-        <p className="text-gray-200">Loading...</p>
+        <p className="text-center py-12">Loading...</p>
       )}
     </div>
   );

@@ -1,17 +1,18 @@
-export const fetchEvents = async (date: string) => {
+export const fetchEvents = async (date: string, userId: string) => {
   try {
     const res = await fetch("/api/events/get-events", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ date }),
+      body: JSON.stringify({ date, userId }), // Pass the user ID
     });
 
-    if (!res.ok) throw new Error("Failed to fetch events");
+    if (!res.ok) {
+      throw new Error(`Failed to fetch events: ${res.statusText}`);
+    }
 
     const data = await res.json();
-
     return data.events;
   } catch (error) {
     console.error("Error fetching events:", error);

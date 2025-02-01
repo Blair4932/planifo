@@ -3,11 +3,11 @@ import prisma from "@/prisma/lib/prisma";
 
 export async function POST(request: Request) {
   try {
-    const { date } = await request.json();
+    const { date, userId } = await request.json(); // Add userId to the request body
 
-    if (!date) {
+    if (!date || !userId) {
       return NextResponse.json(
-        { error: "Date parameter is required" },
+        { error: "Date and User ID parameters are required" },
         { status: 400 }
       );
     }
@@ -16,12 +16,14 @@ export async function POST(request: Request) {
     const endOfDay = new Date(startOfDay);
     endOfDay.setDate(endOfDay.getDate() + 1);
 
+    // Fetch events for the specific user and date range
     const events = await prisma.event.findMany({
       where: {
         date: {
           gte: startOfDay,
           lt: endOfDay,
         },
+        userId: userId, // Filter events by the user's ID
       },
     });
 

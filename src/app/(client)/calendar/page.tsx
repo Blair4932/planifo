@@ -38,6 +38,8 @@ export default function CalendarPage() {
 
   useEffect(() => {
     const fetchUpcomingEvents = async () => {
+      if (!user?.id) return;
+
       const today = new Date();
       const next10Days = Array.from({ length: 10 }, (_, i) =>
         addDays(today, i)
@@ -49,7 +51,7 @@ export default function CalendarPage() {
         const eventsData: { [key: string]: any[] } = {};
         for (const day of next10Days) {
           const dateKey = format(day, "yyyy-MM-dd");
-          const eventList = await fetchEvents(dateKey);
+          const eventList = await fetchEvents(dateKey, user.id);
           eventsData[dateKey] = eventList;
         }
         setEvents(eventsData);
@@ -61,16 +63,18 @@ export default function CalendarPage() {
     };
 
     fetchUpcomingEvents();
-  }, []);
+  }, [user]);
 
   const handleDateClick = async (date: Date) => {
+    if (!user?.id) return;
+
     setSelectedDate(date);
     const dateKey = format(date, "yyyy-MM-dd");
 
     setIsLoading(true);
 
     try {
-      const eventList = await fetchEvents(dateKey);
+      const eventList = await fetchEvents(dateKey, user.id);
       setEvents((prev) => ({ ...prev, [dateKey]: eventList }));
     } catch (error) {
       console.error("Failed to load events.");
@@ -90,7 +94,6 @@ export default function CalendarPage() {
 
   const handleDeleteEvent = async (event: any) => {
     try {
-      // Need to add calling delete api
       const dateKey = format(selectedDate, "yyyy-MM-dd");
       setEvents((prev) => ({
         ...prev,
@@ -155,7 +158,12 @@ export default function CalendarPage() {
       {/* Main Content */}
       <div className="flex-1 p-8 overflow-y-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-red-500">Calendars</h1>
+          <h1
+            className="text-3xl font-bold text-red-500 cursor-pointer"
+            onClick={() => router.push("/pinboard")}
+          >
+            Calendar
+          </h1>
           <button
             onClick={() => router.push("/pinboard")}
             className="text-sm text-red-400 hover:underline"
