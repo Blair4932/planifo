@@ -1,5 +1,4 @@
 "use client";
-import Modal from "./Modal";
 import SideBar from "./sidebar";
 import { useRouter } from "next/navigation";
 
