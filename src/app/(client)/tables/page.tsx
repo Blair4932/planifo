@@ -4,6 +4,7 @@ import jwt_decode from "jwt-decode";
 import { useRouter } from "next/navigation";
 import Modal from "./modal";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 export default function Tables() {
   const [user, setUser] = useState<any>(null);
@@ -113,32 +114,26 @@ export default function Tables() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-
-    if (token) {
+    const fetchUser = async () => {
       try {
-        const decoded: any = jwt_decode(token);
-        setUser(decoded);
-        fetchTables(decoded.id);
+        const res = await fetch("/api/user");
+        const data = await res.json();
 
-        const timeout = setTimeout(() => {
-          if (tables.length === 0) {
-            setNoTablesTimeout(true);
-            setLoading(false);
-          }
-        }, 5000);
-
-        return () => clearTimeout(timeout);
-      } catch (err) {
-        console.error("Invalid token:", err);
-        setError("Token is invalid or expired.");
-        router.push("/login");
+        if (res.ok) {
+          setUser(data.user);
+          fetchTables(data.user.id);
+        } else {
+          setError("Failed to get user.");
+        }
+      } catch (e) {
+        setError("Error getting user: " + e.message);
+      } finally {
+        setLoading(false);
       }
-    } else {
-      setError("No token found.");
-      router.push("/login");
-    }
-  }, [router, tables]);
+    };
+
+    fetchUser();
+  }, []);
 
   const handleCloseModal = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -146,91 +141,119 @@ export default function Tables() {
     }
   };
 
+  const LoadingSpinner = () => (
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="border-t-4 border-blue-400 border-solid w-16 h-16 rounded-full animate-spin"></div>
+    </div>
+  );
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
   return (
-    <div className="text-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-200">
       {/* Header */}
-      <div className="bg-cyan-600 p-4 mb-4">
-        <p className="cursor-pointer" onClick={() => router.push("/pinboard")}>
-          Back
-        </p>
-        <div className=" flex justify-between items-center mb-6">
-          <h1 className="text-3xl text-[40px] ml-7 mt-4 text-white">Tables</h1>
+      <header className="bg-gradient-to-r from-gray-900/70 via-gray-800/70 to-gray-900/70 backdrop-blur-md shadow-lg fixed w-full z-50">
+        <div className="container mx-auto flex justify-between items-center h-28 px-6">
+          <h1
+            className="text-4xl font-extralight cursor-pointer"
+            onClick={() => router.push("/pinboard")}
+          >
+            Tables{" "}
+            <span className="bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent">
+              Manager
+            </span>
+          </h1>
           <div className="flex items-center gap-4">
             <input
               type="text"
               placeholder="Search by title..."
               value={searchQuery}
               onChange={(e) => filterTables(e.target.value)}
-              className="border border-gray-300 rounded-md px-4 py-2 focus:ring-2 text-black focus:ring-blue-500"
+              className="border border-gray-700 rounded-md px-4 py-2 bg-gray-800 text-gray-200 focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
-            <button
+            <motion.button
               onClick={toggleView}
-              className="p-2 bg-blue-800 text-white rounded-md shadow-md hover:bg-blue-900 transition"
+              className="p-2 bg-gradient-to-r from-blue-400 to-blue-200 text-gray-900 rounded-md shadow-md hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 transition"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               {isGridView ? "List View" : "Grid View"}
-            </button>
+            </motion.button>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Tables */}
-      <div
-        className={`${
-          isGridView ? "grid grid-cols-4 gap-6" : "flex flex-col gap-4"
-        }`}
-      >
-        {loading ? (
-          <div className=" absolute flex justify-center items-center w-full h-[60%]">
-            <div className="border-t-4 border-white border-solid w-16 h-16 rounded-full animate-spin"></div>
-          </div>
-        ) : noTablesTimeout ? (
-          <div className="text-center text-gray-600">No tables found</div>
-        ) : (
-          filteredTables.length > 0 &&
-          filteredTables.map((table: any) => (
-            <div
-              key={table.id}
-              onClick={() => router.push(`/tables/${table.id}`)}
-              className={`relative p-4 border border-cyan-800 rounded-md cursor-pointer shadow-sm hover:shadow-md transition transform hover:scale-[102%] ${
-                !isGridView ? "ml-20 mr-20" : "ml-10 mr-10"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <img
-                  src="assets/cells.png"
-                  alt="Table Icon"
-                  className="w-6 h-6"
-                />
-                <h3 className="font-bold text-lg">{table.title}</h3>
-              </div>
-              {isGridView ? (
-                <p className=" mt-2 text-sm">
-                  {table.createdAt?.slice(0, 50) || "..."}
-                </p>
-              ) : null}
+      <main className="pt-28">
+        <div className="container mx-auto px-6 py-12">
+          <div
+            className={`${isGridView ? "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6" : "flex flex-col gap-6"}`}
+          >
+            {filteredTables.length > 0 ? (
+              filteredTables.map((table: any) => (
+                <motion.div
+                  key={table.id}
+                  onClick={() => router.push(`/tables/${table.id}`)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`relative p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300 bg-gradient-to-br from-gray-800/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50 border-2 border-blue-400`}
+                >
+                  <div className="flex items-center gap-3">
+                    <img
+                      src="assets/cells.png"
+                      alt="Table Icon"
+                      className="w-8 h-8"
+                    />
+                    <h3 className="font-bold text-lg">{table.title}</h3>
+                  </div>
+                  {isGridView ? (
+                    <p className="text-gray-300 mt-2 text-sm">
+                      {table.content?.slice(0, 50) || "No content..."}
+                    </p>
+                  ) : null}
 
-              {/* Delete Button */}
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  deleteTable(table.id);
-                }}
-                className="absolute top-2 right-2 cursor-pointer p-1 text-white rounded-full hover:bg-red-600 transition"
-              >
-                <img src="assets/trash.png" alt="Delete" className="w-6 h-6" />
+                  {/* Delete Button */}
+                  <motion.div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteTable(table.id);
+                    }}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="absolute top-4 right-4 cursor-pointer p-1 text-white rounded-full hover:bg-red-600 transition"
+                  >
+                    <img
+                      src="assets/trash.png"
+                      alt="Delete"
+                      className="w-6 h-6"
+                    />
+                  </motion.div>
+                </motion.div>
+              ))
+            ) : (
+              <div className="text-center text-gray-400">
+                {loading ? (
+                  <div className="border-t-4 border-blue-400 border-solid w-16 h-16 rounded-full animate-spin mx-auto"></div>
+                ) : (
+                  "No tables found"
+                )}
               </div>
-            </div>
-          ))
-        )}
-      </div>
+            )}
+          </div>
+        </div>
+      </main>
 
       {/* Floating Action Button */}
-      <button
+      <motion.button
         onClick={toggleShowModal}
-        className=" text-[50px] fixed bottom-10 right-10 bg-blue-800 text-white w-20 rounded-full shadow-lg hover:bg-blue-900 transition"
+        className="fixed bottom-10 right-10 bg-gradient-to-r from-blue-400 to-blue-200 text-gray-900 w-16 h-16 rounded-full shadow-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 transition text-4xl flex items-center justify-center"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
       >
         +
-      </button>
+      </motion.button>
 
       <Modal
         showModal={showModal}

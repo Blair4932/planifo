@@ -2,10 +2,12 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { apps } from "../(global-components)/apps";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [secondPassword, setSecondPassword] = useState("");
   const [email, setEmail] = useState("");
   const [failed, setFailed] = useState(false);
   const [error, setError] = useState("");
@@ -14,6 +16,19 @@ export default function RegisterPage() {
 
   const handleRegistration = async () => {
     setIsLoading(true);
+    if (password !== secondPassword) {
+      setError("Passwords dont match");
+      setFailed(true);
+      setIsLoading(false);
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setFailed(true);
+      setError("Please enter a valid email address.");
+      setIsLoading(false);
+      return;
+    }
 
     const res = await fetch("/api/register", {
       method: "POST",
@@ -49,17 +64,13 @@ export default function RegisterPage() {
       </motion.header>
 
       {/* Main Content */}
-      <div className="relative text-gray-200 flex justify-center items-center min-h-screen bg-gray-800 overflow-hidden">
+      <div className="relative text-gray-200 flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
         {/* Background Image */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.1 }}
           transition={{ duration: 1 }}
           className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: "url('/assets/plan.jpg')",
-            objectFit: "cover",
-          }}
         ></motion.div>
 
         {/* Content Area */}
@@ -80,77 +91,24 @@ export default function RegisterPage() {
             />
             <h1 className="text-4xl font-light mb-4">Manifo</h1>
             <p className="text-center font-extralight mb-8">
-              Join millions of users today in turning their life into more than
-              just a 'what if'.
+              Join millions - not really - of users today in turning their life
+              into more than just a 'what if'.
             </p>
-            <div className="flex flex-col gap-6 items-start w-full">
-              {/* Icon 1 */}
-              <motion.div
-                className="flex items-center gap-4"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <img src="assets/post-it(1).png" className="h-16" alt="Icon" />
-                <div>
-                  <span className="text-lg font-semibold">Notes</span>
-                  <p className="text-sm">
-                    Create and organize your notes easily.
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Icon 2 */}
-              <motion.div
-                className="flex items-center gap-4"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <img src="assets/cells.png" className="h-16" alt="Icon" />
-                <div>
-                  <span className="text-lg font-semibold">Tables</span>
-                  <p className="text-sm">
-                    Manage and organize your data in tables.
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Icon 3 */}
-              <motion.div
-                className="flex items-center gap-4"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <img
-                  src="assets/calendar.png"
-                  className="h-16 cursor-pointer"
-                  alt="Icon"
-                />
-                <div>
-                  <span className="text-lg font-semibold">Calendar</span>
-                  <p className="text-sm">
-                    Stay on top of your events and tasks.
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Icon 4 */}
-              <motion.div
-                className="flex items-center gap-4"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <img
-                  src="assets/image.png"
-                  className="h-16 cursor-pointer"
-                  alt="Icon"
-                />
-                <div>
-                  <span className="text-lg font-semibold">Gallery</span>
-                  <p className="text-sm">
-                    Store and view your photos in one place.
-                  </p>
-                </div>
-              </motion.div>
+            <div className="grid grid-cols-2 gap-6 w-full mt-5">
+              {Object.values(apps).map((app, index) => (
+                <motion.div
+                  key={index}
+                  className="flex items-center gap-4"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <img src={app.iconFilepath} className="h-16" alt="Icon" />
+                  <div>
+                    <span className="text-lg font-semibold">{app.name}</span>
+                    <p className="text-sm">{app.description}</p>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
 
@@ -161,7 +119,7 @@ export default function RegisterPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-col justify-center items-center w-[50%] p-8"
           >
-            <div className="flex flex-col justify-start items-center rounded-md h-[40%] w-[350px] bg-gray-700/50 backdrop-blur-sm p-6 shadow-lg">
+            <div className="flex flex-col h-[500px] justify-start items-center rounded-lg w-[350px] bg-gray-700/50 backdrop-blur-sm p-6 shadow-lg">
               <h2 className="font-light text-[30px] mt-5">Register</h2>
               <p className="text-[15px] font-extralight">
                 Type in details below
@@ -188,6 +146,14 @@ export default function RegisterPage() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                whileFocus={{ scale: 1.05 }}
+              />
+              <motion.input
+                className="border-2 border-gray-600 bg-transparent p-2 rounded-md w-72 mt-4 text-center focus:outline-none focus:border-teal-400 transition-colors"
+                type="password"
+                placeholder="Re-enter Password"
+                value={secondPassword}
+                onChange={(e) => setSecondPassword(e.target.value)}
                 whileFocus={{ scale: 1.05 }}
               />
               {failed && (

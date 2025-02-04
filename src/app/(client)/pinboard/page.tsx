@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import jwt_decode from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { apps } from "../(global-components)/apps";
@@ -15,26 +14,39 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-
-    if (token) {
-      setLoading(true);
+    const fetchUser = async () => {
       try {
-        const decoded: any = jwt_decode(token);
-        setUser(decoded);
-        sortContinueWorking(decoded.id);
-      } catch (err) {
-        console.error("Invalid token:", err);
-        setError("Token is invalid or expired.");
-        router.push("/login");
-      }
-    } else {
-      setError("No token found.");
-      router.push("/login");
-    }
+        const res = await fetch("/api/user");
+        const data = await res.json();
 
-    setLoading(false);
-  }, [router]);
+        if (res.ok) {
+          setUser(data.user);
+          sortContinueWorking(data.user.id);
+        } else {
+          setError("Failed to get user.");
+          router.replace("/login");
+        }
+      } catch (e) {
+        setError("Error getting user: " + e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const handleLogout = async () => {
+    const res = await fetch("/api/logout", {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      router.replace("/login");
+    } else {
+      console.error("Logout failed", await res.json());
+    }
+  };
 
   const sortContinueWorking = async (userId: string) => {
     setIsFetchingData(true);
@@ -65,7 +77,6 @@ export default function Dashboard() {
           data: JSON.stringify({ date, userId }),
         },
       });
-
       const eventsData = await eventsResponse.json();
 
       let continueWorking = notesData.notes.concat(tablesData.tables);
@@ -78,6 +89,7 @@ export default function Dashboard() {
       });
 
       continueWorking = continueWorking.slice(0, 18);
+
       const mergedData = [...eventsData.events, ...continueWorking];
 
       const rows = [];
@@ -108,52 +120,53 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
         <div className="border-t-4 border-teal-400 border-solid w-16 h-16 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-200">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-200">
       {error && <p className="text-red-500 text-center py-4">{error}</p>}
       {user ? (
         <div>
           {/* Header */}
-          <header className="bg-gray-900/70 backdrop-blur-md shadow-lg fixed w-full z-50">
+          <header className="bg-gradient-to-r from-gray-900/70 via-gray-800/70 to-gray-900/70 backdrop-blur-md shadow-lg fixed w-full z-50">
             <div className="container mx-auto flex justify-between items-center h-28 px-6">
               <h1 className="text-4xl font-extralight">
                 Hey, <span className="text-teal-400">{user.username}</span>!
               </h1>
-              <div className="flex items-center gap-6">
-                <a
-                  href="mailto:admin@manifo.uk"
-                  className="text-gray-300 hover:text-teal-400 transition-colors"
-                >
-                  Report a bug
-                </a>
-                <div
-                  className="bg-gray-200 rounded-full p-3 cursor-pointer hover:bg-teal-400 transition-colors"
-                  onClick={() => router.push("/desk")}
-                >
-                  <img src="/assets/desk.png" className="h-12" alt="Desk" />
+              <div className="flex items-center gap-4 w-[20%]">
+                <div className="p-5 w-full">
+                  <a
+                    href="mailto:admin@manifo.uk"
+                    className="text-gray-300 hover:text-teal-400 transition-colors w-10"
+                  >
+                    Report a bug
+                  </a>
                 </div>
+                {/* Login Button */}
+                <motion.button
+                  className="w-full p-2 rounded-md text-white hover:text-red-800 transition-colors"
+                  onClick={handleLogout}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  Logout
+                </motion.button>
               </div>
             </div>
           </header>
 
           {/* Main Content */}
           <main className="pt-28">
-            {/* Floating Icons Section */}
-            <section className="relative h-[500px] flex justify-center items-center">
-              {/* Background Image */}
-              <div
-                className="absolute inset-0 bg-cover bg-center opacity-10"
-                style={{ backgroundImage: "url('/assets/plan.jpg')" }}
-              ></div>
-
-              {/* Icons Grid */}
-              <div className="relative z-10 grid grid-cols-2 md:grid-cols-6 gap-8 p-6">
+            {/* Apps Grid */}
+            <div className="container mx-auto px-6 py-8">
+              <h2 className="text-3xl font-light mb-11 mt-6">Pinboard</h2>
+              <div className="grid grid-cols-2 md:grid-cols-7 px-24 gap-3">
                 {Object.values(apps).map((app, index) => (
                   <motion.div
                     key={index}
@@ -171,11 +184,11 @@ export default function Dashboard() {
                   </motion.div>
                 ))}
               </div>
-            </section>
+            </div>
 
             {/* Continue Working Section */}
-            <section className="container mx-auto px-6 py-12">
-              <h2 className="text-3xl font-light mb-8">Continue Working:</h2>
+            <div className="container mx-auto px-6 py-12">
+              <h2 className="text-3xl font-light mb-8">Continue Working</h2>
               <div className="space-y-6">
                 {isFetchingData ? (
                   <div className="flex justify-center">
@@ -203,7 +216,7 @@ export default function Dashboard() {
                             onClick={() => handleClick(item.id, type)}
                             className={`flex items-center p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300 
                 ${type === "note" ? "border-yellow-500" : type === "event" ? "border-red-600" : "border-blue-500"} 
-                border-2 bg-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50`}
+                border-2 bg-gradient-to-br from-gray-800/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50`}
                           >
                             <img
                               src={
@@ -254,11 +267,13 @@ export default function Dashboard() {
                   ))
                 )}
               </div>
-            </section>
+            </div>
           </main>
         </div>
       ) : (
-        <p className="text-center py-12">Loading...</p>
+        <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+          <div className="border-t-4 border-teal-400 border-solid w-16 h-16 rounded-full animate-spin"></div>
+        </div>
       )}
     </div>
   );

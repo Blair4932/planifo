@@ -1,22 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import SessionHandler from "../../(utils)/sessionHandler";
 
 export async function GET(req: NextRequest) {
-  const token = req.cookies.get("authToken")?.value;
+  const sessionId = req.cookies.get("sessionId")?.value;
 
-  if (!token) {
-    return NextResponse.json({ error: "No token found" }, { status: 401 });
+  if (!sessionId) {
+    return NextResponse.json({ error: "No sessionId found" }, { status: 401 });
   }
 
   try {
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    const user = await SessionHandler.validateSession(sessionId);
 
-    return NextResponse.json({ user: decoded });
+    if (!user) {
+      return NextResponse.json(
+        { error: "Invalid or expired session" },
+        { status: 401 }
+      );
+    }
+
+    return NextResponse.json({ user });
   } catch (err) {
-    console.error("Token verification failed:", err);
-    return NextResponse.json(
-      { error: "Invalid or expired token" },
-      { status: 401 }
-    );
+    console.error("Error during session validation:", err);
+    return NextResponse.json({ error: "An error occurred" }, { status: 500 });
   }
 }

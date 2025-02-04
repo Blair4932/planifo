@@ -9,7 +9,9 @@ export default function TablePage() {
   const {
     table,
     loading,
+    setLoading,
     error,
+    setError,
     saveTable,
     updateCellValue,
     addColumn,
@@ -39,34 +41,30 @@ export default function TablePage() {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
+    const fetchUser = async () => {
       try {
-        const decoded: any = jwt_decode(token);
-        setUser(decoded);
-      } catch (err) {
-        console.error("Invalid token:", err);
-        router.push("/login");
-      }
-    } else {
-      router.push("/login");
-    }
-  }, [router]);
+        const res = await fetch("/api/user");
+        const data = await res.json();
 
-  const fetchRecentTables = async () => {
+        if (res.ok) {
+          setUser(data.user);
+          fetchRecentTables(data.user.id);
+        } else {
+          setError("Failed to fetch table");
+          router.replace("/login");
+        }
+      } catch (e) {
+        setError("Error getting user: " + e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const fetchRecentTables = async (userId: string) => {
     try {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        throw new Error("No token found.");
-      }
-
-      const decoded: any = jwt_decode(token);
-      const userId = decoded.id;
-
-      if (!userId) {
-        throw new Error("userId not found in token.");
-      }
-
       const res = await fetch("/api/get-tables", {
         method: "GET",
         headers: {
@@ -95,12 +93,6 @@ export default function TablePage() {
     }
   };
 
-  useEffect(() => {
-    if (user) {
-      fetchRecentTables();
-    }
-  }, [user, table?.id]);
-
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-900">
@@ -121,7 +113,7 @@ export default function TablePage() {
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-900 text-gray-100">
       {/* Sidebar */}
       <div className="w-full lg:w-1/4 bg-gray-800 p-6 border-r border-gray-700">
-        <h2 className="text-2xl font-bold mb-6 text-teal-400">
+        <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent">
           Recently Worked On Tables
         </h2>
         <div className="space-y-4">
@@ -132,7 +124,7 @@ export default function TablePage() {
                 className="p-4 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors"
                 onClick={() => router.push(`/tables/${recentTable.id}`)}
               >
-                <h3 className="text-lg font-semibold truncate text-teal-300">
+                <h3 className="text-lg font-semibold truncate bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent">
                   {recentTable.title || "Untitled"}
                 </h3>
                 <p className="text-sm truncate text-gray-300">
@@ -150,14 +142,14 @@ export default function TablePage() {
       <div className="flex-1 p-8 overflow-y-auto">
         <div className="flex justify-between items-center mb-8">
           <h1
-            className="text-3xl font-bold text-teal-400 cursor-pointer hover:underline"
+            className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent cursor-pointer hover:underline"
             onClick={() => router.push("/tables")}
           >
             Tables
           </h1>
           <button
             onClick={() => router.push("/pinboard")}
-            className="text-sm text-teal-400 hover:underline"
+            className="text-sm bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent hover:underline"
           >
             Back to Pinboard
           </button>
@@ -165,7 +157,7 @@ export default function TablePage() {
 
         {/* Table Editor */}
         <div className="p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
-          <h1 className="text-3xl font-bold mb-4 text-left text-teal-400">
+          <h1 className="text-3xl font-bold mb-4 text-left bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent">
             {table.title}
           </h1>
           <div className="overflow-auto">
@@ -186,14 +178,14 @@ export default function TablePage() {
                           setColumnCells(column.cells);
                         }}
                         onChange={(e) => setEditedHeader(e.target.value)}
-                        className="bg-transparent w-full border-none outline-none text-center text-teal-400 placeholder-teal-600"
+                        className="bg-transparent w-full border-none outline-none text-center bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent placeholder-blue-600"
                         placeholder="Header"
                       />
                     </th>
                   ))}
                   <th>
                     <button
-                      className="bg-teal-500 text-gray-900 px-2 py-1 rounded-md hover:bg-teal-600 transition"
+                      className="bg-gradient-to-r from-blue-400 to-blue-200 text-gray-900 px-2 py-1 rounded-md hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 transition"
                       onClick={addColumn}
                     >
                       + Add Column
@@ -229,7 +221,7 @@ export default function TablePage() {
                           onChange={(e) =>
                             updateCellValue(cell.id, e.target.value)
                           }
-                          className="bg-transparent w-full border-none outline-none text-center text-gray-100"
+                          className="bg-transparent w-full border-none outline-none text-center text-black"
                         />
                       </td>
                     ))}
@@ -238,7 +230,7 @@ export default function TablePage() {
                 <tr>
                   <td>
                     <button
-                      className="bg-teal-500 text-gray-900 px-2 py-1 rounded-md w-[100%] hover:bg-teal-600 transition"
+                      className="bg-gradient-to-r from-blue-400 to-blue-200 text-gray-900 px-2 py-1 rounded-md w-[100%] hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 transition"
                       onClick={addRow}
                     >
                       + Add Row
@@ -252,7 +244,7 @@ export default function TablePage() {
 
         {/* Details Pane */}
         <div className="mt-8 p-6 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
-          <h2 className="text-xl font-semibold text-teal-400 mb-4">
+          <h2 className="text-xl font-semibold bg-gradient-to-r from-blue-400 to-blue-200 bg-clip-text text-transparent mb-4">
             Table Details
           </h2>
           <ul className="space-y-5 text-gray-300">
@@ -272,7 +264,7 @@ export default function TablePage() {
 
             <button
               onClick={saveTable}
-              className="w-full mt-6 py-2 rounded-md bg-teal-500 text-gray-900 hover:bg-teal-600 transition"
+              className="w-full mt-6 py-2 rounded-md bg-gradient-to-r from-blue-400 to-blue-200 text-gray-900 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 transition"
             >
               {saving ? (
                 <div className="w-4 h-4 border-t-4 border-gray-900 border-solid rounded-full animate-spin mx-auto"></div>
@@ -283,14 +275,14 @@ export default function TablePage() {
 
             <button
               onClick={handleCalculateButtonClick}
-              className="w-full mt-4 py-2 rounded-md bg-teal-400 text-gray-900 hover:bg-teal-500 transition"
+              className="w-full mt-4 py-2 rounded-md bg-gradient-to-r from-blue-400 to-blue-200 text-gray-900 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 transition"
             >
               Calculate
             </button>
 
             <button
               onClick={deleteTable}
-              className="w-full mt-4 bg-red-600 text-gray-100 py-2 rounded-md hover:bg-red-700 transition"
+              className="w-full mt-4 bg-gradient-to-r from-red-600 to-red-500 text-gray-100 py-2 rounded-md hover:bg-gradient-to-r hover:from-red-700 hover:to-red-600 transition"
             >
               Delete Table
             </button>

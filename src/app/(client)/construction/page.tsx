@@ -10,7 +10,7 @@ export default function UnderConstructionPage() {
       </p>
       <p className="text-md mb-6">Please check back later.</p>
       <Link
-        href="/"
+        href="/pinboard"
         className="text-lg text-blue-500 hover:underline transition-all"
       >
         Go Back to Home

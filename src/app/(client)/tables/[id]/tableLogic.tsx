@@ -22,27 +22,6 @@ export function useTableLogic() {
 
   const params = useParams();
   const router = useRouter();
-
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-
-    if (token) {
-      try {
-        const decoded: any = jwt_decode(token);
-        setUser(decoded);
-      } catch (err) {
-        console.error("Invalid token:", err);
-        setError("Token is invalid or expired.");
-        router.push("/login");
-      }
-    } else {
-      setError("No token found.");
-      router.push("/login");
-    }
-
-    setLoading(false);
-  }, [router]);
-
   /**
    * Fetches details of opened table
    */
@@ -418,7 +397,9 @@ export function useTableLogic() {
   return {
     table,
     loading,
+    setLoading,
     error,
+    setError,
     saveTable,
     updateCellValue,
     addColumn,

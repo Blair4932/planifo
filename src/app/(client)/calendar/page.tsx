@@ -2,11 +2,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import EventModal from "./modal";
-import jwt_decode from "jwt-decode";
 import EventCard from "./eventCard";
 import CalendarGrid from "./calenderGrid";
 import { format, addDays, isToday, isTomorrow } from "date-fns";
 import { fetchEvents } from "./calenderAPI";
+import { handleLogout } from "../(global-functions)/clientSessionHandler";
 
 export default function CalendarPage() {
   const router = useRouter();
@@ -19,22 +19,20 @@ export default function CalendarPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-
-    if (token) {
-      try {
-        const decoded: any = jwt_decode(token);
-        setUser(decoded);
-      } catch (err) {
-        console.error("Invalid token:", err);
-        setError("Token is invalid or expired.");
-        router.push("/login");
+    const fetchUser = async () => {
+      const res = await fetch("/api/user");
+      const data = await res.json();
+      if (res.ok) {
+        setUser(data.user);
+        setIsLoading(false);
+      } else {
+        handleLogout();
+        setError("Failed to fetch user");
       }
-    } else {
-      setError("No token found.");
-      router.push("/login");
-    }
-  }, [router]);
+    };
+
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     const fetchUpcomingEvents = async () => {
@@ -111,10 +109,10 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen bg-gray-900">
+    <div className="flex flex-col lg:flex-row h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Sidebar */}
-      <div className="w-full lg:w-1/4 bg-gray-800 p-6 text-white overflow-y-auto border-r border-gray-700">
-        <h2 className="text-2xl font-bold mb-6 text-red-500">
+      <div className="w-full lg:w-1/4 bg-gradient-to-br from-gray-800/70 via-gray-700/70 to-gray-800/70 backdrop-blur-md p-6 text-white overflow-y-auto border-r border-gray-700">
+        <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent">
           Upcoming Events
         </h2>
         <div className="space-y-6">
@@ -130,10 +128,10 @@ export default function CalendarPage() {
                     {events.map((event, index) => (
                       <div
                         key={index}
-                        className="p-3 bg-gray-700 rounded-md hover:bg-gray-600 transition-colors cursor-pointer border border-gray-600"
+                        className="p-3 bg-gradient-to-br from-gray-700/50 via-gray-600/50 to-gray-700/50 backdrop-blur-sm rounded-md hover:bg-gray-600/50 transition-colors cursor-pointer border border-red-500/20"
                         onClick={() => handleEditEvent(event)}
                       >
-                        <p className="text-sm font-medium truncate text-red-400 font-semibold">
+                        <p className="text-sm font-medium truncate bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent font-semibold">
                           {event.title}
                         </p>
                         <p className="text-xs text-gray-300 truncate">
@@ -159,14 +157,14 @@ export default function CalendarPage() {
       <div className="flex-1 p-8 overflow-y-auto">
         <div className="flex justify-between items-center mb-8">
           <h1
-            className="text-3xl font-bold text-red-500 cursor-pointer"
+            className="text-3xl font-bold bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent cursor-pointer"
             onClick={() => router.push("/pinboard")}
           >
             Calendar
           </h1>
           <button
             onClick={() => router.push("/pinboard")}
-            className="text-sm text-red-400 hover:underline"
+            className="text-sm bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent hover:underline"
           >
             Back to Pinboard
           </button>
@@ -182,7 +180,7 @@ export default function CalendarPage() {
         {/* Event Details Pane */}
         {isLoading ? (
           <div className="flex justify-center items-center mt-10">
-            <div className="border-t-4 border-white border-solid w-16 h-16 rounded-full animate-spin"></div>
+            <div className="border-t-4 border-red-500 border-solid w-16 h-16 rounded-full animate-spin"></div>
           </div>
         ) : events[format(selectedDate, "yyyy-MM-dd")]?.length > 0 ? (
           <ul className="mt-4 space-y-3">
@@ -203,7 +201,7 @@ export default function CalendarPage() {
       {/* Floating Button */}
       <button
         onClick={handleAddButtonClick}
-        className="text-[50px] fixed bottom-10 right-10 bg-red-500 text-white w-20 rounded-full shadow-lg hover:bg-red-600 transition"
+        className="text-[50px] fixed bottom-10 right-10 bg-gradient-to-r from-red-500 to-red-400 text-white w-20 rounded-full shadow-lg hover:from-red-600 hover:to-red-500 transition"
       >
         +
       </button>

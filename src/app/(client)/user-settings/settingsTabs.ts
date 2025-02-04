@@ -1,28 +1,33 @@
 export interface SettingTab {
+  id: number;
   name: string;
   icon?: string; // need to change these optionals
   innerSettings?: SettingTab[];
 }
 
-export const settingTabs = {
-  accountSettings: {
+export const settingsTabs = [
+  {
+    id: 1,
     name: "Account Settings",
     icon: "",
     innerSettings: [],
   },
-  accessibilitySettings: {
+  {
+    id: 2,
     name: "Accessibility Settings",
     icon: "",
     innerSettings: [],
   },
-  contact: {
+  {
+    id: 3,
     name: "Contact",
     icon: "",
     innerSettings: [],
   },
-  logout: {
+  {
+    id: 4,
     name: "Logout",
     icon: "",
     innerSettings: [],
   },
-};
+];

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createNote } from "../../helpers/create-note";
+import { createNote } from "../../../helpers/create-note";
 
 export async function POST(req: Request) {
   const { title, content, userId } = await req.json();

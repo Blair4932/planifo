@@ -12,6 +12,20 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
+    const fetchUser = async () => {
+      const res = await fetch("/api/user");
+      const data = await res.json();
+      if (data.user) {
+        router.replace("/pinboard");
+      } else {
+        return;
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
     const storedUsername = localStorage.getItem("username");
     if (storedUsername) {
       setUsername(storedUsername);
@@ -31,8 +45,6 @@ export default function LoginPage() {
     setIsLoading(false);
 
     if (res.ok) {
-      localStorage.removeItem("username");
-      localStorage.setItem("authToken", data.token);
       router.push("/pinboard");
     } else {
       setFailed(true);
@@ -41,14 +53,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
+    <div className="relative flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
       {/* Background Animation */}
       <motion.div
         className="absolute inset-0 bg-cover bg-center opacity-10"
-        style={{
-          backgroundImage: "url('/assets/plan.jpg')",
-          objectFit: "cover",
-        }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.1 }}
         transition={{ duration: 1 }}
@@ -157,6 +165,11 @@ export default function LoginPage() {
             onClick={() => router.push("/")}
           >
             Forgot password?
+          </p>
+          <p className="text-[8px] mt-2 text-gray-400 transition-colors">
+            Manifo is currently a work in progress. You may experience bugs or
+            poor performance. Please support me by using the "Report Bug" option
+            if you encounter an issue
           </p>
         </motion.div>
       </motion.div>

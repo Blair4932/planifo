@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import prisma from "@/prisma/lib/prisma";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import prisma from "@/prisma/lib/prisma";
+import SessionHandler from "../../(utils)/sessionHandler";
 
 export async function POST(req: Request) {
   try {
@@ -19,6 +19,7 @@ export async function POST(req: Request) {
       include: {
         notes: true,
         tables: true,
+        events: true,
       },
     });
 
@@ -29,15 +30,7 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!user.password) {
-      return NextResponse.json(
-        { error: "Password is missing for this user" },
-        { status: 500 }
-      );
-    }
-
     const isPasswordValid = await bcrypt.compare(password, user.password);
-
     if (!isPasswordValid) {
       return NextResponse.json(
         { error: "Invalid username or password" },
@@ -45,29 +38,30 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!process.env.JWT_SECRET) {
-      return NextResponse.json(
-        { error: "Server misconfiguration: Missing JWT_SECRET" },
-        { status: 500 }
-      );
+    const existingSession = await prisma.session.findFirst({
+      where: { userId: user.id },
+    });
+
+    if (existingSession) {
+      await prisma.session.delete({
+        where: { id: existingSession.sessionId },
+      });
     }
 
-    const token = jwt.sign(
-      {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        notes: user.notes,
-        tables: user.tables,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
+    const sessionId = await SessionHandler.createSession(user);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       message: "Login successful",
-      token,
     });
+
+    response.cookies.set("sessionId", sessionId, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    return response;
   } catch (error) {
     console.error("Error during login:", error.message, error.stack);
     return NextResponse.json(

@@ -9,11 +9,9 @@ export async function DELETE(request: Request) {
   }
 
   try {
-    // Verify token and get user ID
     const decoded: any = jwt_decode(token);
     const userId = decoded.id;
 
-    // Delete user from database
     await prisma.user.delete({
       where: { id: userId },
     });
