@@ -71,7 +71,7 @@ export const deleteEvent = async (eventId: string) => {
 export const createEvent = async (eventData: {
   title: string;
   description: string;
-  duration: number;
+  duration: string;
   startTime: string;
   endTime: string;
   date: string;

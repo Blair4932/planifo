@@ -5,7 +5,7 @@ import EventModal from "./modal";
 import EventCard from "./eventCard";
 import CalendarGrid from "./calenderGrid";
 import { format, addDays, isToday, isTomorrow } from "date-fns";
-import { fetchEvents } from "./calenderAPI";
+import { deleteEvent, fetchEvents } from "./calenderAPI";
 import { handleLogout } from "../(global-functions)/clientSessionHandler";
 
 export default function CalendarPage() {
@@ -92,6 +92,7 @@ export default function CalendarPage() {
 
   const handleDeleteEvent = async (event: any) => {
     try {
+      await deleteEvent(event.id);
       const dateKey = format(selectedDate, "yyyy-MM-dd");
       setEvents((prev) => ({
         ...prev,

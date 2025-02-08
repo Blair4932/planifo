@@ -43,8 +43,9 @@ export async function POST(req: Request) {
     });
 
     if (existingSession) {
+      console.log("EXISTING SESSION", existingSession);
       await prisma.session.delete({
-        where: { id: existingSession.sessionId },
+        where: { id: existingSession.id },
       });
     }
 

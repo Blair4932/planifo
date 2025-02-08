@@ -14,7 +14,7 @@ export default function EventModal({
 }: any) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [duration, setDuration] = useState(60);
+  const [duration, setDuration] = useState("");
   const [startTime, setStartTime] = useState<string>("");
   const [endTime, setEndTime] = useState<string>("");
   const [startTimePeriod, setStartTimePeriod] = useState<string>("AM");
@@ -45,12 +45,15 @@ export default function EventModal({
   }, []);
 
   const handleSave = async () => {
+    const calculatedDuration = calculateDuration(startTime, endTime);
+    console.log("DURATION", calculatedDuration, startTime, endTime);
+
     const event = {
       title,
       description,
       startTime,
       endTime,
-      duration,
+      duration: calculatedDuration,
       date: format(date, "yyyy-MM-dd"),
     };
 
@@ -59,9 +62,10 @@ export default function EventModal({
         ...event,
         userId: user?.id,
       });
+
       let newDate = format(newEvent.date, "yyyy-MM-dd");
 
-      let updatedEvents = [...events[newDate], newEvent];
+      let updatedEvents = [...(events[newDate] || []), newEvent];
 
       setEvents((prevEvents) => ({ ...prevEvents, [newDate]: updatedEvents }));
       setIsModalOpen(false);
@@ -86,6 +90,29 @@ export default function EventModal({
     const newEndTime = e.target.value;
     setEndTime(newEndTime);
     setEndTimePeriod(updatePeriod(newEndTime));
+  };
+
+  const calculateDuration = (start: string, end: string): string => {
+    const startTime = new Date(`1970-01-01T${start}`);
+    const endTime = new Date(`1970-01-01T${end}`);
+
+    let diff = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
+
+    if (diff < 0) {
+      diff += 24 * 60;
+    }
+
+    let durationStr;
+    if (diff >= 60) {
+      const hours = Math.floor(diff / 60);
+      const minutes = diff % 60;
+      durationStr = `${hours}h ${minutes}m`;
+    } else {
+      durationStr = `${diff}m`;
+    }
+
+    setDuration(durationStr);
+    return durationStr;
   };
 
   return (
@@ -117,18 +144,6 @@ export default function EventModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full p-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 border border-gray-600 h-24"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Duration (minutes)
-            </label>
-            <input
-              type="number"
-              value={duration}
-              onChange={(e) => setDuration(Number(e.target.value))}
-              className="w-full p-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 border border-gray-600"
             />
           </div>
 

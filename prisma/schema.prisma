@@ -89,7 +89,7 @@ model Event {
   id          String   @id @default(uuid()) // UUID for Event ID
   title       String // Event title
   description String // Event description
-  duration    Int // Duration in minutes
+  duration    String // Duration of the event
   startTime   String // Event start time
   endTime     String // Event end time
   date        DateTime // Date of the event
