@@ -136,9 +136,16 @@ export default function CalendarPage() {
                           {event.title}
                         </p>
                         <p className="text-xs text-gray-300 truncate">
-                          {event.startTime} - {event.endTime}
+                          {event.reminder
+                            ? event.startTime
+                            : event.allDay
+                              ? ""
+                              : `${event.startTime} - ${event.endTime}`}
                           <br />
-                          {event.duration} minutes
+                          {event.duration}{" "}
+                          {!event.reminder && !event.allDay && (
+                            <span>mins</span>
+                          )}
                         </p>
                       </div>
                     ))}

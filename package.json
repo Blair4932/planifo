@@ -21,6 +21,7 @@
     "next": "15.1.4",
     "node-mailjet": "^6.0.6",
     "nookies": "^2.5.2",
+    "primereact": "^10.9.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-toastify": "^11.0.3",

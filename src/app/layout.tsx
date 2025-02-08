@@ -3,7 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { checkAndClearStorage } from "./(server)/(utils)/versionCheck";
+import "primereact/resources/themes/lara-light-blue/theme.css"; // Choose a theme
+import "primereact/resources/primereact.min.css";
+
+import { PrimeReactProvider } from "primereact/api";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,13 +28,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  checkAndClearStorage();
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-cyan-950`}
       >
-        {children}
+        <PrimeReactProvider value={{ ripple: true }}>
+          {children}
+        </PrimeReactProvider>
         <ToastContainer />
       </body>
     </html>

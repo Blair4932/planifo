@@ -11,7 +11,7 @@ interface UpdateMessage {
 export const updateMessage: UpdateMessage = {
   version: APP_VERSION,
   date: "8 Feb 2025",
-  title: "Whats New Scooby Doo?",
+  title: "New Event Types",
   content:
-    "This new update brings the Whats New section. When a new build is made, this header will appear. Don't worry, you can dismiss it any time. It also adds welcome emails to users.",
+    "Hello Manifonians. This new update brings basic functionality of two new event types: Reminders and All Day events. Reminder notification functionality will be released soon.",
 };

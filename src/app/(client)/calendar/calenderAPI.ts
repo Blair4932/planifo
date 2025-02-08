@@ -72,6 +72,8 @@ export const createEvent = async (eventData: {
   title: string;
   description: string;
   duration: string;
+  reminder: boolean;
+  allDay: boolean;
   startTime: string;
   endTime: string;
   date: string;

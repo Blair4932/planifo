@@ -3,8 +3,17 @@ import prisma from "@/prisma/lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {
-    const { title, description, duration, startTime, endTime, date, userId } =
-      await req.json();
+    const {
+      title,
+      description,
+      duration,
+      reminder,
+      allDay,
+      startTime,
+      endTime,
+      date,
+      userId,
+    } = await req.json();
 
     if (!title || !description || !duration || !date || !userId) {
       return NextResponse.json(
@@ -20,13 +29,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const formattedEndTime = endTime === "" ? null : endTime;
+
     const event = await prisma.event.create({
       data: {
         title,
         description,
         duration,
+        reminder,
+        allDay,
         startTime,
-        endTime,
+        endTime: formattedEndTime,
         date: new Date(date),
         userId,
       },

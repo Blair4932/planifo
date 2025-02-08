@@ -5,7 +5,9 @@ interface EventCardProps {
     id: string;
     title: string;
     description: string;
-    duration: number;
+    reminder: boolean;
+    allDay: boolean;
+    duration: string;
     startTime: string;
     endTime: string;
     location?: string;
@@ -23,7 +25,10 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
           <p className="text-sm text-gray-300">{event.description}</p>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-400">{event.duration} mins</span>
+          <span className="text-sm text-gray-400">
+            {event.duration}{" "}
+            {!event.reminder && !event.allDay && <span>mins</span>}
+          </span>
           <button
             className="text-gray-400 hover:text-red-500 transition-colors"
             onClick={() => onEdit(event)}
@@ -59,7 +64,11 @@ const EventCard: React.FC<EventCardProps> = ({ event, onEdit, onDelete }) => {
       {event.startTime && (
         <div className="mt-2 flex items-center text-sm text-gray-400">
           <span>
-            {event.startTime} - {event.endTime}
+            {event.reminder
+              ? event.startTime
+              : event.allDay
+                ? "All Day"
+                : `${event.startTime} - ${event.endTime}`}
           </span>
         </div>
       )}

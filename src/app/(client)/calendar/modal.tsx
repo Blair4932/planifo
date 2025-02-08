@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import format from "date-fns/format";
 import { createEvent } from "./calenderAPI";
+import { InputSwitch } from "primereact/inputswitch";
 
 export default function EventModal({
   user,
@@ -15,6 +16,8 @@ export default function EventModal({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [duration, setDuration] = useState("");
+  const [allDay, setAllDay] = useState(false);
+  const [reminder, setReminder] = useState(false);
   const [startTime, setStartTime] = useState<string>("");
   const [endTime, setEndTime] = useState<string>("");
   const [startTimePeriod, setStartTimePeriod] = useState<string>("AM");
@@ -45,17 +48,30 @@ export default function EventModal({
   }, []);
 
   const handleSave = async () => {
-    const calculatedDuration = calculateDuration(startTime, endTime);
-    console.log("DURATION", calculatedDuration, startTime, endTime);
+    let finalDuration = "";
+    if (reminder) {
+      setEndTime("");
+      finalDuration = "Reminder";
+    } else if (allDay) {
+      setStartTime("");
+      setEndTime("");
+      finalDuration = "All Day";
+    } else {
+      finalDuration = calculateDuration(startTime, endTime);
+    }
 
     const event = {
       title,
       description,
+      reminder,
+      allDay,
       startTime,
       endTime,
-      duration: calculatedDuration,
+      duration: finalDuration,
       date: format(date, "yyyy-MM-dd"),
     };
+
+    console.log("event", event);
 
     try {
       const newEvent = await createEvent({
@@ -146,6 +162,36 @@ export default function EventModal({
               className="w-full p-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 border border-gray-600 h-24"
             />
           </div>
+          <div className="flex items-center justify-center gap-32">
+            <div className="flex flex-col items-center gap-2">
+              <InputSwitch
+                checked={reminder}
+                onChange={(e) => setReminder(e.value)}
+                pt={{
+                  root: { className: "w-12 h-7" },
+                  slider: ({ props }) => ({
+                    className: `
+                  ${props.checked ? "bg-red-500 before:translate-x-5" : "bg-gray-200 hover:bg-gray-300"}`,
+                  }),
+                }}
+              />
+              <span className="text-white">Reminder</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <InputSwitch
+                checked={allDay}
+                onChange={(e) => setAllDay(e.value)}
+                pt={{
+                  root: { className: "w-12 h-7" },
+                  slider: ({ props }) => ({
+                    className: `
+                  ${props.checked ? "bg-red-500 before:translate-x-5" : "bg-gray-200 hover:bg-gray-300"}`,
+                  }),
+                }}
+              />
+              <span className="text-white">All Day</span>
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -154,12 +200,16 @@ export default function EventModal({
               </label>
               <div className="flex gap-2">
                 <input
+                  disabled={allDay}
                   type="time"
                   value={startTime}
                   onChange={handleStartTimeChange}
-                  className="w-full p-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 border border-gray-600"
+                  className={`w-full p-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 border border-gray-600
+                    ${allDay ? "opacity-50 cursor-not-allowed" : "opacity-100"}`}
                 />
-                <span className="px-4 py-3 bg-gray-700 rounded-lg text-white">
+                <span
+                  className={`px-4 py-3 bg-gray-700 rounded-lg text-white ${allDay ? "opacity-50 cursor-not-allowed" : "opacity-100"}`}
+                >
                   {startTimePeriod}
                 </span>
               </div>
@@ -171,12 +221,17 @@ export default function EventModal({
               </label>
               <div className="flex gap-2">
                 <input
+                  disabled={reminder || allDay}
                   type="time"
                   value={endTime}
                   onChange={handleEndTimeChange}
-                  className="w-full p-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 border border-gray-600"
+                  className={`w-full p-3 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 border border-gray-600
+                  ${reminder || allDay ? "opacity-50 cursor-not-allowed" : "opacity-100"}`}
                 />
-                <span className="px-4 py-3 bg-gray-700 rounded-lg text-white">
+
+                <span
+                  className={`px-4 py-3 bg-gray-700 rounded-lg text-white ${reminder || allDay ? "opacity-50 cursor-not-allowed" : "opacity-100"}`}
+                >
                   {endTimePeriod}
                 </span>
               </div>
