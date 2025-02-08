@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { apps } from "../(global-components)/apps";
 import { format } from "date-fns";
 import WhatsNew from "../(global-components)/updatemessage";
+import { APP_VERSION } from "@/version";
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
@@ -148,6 +149,9 @@ export default function Dashboard() {
         <div>
           {/* Header */}
           <header className="bg-gradient-to-r from-gray-900/70 via-gray-800/70 to-gray-900/70 backdrop-blur-md shadow-lg fixed w-full z-50 top-0">
+            <p className="text-sm text-gray-400 top-28 relative">
+              Version {APP_VERSION}
+            </p>
             <div className="container mx-auto flex justify-between items-center h-28 px-6">
               <h1 className="text-4xl font-extralight">
                 Hey, <span className="text-teal-400">{user.username}</span>!
