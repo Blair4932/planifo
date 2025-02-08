@@ -1,5 +1,5 @@
 "use client";
-import { updateMessage } from "@/update";
+import { updateMessage } from "../../../../update";
 
 export default function WhatsNew({ dismiss, onDismiss }: any) {
   if (dismiss) {
