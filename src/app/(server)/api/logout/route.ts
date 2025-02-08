@@ -25,7 +25,6 @@ export async function DELETE(req: NextRequest) {
     });
 
     response.cookies.delete("sessionId");
-    localStorage.clear();
 
     return response;
   } catch (error) {
