@@ -1,5 +1,5 @@
 "use client";
-import version from "package.json";
+import { updateMessage } from "@/update";
 
 export default function WhatsNew({ dismiss, onDismiss }: any) {
   if (dismiss) {
@@ -7,7 +7,7 @@ export default function WhatsNew({ dismiss, onDismiss }: any) {
   }
 
   return (
-    <div className="fixed top-28 left-0 right-0 z-60 bg-gradient-to-r from-teal-700/80 to-teal-800/80 backdrop-blur-md shadow-lg">
+    <div className="relative top-28 left-0 right-0 z-60 bg-gradient-to-r from-teal-700/80 to-teal-800/80 backdrop-blur-md shadow-lg">
       <div className="container mx-auto px-6 py-4">
         <div className="flex justify-between items-start">
           <div className="flex-1 mr-4">
