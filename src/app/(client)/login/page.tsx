@@ -166,7 +166,7 @@ export default function LoginPage() {
           >
             Forgot password?
           </p>
-          <p className="text-[8px] mt-2 text-gray-400 transition-colors">
+          <p className="text-[10px] mt-2 text-gray-400 transition-colors">
             Manifo is currently a work in progress. You may experience bugs or
             poor performance. Please support me by using the "Report Bug" option
             if you encounter an issue

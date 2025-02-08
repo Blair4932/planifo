@@ -4,6 +4,24 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { apps } from "../(global-components)/apps";
 import { format } from "date-fns";
+import WhatsNew from "../(global-components)/updatemessage";
+
+interface UpdateMessage {
+  version: string;
+  date: Date;
+  title: string;
+  content: string;
+  isHighlighted?: boolean;
+}
+
+export const updateMessage: UpdateMessage = {
+  version: "0.4-1",
+  date: new Date(),
+  title: "Authentication and Calendar Update",
+  content:
+    "This update brings about authentication changes. Before login states were managed in local storage. This was always temporary and has now been replaced with HTTP only cookie storage. Additional bug fixes have also been made to calendar with more changes to come. As always thank you for supporting Manifo",
+  isHighlighted: true,
+};
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
@@ -11,7 +29,20 @@ export default function Dashboard() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [isFetchingData, setIsFetchingData] = useState(false);
+  const [showWhatsNew, setShowWhatsNew] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    const isBannerDismissed = localStorage.getItem("dismissWhatsNewBanner");
+    if (isBannerDismissed === "true") {
+      setShowWhatsNew(false);
+    }
+  }, []);
+
+  const dismissBanner = () => {
+    setShowWhatsNew(false);
+    localStorage.setItem("dismissWhatsNewBanner", "true");
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -132,7 +163,7 @@ export default function Dashboard() {
       {user ? (
         <div>
           {/* Header */}
-          <header className="bg-gradient-to-r from-gray-900/70 via-gray-800/70 to-gray-900/70 backdrop-blur-md shadow-lg fixed w-full z-50">
+          <header className="bg-gradient-to-r from-gray-900/70 via-gray-800/70 to-gray-900/70 backdrop-blur-md shadow-lg fixed w-full z-50 top-0">
             <div className="container mx-auto flex justify-between items-center h-28 px-6">
               <h1 className="text-4xl font-extralight">
                 Hey, <span className="text-teal-400">{user.username}</span>!
@@ -146,14 +177,12 @@ export default function Dashboard() {
                     Report a bug
                   </a>
                 </div>
-                {/* Login Button */}
+                {/* Logout Button */}
                 <motion.button
                   className="w-full p-2 rounded-md text-white hover:text-red-800 transition-colors"
                   onClick={handleLogout}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 0.1 }}
                 >
                   Logout
                 </motion.button>
@@ -161,8 +190,13 @@ export default function Dashboard() {
             </div>
           </header>
 
+          {/* What's New Banner */}
+          {showWhatsNew && (
+            <WhatsNew dismiss={!showWhatsNew} onDismiss={dismissBanner} />
+          )}
+
           {/* Main Content */}
-          <main className="pt-28">
+          <main className={`pt-28 ${showWhatsNew ? "mt-12" : ""}`}>
             {/* Apps Grid */}
             <div className="container mx-auto px-6 py-8">
               <h2 className="text-3xl font-light mb-11 mt-6">Pinboard</h2>
@@ -214,7 +248,7 @@ export default function Dashboard() {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleClick(item.id, type)}
-                            className={`flex items-center p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300 
+                            className={`flex items-center p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-100 
                 ${type === "note" ? "border-yellow-500" : type === "event" ? "border-red-600" : "border-blue-500"} 
                 border-2 bg-gradient-to-br from-gray-800/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50`}
                           >
