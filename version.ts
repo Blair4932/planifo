@@ -1,2 +1,2 @@
 // this should be updated with each commit
-export const APP_VERSION: string = "0.4-2.4";
+export const APP_VERSION: string = "0.4-2.5";

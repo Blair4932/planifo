@@ -6,23 +6,6 @@ import { apps } from "../(global-components)/apps";
 import { format } from "date-fns";
 import WhatsNew from "../(global-components)/updatemessage";
 
-interface UpdateMessage {
-  version: string;
-  date: Date;
-  title: string;
-  content: string;
-  isHighlighted?: boolean;
-}
-
-export const updateMessage: UpdateMessage = {
-  version: "0.4-1",
-  date: new Date(),
-  title: "Authentication and Calendar Update",
-  content:
-    "This update brings about authentication changes. Before login states were managed in local storage. This was always temporary and has now been replaced with HTTP only cookie storage. Additional bug fixes have also been made to calendar with more changes to come. As always thank you for supporting Manifo",
-  isHighlighted: true,
-};
-
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [resume, setResume] = useState<any>([]);
