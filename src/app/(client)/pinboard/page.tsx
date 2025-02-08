@@ -74,6 +74,7 @@ export default function Dashboard() {
 
     if (res.ok) {
       router.replace("/login");
+      localStorage.clear();
     } else {
       console.error("Logout failed", await res.json());
     }
