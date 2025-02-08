@@ -6,8 +6,6 @@ import SessionHandler from "../../(utils)/sessionHandler";
 export async function POST(req: Request) {
   try {
     const { username, password } = await req.json();
-
-    console.log(username, password);
     if (!username || !password) {
       return NextResponse.json(
         { error: "Username and password are required" },
@@ -44,7 +42,6 @@ export async function POST(req: Request) {
     });
 
     if (existingSession) {
-      console.log("EXISTING SESSION", existingSession);
       await prisma.session.delete({
         where: { id: existingSession.id },
       });

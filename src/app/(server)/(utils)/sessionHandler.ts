@@ -36,7 +36,6 @@ class SessionHandler {
       });
 
       if (!session || new Date() >= session.expiresAt) {
-        console.log("SESSION", session);
         await this.deleteSession(sessionId);
         return await this.validateSession(sessionId);
       }

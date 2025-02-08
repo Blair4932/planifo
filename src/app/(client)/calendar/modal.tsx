@@ -71,8 +71,6 @@ export default function EventModal({
       date: format(date, "yyyy-MM-dd"),
     };
 
-    console.log("event", event);
-
     try {
       const newEvent = await createEvent({
         ...event,
