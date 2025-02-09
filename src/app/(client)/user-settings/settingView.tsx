@@ -134,12 +134,11 @@ export default function SettingView({
         return (
           <div className="p-4 flex mt-3 flex-col items-center gap-4 rounded-md shadow-sm">
             <h2 className="text-lg font-semibold mb-2">Contact us via email</h2>
-            <button
-              className="w-64 rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600"
-              onClick={() => handleLogout(router)}
-            >
-              Contact Manifo
-            </button>
+            <a href="mailto:admin@manifo.uk">
+              <button className="w-64 rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600">
+                Contact Manifo
+              </button>
+            </a>
           </div>
         );
       case "Logout":
