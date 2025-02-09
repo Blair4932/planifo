@@ -52,6 +52,10 @@ export default function LoginPage() {
     }
   };
 
+  const handleForgotPassword = () => {
+    router.push("login/forgot-password");
+  };
+
   return (
     <div className="relative flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
       {/* Background Animation */}
@@ -162,7 +166,7 @@ export default function LoginPage() {
           </p>
           <p
             className="text-sm text-gray-400 cursor-pointer hover:text-teal-400 transition-colors"
-            onClick={() => router.push("/")}
+            onClick={handleForgotPassword}
           >
             Forgot password?
           </p>

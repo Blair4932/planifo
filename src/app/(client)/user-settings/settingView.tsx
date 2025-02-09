@@ -1,6 +1,8 @@
 "use client";
 import { SettingTab } from "./settingsTabs";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { handleLogout } from "./settingsLogic";
 
 export default function SettingView({
   selectedTab,
@@ -8,31 +10,60 @@ export default function SettingView({
   selectedTab: SettingTab;
 }) {
   const [user, setUser] = useState<any>(null);
+  const [newUsername, setNewUsername] = useState<string>("");
+  const [newEmail, setNewEmail] = useState<string>("");
+  const [newPassword, setNewPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userResponse = await fetch("/api/user", {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (!userResponse.ok) {
-          throw new Error("Failed to fetch user data");
-        }
-
-        const userData = await userResponse.json();
-        setUser(userData);
-      } catch (error) {
-        console.error(error);
-      } finally {
+    setLoading(true);
+    const fetchUser = async () => {
+      const res = await fetch("/api/user");
+      const data = await res.json();
+      if (res.ok) {
+        setUser(data.user);
         setLoading(false);
+      } else {
+        router.push("/login");
+        setError("Failed to fetch user");
       }
     };
 
-    fetchUserData();
+    fetchUser();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      setNewUsername(user.username || "");
+      setNewEmail(user.email || "");
+    }
+  }, [user]);
+
+  const handleSaveChanges = async () => {
+    try {
+      const response = await fetch("/api/user/update", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: user.id,
+          username: newUsername,
+          email: newEmail,
+          password: newPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update user data");
+      }
+
+      const updatedUser = await response.json();
+      setUser(updatedUser);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const renderTabContent = () => {
     if (loading)
@@ -55,9 +86,9 @@ export default function SettingView({
                 <input
                   type="text"
                   name="username"
-                  value={user?.username || ""}
-                  // onChange={handleAccountSettingsChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  className="mt-1 block w-64 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none text-black focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               <div>
@@ -67,9 +98,9 @@ export default function SettingView({
                 <input
                   type="email"
                   name="email"
-                  value={user?.email || ""}
-                  // onChange={handleAccountSettingsChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  className="mt-1 block w-64 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none text-black focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               <div>
@@ -79,20 +110,52 @@ export default function SettingView({
                 <input
                   type="password"
                   name="password"
-                  value={""}
-                  // onChange={handleAccountSettingsChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="mt-1 block w-64 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
+              <button
+                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
+                onClick={handleSaveChanges}
+              >
+                <span>Save Changes</span>
+              </button>
             </div>
           </div>
         );
       case "Accessibility Settings":
-        return <div>Accessibility Settings Content</div>;
+        return (
+          <div className="p-4 flex mt-3 flex-col items-center gap-4 rounded-md shadow-sm">
+            <h2 className="text-lg font-semibold mb-2">Coming Soon!</h2>
+          </div>
+        );
       case "Contact":
-        return <div>Contact Content</div>;
+        return (
+          <div className="p-4 flex mt-3 flex-col items-center gap-4 rounded-md shadow-sm">
+            <h2 className="text-lg font-semibold mb-2">Contact us via email</h2>
+            <button
+              className="w-64 rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600"
+              onClick={() => handleLogout(router)}
+            >
+              Contact Manifo
+            </button>
+          </div>
+        );
       case "Logout":
-        return <div>Logout Content</div>;
+        return (
+          <div className="p-4 flex mt-3 flex-col items-center gap-4 rounded-md shadow-sm">
+            <h2 className="text-lg font-semibold mb-2">
+              Are you sure you want to log out of your Manifo?
+            </h2>
+            <button
+              className="w-64 rounded-md bg-red-500 p-2 text-white hover:bg-red-600"
+              onClick={() => handleLogout(router)}
+            >
+              Logout
+            </button>
+          </div>
+        );
       default:
         return <div>Select a tab to view content</div>;
     }

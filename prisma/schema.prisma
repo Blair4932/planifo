@@ -23,6 +23,8 @@ model User {
   events    Event[] // User's events
   createdAt DateTime  @default(now()) // Timestamp of creation
   Session   Session[]
+  resetToken String? // for resetting password
+  resetTokenExpiry DateTime? // for resetting password
 }
 
 model Session {

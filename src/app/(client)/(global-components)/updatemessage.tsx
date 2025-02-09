@@ -1,7 +1,9 @@
 "use client";
 import { updateMessage } from "@/update";
+import { useRouter } from "next/navigation";
 
 export default function WhatsNew({ dismiss, onDismiss }: any) {
+  const router = useRouter();
   if (dismiss) {
     return null;
   }
@@ -37,7 +39,13 @@ export default function WhatsNew({ dismiss, onDismiss }: any) {
               {updateMessage.title} - {updateMessage.date}
             </p>
             <p className="text-sm text-gray-200 leading-relaxed">
-              {updateMessage.content}
+              {updateMessage.content}{" "}
+              <span
+                className="underline cursor-pointer text-teal-400"
+                onClick={() => router.push("/whats-new")}
+              >
+                Read More
+              </span>
             </p>
           </div>
         </div>
