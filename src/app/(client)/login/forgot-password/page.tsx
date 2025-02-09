@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -66,7 +67,7 @@ export default function ForgotPassword() {
       if (response.ok) {
         setMessage("Password updated successfully! You can now log in.");
         setTimeout(() => {
-          router.push("/login");
+          router.push("/");
         }, 2000);
       } else {
         setMessage("Failed to update password. Please try again.");
@@ -77,95 +78,156 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="bg-white flex justify-center items-center h-screen">
-      <div className="p-6 border rounded-md shadow-md w-80">
-        <h2 className="text-2xl font-semibold mb-4">Forgot Password?</h2>
+    <div className="relative flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
+      {/* Forgot Password Container */}
+      <motion.div
+        className="relative z-10 bg-gray-700/50 backdrop-blur-sm rounded-lg shadow-2xl p-8 w-[90%] max-w-md"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+      >
+        <motion.h1
+          className="text-4xl font-light text-center flex justify-center mb-6 text-gray-200 font-sans cursor-pointer"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          Forgot Password
+        </motion.h1>
 
         {/* Email Input */}
         {!isEmailSent && (
           <>
-            <p className="text-sm text-gray-600 mb-4">
-              Enter your email to receive a reset code.
-            </p>
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border rounded-md mb-4 text-black"
-            />
-            <button
+            <motion.div
+              className="mb-4"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              <p className="text-sm text-gray-400 mb-4">
+                Enter your email to receive a reset code.
+              </p>
+              <input
+                className="w-full p-2 rounded-md bg-transparent border-2 border-gray-600 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-teal-400 transition-colors"
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </motion.div>
+            <motion.button
+              className="w-full p-2 rounded-md bg-teal-400 text-gray-900 font-semibold hover:bg-teal-500 transition-colors"
               onClick={handlePasswordReset}
-              className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
             >
               Send Reset Code
-            </button>
+            </motion.button>
           </>
         )}
 
         {/* Code Input */}
         {isEmailSent && !isCodeValid && (
           <>
-            <p className="text-sm text-gray-600 mb-4">
-              Enter the reset code sent to your email.
-            </p>
-            <input
-              type="text"
-              placeholder="Enter Code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              className="w-full p-2 border rounded-md mb-4 text-black"
-            />
-            <button
+            <motion.div
+              className="mb-4"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              <p className="text-sm text-gray-400 mb-4">
+                Enter the reset code sent to your email.
+              </p>
+              <input
+                className="w-full p-2 rounded-md bg-transparent border-2 border-gray-600 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-teal-400 transition-colors"
+                type="text"
+                placeholder="Enter Code"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+              />
+            </motion.div>
+            <motion.button
+              className="w-full p-2 rounded-md bg-teal-400 text-gray-900 font-semibold hover:bg-teal-500 transition-colors"
               onClick={handleCodeSubmit}
-              className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
             >
               Verify Code
-            </button>
+            </motion.button>
           </>
         )}
 
         {/* New Password Input */}
         {isCodeValid && (
           <>
-            <p className="text-sm text-gray-600 mb-4">
-              Enter your new password.
-            </p>
-            <input
-              type="password"
-              placeholder="New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full p-2 border rounded-md mb-4 text-black"
-            />
-            <input
-              type="password"
-              placeholder="Confirm New Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full p-2 border rounded-md mb-4 text-black"
-            />
-            <button
+            <motion.div
+              className="mb-4"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              <p className="text-sm text-gray-400 mb-4">
+                Enter your new password.
+              </p>
+              <input
+                className="w-full p-2 rounded-md bg-transparent border-2 border-gray-600 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-teal-400 transition-colors"
+                type="password"
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              <input
+                className="w-full p-2 rounded-md bg-transparent border-2 border-gray-600 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-teal-400 transition-colors mt-4"
+                type="password"
+                placeholder="Confirm New Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </motion.div>
+            <motion.button
+              className="w-full p-2 rounded-md bg-teal-400 text-gray-900 font-semibold hover:bg-teal-500 transition-colors"
               onClick={handlePasswordUpdate}
-              className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
             >
               Update Password
-            </button>
+            </motion.button>
           </>
         )}
 
         {/* Contact Link */}
-        <p className="text-[12px]">
-          <a href="mailto:admin@manifo.uk">
-            <span className="font-bold text-[14px]">Issue resetting?</span>
-            <br />
-            Contact us and we will get back to you ASAP.
-          </a>
-        </p>
+        <motion.div
+          className="mt-4 text-center space-y-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 1.2 }}
+        >
+          <p className="text-sm text-gray-400">
+            <a
+              href="mailto:admin@manifo.uk"
+              className="hover:text-teal-400 transition-colors"
+            >
+              <span className="font-bold">Issue resetting?</span>
+              <br />
+              Contact us and we will resolve your problem ASAP.
+            </a>
+          </p>
+        </motion.div>
 
         {/* Message Display */}
-        {message && <p className="text-sm text-gray-700 mt-3">{message}</p>}
-      </div>
+        {message && (
+          <motion.div
+            className="text-sm text-gray-200 mt-4 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            {message}
+          </motion.div>
+        )}
+      </motion.div>
     </div>
   );
 }
