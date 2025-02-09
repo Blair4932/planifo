@@ -1,4 +1,16 @@
 export const apps = {
+  hub: {
+    name: "Hub",
+    iconFilepath: "assets/project-plan(1).png",
+    route: "/construction",
+    description: "Plan your next big personal or business project",
+  },
+  dashboard: {
+    name: "Dashboard",
+    iconFilepath: "assets/menu(1).png",
+    route: "/construction",
+    description: "Generate information and mindmaps from files ",
+  },
   notes: {
     name: "Notes",
     iconFilepath: "assets/post-it(1).png",
@@ -23,18 +35,6 @@ export const apps = {
     iconFilepath: "assets/image.png",
     route: "/construction",
     description: "Store and view your photos in one place.",
-  },
-  hub: {
-    name: "Hub",
-    iconFilepath: "assets/project-plan(1).png",
-    route: "/construction",
-    description: "Plan your next big personal or business project",
-  },
-  dashboard: {
-    name: "Dashboard",
-    iconFilepath: "assets/menu(1).png",
-    route: "/construction",
-    description: "Generate information and mindmaps from files ",
   },
   settings: {
     name: "User Settings",

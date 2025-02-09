@@ -278,7 +278,9 @@ export default function Dashboard() {
                                 </p>
                               ) : (
                                 <p className="text-sm text-gray-400">
-                                  Today at {item.startTime}
+                                  {item.allDay
+                                    ? "All Day Today"
+                                    : `Today at ${item.startTime}`}
                                 </p>
                               )}
                               {type !== "note" && item.content && (
