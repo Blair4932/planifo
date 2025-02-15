@@ -1,11 +1,18 @@
 "use client";
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { useRouter } from "next/navigation";
+import { updateMessage } from "@/update";
+
+// Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import { updateMessage } from "@/update";
+
+// Register Swiper modules
+import { register } from "swiper/element/bundle";
+register();
 
 const WhatsNew: React.FC<any> = ({ events }) => {
   const getNextThreeDays = () => {
@@ -16,7 +23,7 @@ const WhatsNew: React.FC<any> = ({ events }) => {
     });
   };
 
-  const isSameDay = (date1, date2) => {
+  const isSameDay = (date1: Date, date2: Date) => {
     return (
       date1.getFullYear() === date2.getFullYear() &&
       date1.getMonth() === date2.getMonth() &&
