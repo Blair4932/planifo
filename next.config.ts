@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizeCss: false,
   },
+  poweredByHeader: false,
+  reactStrictMode: true,
   typescript: {
     ignoreBuildErrors: false,
   },
