@@ -5,7 +5,6 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import { useRouter } from "next/navigation";
 import { updateMessage } from "@/update";
 
 const WhatsNew: React.FC<any> = ({ events }) => {
