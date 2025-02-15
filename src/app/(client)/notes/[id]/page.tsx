@@ -1,9 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
-import jwt_decode from "jwt-decode";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { useMemo } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Quill from "quill";
+import "quill/dist/quill.snow.css";
 
 export default function NoteDetails() {
   const [note, setNote] = useState<any>(null);
@@ -12,11 +14,29 @@ export default function NoteDetails() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [editedContent, setEditedContent] = useState("");
-  const [editedTitle, setEditedTitle] = useState("");
   const [noteNotFound, setNoteNotFound] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const quillRef = useRef<Quill | null>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
   const params = useParams();
   const router = useRouter();
+
+  const modules = useMemo(
+    () => ({
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline", "blockquote"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link", "image"],
+        [{ align: ["", "center", "right", "justify"] }],
+        [{ color: [] }, { background: [] }],
+        [{ font: [] }],
+        [{ size: ["small", false, "large", "huge"] }],
+        ["clean"],
+      ],
+    }),
+    []
+  );
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -28,6 +48,7 @@ export default function NoteDetails() {
           setUser(data.user);
           fetchNoteDetails();
           fetchRecentNotes(data.user.id);
+          await initializeQuill();
         } else {
           setError("Failed to get user.");
           router.replace("/login");
@@ -40,35 +61,128 @@ export default function NoteDetails() {
     };
 
     fetchUser();
+
+    return () => {
+      if (quillRef.current) {
+        quillRef.current = null;
+      }
+    };
   }, []);
 
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      editorRef.current &&
+      !quillRef.current
+    ) {
+      const quill = new Quill(editorRef.current, {
+        theme: "snow",
+        modules: modules,
+        placeholder: "Start writing your masterpiece...",
+      });
+
+      quill.on("text-change", () => {
+        const content = quill.root.innerHTML;
+        setNote((prev) => ({ ...prev, content }));
+      });
+
+      if (note?.content) {
+        quill.clipboard.dangerouslyPasteHTML(note.content);
+      }
+
+      quillRef.current = quill;
+    }
+  }, [modules, note?.content]);
+
+  const initializeQuill = () => {
+    if (editorRef.current && !quillRef.current) {
+      const quill = new Quill(editorRef.current, {
+        theme: "snow",
+        modules: modules,
+        formats: [
+          "header",
+          "bold",
+          "italic",
+          "underline",
+          "blockquote",
+          "list",
+          "bullet",
+          "link",
+          "image",
+          "align",
+          "color",
+          "background",
+          "font",
+          "size",
+          "clean",
+        ],
+        placeholder: "Start writing...",
+      });
+
+      quill.on("text-change", () => {
+        const content = quill.root.innerHTML;
+        setNote((prev: any) => ({ ...prev, content }));
+      });
+
+      quillRef.current = quill;
+    }
+  };
+
   const fetchNoteDetails = async () => {
-    setLoading(true);
     try {
       if (params.id) {
-        const res = await fetch(`/api/get-notes/${params.id}`, {
-          method: "GET",
-        });
-
+        const res = await fetch(`/api/get-notes/${params.id}`);
         if (res.ok) {
           const data = await res.json();
           setNote(data.note);
-          setEditedContent(data.note.content || "");
           setEditedTitle(data.note.title);
+          if (quillRef.current) {
+            quillRef.current.root.innerHTML = data.note.content;
+          }
         } else {
-          setTimeout(() => {
-            setNoteNotFound(true);
-            setLoading(true);
-          }, 1000);
-          console.error("Failed to fetch note details");
-          setError("Failed to fetch note details.");
+          setNoteNotFound(true);
         }
       }
     } catch (error) {
-      console.error("Error fetching note details:", error);
-      setError("An unexpected error occurred.");
+      setError("Failed to load note");
+    }
+  };
+
+  const saveNote = async () => {
+    setSaving(true);
+    try {
+      const content = quillRef.current?.root.innerHTML || "";
+      const res = await fetch(`/api/update-note/${params.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, title: editedTitle }),
+      });
+
+      if (res.ok) {
+        toast.success("Document saved successfully");
+      } else {
+        toast.error("Failed to save document");
+      }
     } finally {
-      setLoading(false);
+      setSaving(false);
+    }
+  };
+
+  const deleteNote = async () => {
+    try {
+      const res = await fetch(`/api/delete-note/${params.id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          noteId: note.id,
+        }),
+      });
+
+      if (res.ok) {
+        router.push("/notes");
+      }
+    } catch (e) {
+      console.error("Error deleting note: ", e);
     }
   };
 
@@ -92,7 +206,7 @@ export default function NoteDetails() {
               new Date(b.lastUpdatedAt).getTime() -
               new Date(a.lastUpdatedAt).getTime()
           )
-          .slice(0, 5);
+          .slice(0, 10);
 
         setRecentNotes(sortedNotes);
       } else {
@@ -100,54 +214,6 @@ export default function NoteDetails() {
       }
     } catch (error) {
       console.error("Error fetching recent notes:", error);
-    }
-  };
-
-  const saveNote = async () => {
-    setSaving(true);
-    try {
-      const res = await fetch(`/api/update-note/${params.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: editedContent,
-          title: editedTitle,
-        }),
-      });
-
-      if (res.ok) {
-        setNote((prevNote: any) => ({
-          ...prevNote,
-          title: editedTitle,
-          content: editedContent,
-        }));
-        toast.success("Note Saved Successfully");
-      } else {
-        toast.error("Failed to save: Note cannot be empty");
-        console.error("Failed to save note.");
-      }
-    } catch (error) {
-      console.error("Error saving note:", error);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const deleteNote = async () => {
-    try {
-      const res = await fetch(`/api/delete-note/${params.id}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          noteId: note.id,
-        }),
-      });
-
-      if (res.ok) {
-        router.push("/notes");
-      }
-    } catch (e) {
-      console.error("Error deleting note: ", e);
     }
   };
 
@@ -172,110 +238,180 @@ export default function NoteDetails() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100">
-      {/* Sidebar */}
-      <div className="w-full lg:w-1/4 bg-gradient-to-br from-gray-800/70 via-gray-700/70 to-gray-800/70 backdrop-blur-md p-6 border-r border-gray-700">
-        <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent">
-          Recently Worked On Notes
-        </h2>
-        <div className="space-y-4">
-          {recentNotes.length > 0 ? (
-            recentNotes.map((recentNote) => (
-              <div
-                key={recentNote.id}
-                className="p-4 bg-gradient-to-br from-gray-700/50 via-gray-600/50 to-gray-700/50 backdrop-blur-sm rounded-lg cursor-pointer hover:bg-gray-600/50 transition-colors border border-yellow-400/20"
-                onClick={() => router.push(`/notes/${recentNote.id}`)}
-              >
-                <h3 className="text-lg font-semibold truncate text-yellow-300">
-                  {recentNote.title || "Untitled"}
-                </h3>
-                <p className="text-sm truncate text-gray-300">
-                  {recentNote.content || "No content available"}
-                </p>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-400">No recent notes found.</p>
-          )}
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 p-8 overflow-y-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1
-            className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent cursor-pointer hover:underline"
-            onClick={() => router.push("/notes")}
-          >
-            Notes
-          </h1>
-          <button
-            onClick={() => router.push("/pinboard")}
-            className="text-sm bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent hover:underline"
-          >
-            Back to Pinboard
-          </button>
-        </div>
-
-        {/* Note Editor */}
-        <div className="p-6 bg-gradient-to-br from-gray-800/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm rounded-lg shadow-lg border border-yellow-400/20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+      {/* Top Bar */}
+      <div className="p-4 h-24 flex items-center bg-gray-800/90 backdrop-blur-md border-b border-gray-700">
+        <div className="max-w-7xl w-[74%] mx-auto flex items-center justify-between">
           <input
             type="text"
             value={editedTitle}
             onChange={(e) => setEditedTitle(e.target.value)}
-            className="text-3xl font-bold mb-4 text-left bg-transparent border-none outline-none focus:ring-2 focus:ring-yellow-500 w-full bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent placeholder-yellow-600"
-            placeholder="Title"
+            className="text-2xl bg-transparent border-none focus:ring-0 text-white placeholder-gray-400 font-bold w-full max-w-2xl"
+            placeholder="Untitled Document"
           />
-          <textarea
-            value={editedContent}
-            onChange={(e) => setEditedContent(e.target.value)}
-            className="w-full h-96 p-4 border border-yellow-400/20 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-gray-700/50 text-gray-100 placeholder-gray-400"
-            placeholder="No content"
-          />
-        </div>
-
-        {/* Buttons */}
-        <div className="mt-8 flex items-center gap-4">
-          <button
-            onClick={saveNote}
-            disabled={saving}
-            className="px-6 py-2 bg-gradient-to-r from-yellow-400 to-yellow-200 text-gray-900 rounded-md hover:from-yellow-500 hover:to-yellow-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {saving ? (
-              <div className="w-4 h-4 border-t-4 border-gray-900 border-solid rounded-full animate-spin mx-auto"></div>
-            ) : (
-              "Save"
-            )}
-          </button>
-
-          <button
-            onClick={deleteNote}
-            className="px-6 py-2 bg-gradient-to-r from-red-600 to-red-500 text-gray-100 rounded-md hover:from-red-700 hover:to-red-600 transition"
-          >
-            Delete
-          </button>
-        </div>
-
-        {/* Note Details */}
-        <div className="mt-8">
-          <h2 className="text-xl font-semibold bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent mb-4">
-            Details
-          </h2>
-          <ul className="space-y-2 text-gray-300">
-            <li>
-              <strong>Created:</strong>{" "}
-              {new Date(note.createdAt).toLocaleString()}
-            </li>
-            <li>
-              <strong>Last Modified:</strong>{" "}
-              {new Date(note.lastUpdatedAt).toLocaleString()}
-            </li>
-            <li>
-              <strong>Character Count:</strong> {editedContent.length}
-            </li>
-          </ul>
+          <div className="flex gap-4 items-center">
+            <button
+              onClick={saveNote}
+              disabled={saving}
+              className="px-4 py-2 bg-yellow-400 text-gray-900 rounded-md hover:bg-yellow-300 transition font-medium flex items-center gap-2"
+            >
+              {saving ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <SaveIcon className="w-5 h-5" />
+                  Save
+                </>
+              )}
+            </button>
+            <button
+              onClick={deleteNote}
+              className="px-4 py-2 text-red-400 hover:text-red-300 transition font-medium flex items-center gap-2"
+            >
+              <TrashIcon className="w-5 h-5" />
+              Delete
+            </button>
+            <p
+              className="cursor-pointer text-white"
+              onClick={() => router.push("/notes")}
+            >
+              Back to Notes
+            </p>
+          </div>
         </div>
       </div>
+
+      <div className="max-w-7xl mx-auto grid grid-cols-12 gap-8 p-4">
+        {/* Recent Notes Sidebar */}
+        <div className="col-span-2 bg-gray-800/50 backdrop-blur-md rounded-lg p-4 border border-gray-700">
+          <h3 className="text-sm font-semibold text-yellow-400 mb-4">
+            Recent Notes
+          </h3>
+          <div className="space-y-2">
+            {recentNotes.map((note) => (
+              <div
+                key={note.id}
+                onClick={() => router.push(`/notes/${note.id}`)}
+                className="p-2 hover:bg-gray-700/50 rounded cursor-pointer transition group"
+              >
+                <p className="text-sm text-gray-300 truncate group-hover:text-white">
+                  {note.title || "Untitled"}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {new Date(note.lastUpdatedAt).toLocaleDateString()}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Editor Container */}
+        <div className="col-span-10 bg-gray-800/30 backdrop-blur-md rounded-lg border border-gray-700">
+          <div
+            ref={editorRef}
+            className="h-[calc(100vh-180px)] quill-custom-style"
+          />
+        </div>
+      </div>
+
+      <style jsx global>{`
+        .ql-toolbar {
+          border: none !important;
+          background: rgba(31, 41, 55, 0.8) !important;
+          border-radius: 8px 8px 0 0;
+          padding: 8px !important;
+        }
+
+        .ql-container {
+          border: none !important;
+          font-family: inherit;
+          font-size: 1rem;
+          background: rgba(17, 24, 39, 0.3) !important;
+        }
+
+        .ql-editor {
+          min-height: calc(100vh - 180px) !important;
+          color: #f3f4f6 !important;
+          padding: 2rem !important;
+        }
+        .ql-editor.ql-blank::before {
+          color: white !important;
+        }
+
+        .ql-snow .ql-stroke {
+          stroke: #e5e7eb !important;
+        }
+
+        .ql-snow .ql-fill {
+          fill: #e5e7eb !important;
+        }
+
+        .ql-snow .ql-picker {
+          color: #e5e7eb !important;
+        }
+
+        .ql-snow.ql-toolbar button:hover .ql-stroke {
+          stroke: #fbbf24 !important;
+        }
+
+        .ql-snow .ql-picker-options {
+          background-color: #1f2937 !important;
+          border: 1px solid #374151 !important;
+          border-radius: 6px !important;
+          padding: 8px !important;
+        }
+
+        .ql-snow .ql-picker-item.ql-selected {
+          color: #fbbf24 !important;
+        }
+      `}</style>
+      <footer className="bg-gray-900 text-gray-200 p-4 shadow-lg">
+        <div className="flex justify-between items-center">
+          <p className="text-sm">© 2025 Manifo.uk - All rights reserved</p>
+          <p className="text-sm">Contact: admin@manifo.uk</p>
+        </div>
+      </footer>
     </div>
+  );
+}
+
+function SaveIcon(props: any) {
+  return (
+    <svg
+      {...props}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 13l4 4L19 7"
+      />
+    </svg>
+  );
+}
+
+function TrashIcon(props: any) {
+  return (
+    <svg
+      {...props}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+      />
+    </svg>
   );
 }

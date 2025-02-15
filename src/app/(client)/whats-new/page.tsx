@@ -1,55 +1,128 @@
 "use client";
-
-import { updateMessage } from "@/update";
-import { APP_VERSION } from "@/version";
+import React from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { useRouter } from "next/navigation";
+import { updateMessage } from "@/update";
 
-export default function WhatsNewPage() {
-  const router = useRouter();
+const WhatsNew: React.FC<any> = ({ events }) => {
+  const getNextThreeDays = () => {
+    return Array.from({ length: 3 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      return date;
+    });
+  };
+
+  const isSameDay = (date1, date2) => {
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-200">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-gray-900/70 via-gray-800/70 to-gray-900/70 backdrop-blur-md shadow-lg fixed w-full z-50 top-0">
-        <div className="container mx-auto flex justify-between items-center h-28 px-6">
-          <h1
-            className="text-4xl font-extralight cursor-pointer"
-            onClick={() => router.push("/pinboard")}
-          >
-            What's New
-          </h1>
-          <div className="flex items-center gap-4 w-[20%]">
-            <div className="p-5 w-full">
-              <a
-                href="mailto:admin@manifo.uk"
-                className="text-gray-300 hover:text-teal-400 transition-colors w-10"
-              >
-                Report a bug
-              </a>
+    <div className="border border-gray-700 w-[40%] h-[500px] rounded-lg p-5 bg-gray-900/80 backdrop-blur-lg shadow-xl">
+      <Swiper
+        modules={[Navigation, Pagination, Autoplay]}
+        spaceBetween={10}
+        slidesPerView={1}
+        pagination={{ clickable: true }}
+        autoplay={{ delay: 6000, disableOnInteraction: false }}
+        className="w-full h-full relative group"
+      >
+        {/* Slide 1: Updates */}
+        <SwiperSlide>
+          <div className="flex flex-col h-full p-6 bg-gray-900/50 rounded-lg shadow-lg">
+            <h3 className="text-2xl font-bold text-gray-100 mb-4">
+              What's New
+            </h3>
+            <div className="border-l-4 border-teal-400 pl-4">
+              <h4 className="text-lg font-semibold text-gray-200">
+                {updateMessage.title}
+              </h4>
+              <p className="text-sm text-gray-400 mt-1">
+                Version {updateMessage.version} - {updateMessage.date}
+              </p>
+              <p className="text-sm text-gray-300 mt-3 leading-relaxed">
+                {updateMessage.content}
+              </p>
+              <p className="text-xs text-gray-500 mt-2 italic">
+                {updateMessage.extra}
+              </p>
             </div>
           </div>
-        </div>
-      </header>
+        </SwiperSlide>
 
-      {/* Main Content */}
-      <main className="pt-28">
-        <div className="container mx-auto px-6 py-8">
-          {/* Current Version */}
-          <p className="text-sm text-gray-400 mb-4">
-            Current Version: {APP_VERSION}
-          </p>
-
-          {/* Update Message */}
-          <div className="bg-gradient-to-br from-gray-800/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-lg">
-            <h2 className="text-3xl font-light mb-4 text-teal-400">
-              {updateMessage.title}
-            </h2>
-            <p className="text-sm text-gray-400 mb-2">
-              Version: {updateMessage.version} - {updateMessage.date}
-            </p>
-            <p className="text-gray-300">{updateMessage.content}</p>
+        {/* Slide 2: Upcoming Events */}
+        <SwiperSlide>
+          <div className="flex flex-col h-full overflow-auto p-6 bg-gray-900/50 rounded-lg shadow-lg">
+            <h3 className="text-2xl font-bold text-gray-100 mb-4">
+              Upcoming Events
+            </h3>
+            <div className="space-y-4">
+              {getNextThreeDays().map((day, index) => (
+                <div key={index} className="space-y-2">
+                  <h4 className="text-lg font-semibold text-gray-200">
+                    {index === 0
+                      ? "Today"
+                      : day.toLocaleDateString("en-GB", { weekday: "long" })}
+                  </h4>
+                  {events
+                    .filter((event) => isSameDay(new Date(event.date), day))
+                    .sort((a, b) => {
+                      if (a.allDay && !b.allDay) return -1;
+                      if (!a.allDay && b.allDay) return 1;
+                      if (a.startTime < b.startTime) return -1;
+                      if (a.startTime > b.startTime) return 1;
+                      return 0;
+                    })
+                    .map((event, eventIndex) => (
+                      <div
+                        key={eventIndex}
+                        className="border-l-4 border-red-500 bg-gray-700 p-3 rounded-lg rounded-l-sm"
+                      >
+                        <div className="flex justify-between items-start">
+                          <h4 className="text-md font-medium text-gray-200">
+                            {event.title}
+                          </h4>
+                          <span className="text-xs text-gray-400">
+                            {event.reminder
+                              ? event.startTime
+                              : event.allDay
+                                ? ""
+                                : `${event.startTime} - ${event.endTime}`}
+                            <br />
+                            {event.duration}{" "}
+                            {!event.reminder && !event.allDay && (
+                              <span>mins</span>
+                            )}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-400 leading-relaxed">
+                          {event.description}
+                        </p>
+                      </div>
+                    ))}
+                  {events.filter((event) =>
+                    isSameDay(new Date(event.date), day)
+                  ).length === 0 && (
+                    <p className="text-sm text-gray-500">
+                      No events scheduled.
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </main>
+        </SwiperSlide>
+      </Swiper>
     </div>
   );
-}
+};
+
+export default WhatsNew;

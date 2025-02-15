@@ -15,7 +15,7 @@ export default function Notes() {
   const [noteTitle, setNoteTitle] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isGridView, setIsGridView] = useState(true);
-
+  const sanitize = (html: string) => html.replace(/<[^>]*>/g, "");
   const router = useRouter();
 
   useEffect(() => {
@@ -209,7 +209,8 @@ export default function Notes() {
                   </div>
                   {isGridView ? (
                     <p className="text-gray-300 mt-2 text-sm">
-                      {note.content?.slice(0, 50) || "No content..."}
+                      {sanitize(note.content || "")?.slice(0, 50) ||
+                        "No content..."}
                     </p>
                   ) : null}
 

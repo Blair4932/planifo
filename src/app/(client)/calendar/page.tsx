@@ -4,13 +4,24 @@ import { useRouter } from "next/navigation";
 import EventModal from "./modal";
 import EventCard from "./eventCard";
 import CalendarGrid from "./calenderGrid";
-import { format, addDays, isToday, isTomorrow } from "date-fns";
+import {
+  format,
+  addDays,
+  isToday,
+  isTomorrow,
+  startOfWeek,
+  subWeeks,
+  addWeeks,
+  subMonths,
+  addMonths,
+} from "date-fns";
 import { deleteEvent, fetchEvents } from "./calenderAPI";
 import { handleLogout } from "../(global-functions)/clientSessionHandler";
 
 export default function CalendarPage() {
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState<{ [key: string]: any[] }>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [user, setUser] = useState(null);
@@ -38,21 +49,32 @@ export default function CalendarPage() {
     const fetchUpcomingEvents = async () => {
       if (!user?.id) return;
 
-      const today = new Date();
-      const next10Days = Array.from({ length: 10 }, (_, i) =>
-        addDays(today, i)
-      );
-
       setIsLoading(true);
 
       try {
         const eventsData: { [key: string]: any[] } = {};
-        for (const day of next10Days) {
-          const dateKey = format(day, "yyyy-MM-dd");
+
+        const today = new Date();
+        const next14Days = Array.from({ length: 14 }, (_, i) =>
+          addDays(today, i)
+        );
+
+        const weekStart = startOfWeek(currentDate);
+        const calendarDays = Array.from({ length: 7 }, (_, i) =>
+          addDays(weekStart, i)
+        );
+
+        const allDates = [...next14Days, ...calendarDays];
+        const uniqueDates = Array.from(
+          new Set(allDates.map((d) => format(d, "yyyy-MM-dd")))
+        );
+
+        for (const dateKey of uniqueDates) {
           const eventList = await fetchEvents(dateKey, user.id);
           eventsData[dateKey] = eventList;
         }
-        setEvents(eventsData);
+
+        setEvents((prev) => ({ ...prev, ...eventsData }));
       } catch (error) {
         console.error("Failed to load events.");
       } finally {
@@ -61,7 +83,7 @@ export default function CalendarPage() {
     };
 
     fetchUpcomingEvents();
-  }, [user]);
+  }, [user, currentDate]);
 
   const handleDateClick = async (date: Date) => {
     if (!user?.id) return;
@@ -69,27 +91,29 @@ export default function CalendarPage() {
     setSelectedDate(date);
     const dateKey = format(date, "yyyy-MM-dd");
 
-    setIsLoading(true);
-
-    try {
-      const eventList = await fetchEvents(dateKey, user.id);
-      setEvents((prev) => ({ ...prev, [dateKey]: eventList }));
-    } catch (error) {
-      console.error("Failed to load events.");
-    } finally {
-      setIsLoading(false);
+    if (!events[dateKey]) {
+      setIsLoading(true);
+      try {
+        const eventList = await fetchEvents(dateKey, user.id);
+        setEvents((prev) => ({ ...prev, [dateKey]: eventList }));
+      } catch (error) {
+        console.error("Failed to load events.");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
-  const handleAddButtonClick = () => {
-    setIsModalOpen(true);
-  };
+  const handlePrevWeek = () => setCurrentDate(subWeeks(currentDate, 1));
+  const handleNextWeek = () => setCurrentDate(addWeeks(currentDate, 1));
+  const handlePrevMonth = () => setCurrentDate(subMonths(currentDate, 1));
+  const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1));
 
+  const handleAddButtonClick = () => setIsModalOpen(true);
   const handleEditEvent = (event: any) => {
     setSelectedEvent(event);
     setIsModalOpen(true);
   };
-
   const handleDeleteEvent = async (event: any) => {
     try {
       await deleteEvent(event.id);
@@ -110,109 +134,129 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      {/* Sidebar */}
-      <div className="w-full lg:w-1/4 bg-gradient-to-br from-gray-800/70 via-gray-700/70 to-gray-800/70 backdrop-blur-md p-6 text-white overflow-y-auto border-r border-gray-700">
-        <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent">
-          Upcoming Events
-        </h2>
-        <div className="space-y-6">
-          {Object.entries(events).map(([dateKey, events]) => {
-            const date = new Date(dateKey);
-            return (
-              <div key={dateKey}>
-                <h3 className="text-lg font-semibold mb-2 text-gray-400">
-                  {formatDayHeading(date)}
-                </h3>
-                {events.length > 0 ? (
-                  <div className="space-y-3">
-                    {events.map((event, index) => (
-                      <div
-                        key={index}
-                        className="p-3 bg-gradient-to-br from-gray-700/50 via-gray-600/50 to-gray-700/50 backdrop-blur-sm rounded-md hover:bg-gray-600/50 transition-colors cursor-pointer border border-red-500/20"
-                        onClick={() => handleEditEvent(event)}
-                      >
-                        <p className="text-sm font-medium truncate bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent font-semibold">
-                          {event.title}
-                        </p>
-                        <p className="text-xs text-gray-300 truncate">
-                          {event.reminder
-                            ? event.startTime
-                            : event.allDay
-                              ? ""
-                              : `${event.startTime} - ${event.endTime}`}
-                          <br />
-                          {event.duration}{" "}
-                          {!event.reminder && !event.allDay && (
-                            <span>mins</span>
-                          )}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-400 text-sm">
-                    No events for this day
-                  </p>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 p-8 overflow-y-auto">
+    <div className="min-h-screen bg-gray-900">
+      {/* Main Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header Navigation */}
         <div className="flex justify-between items-center mb-8">
           <h1
-            className="text-3xl font-bold bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent cursor-pointer"
+            className="text-3xl font-bold text-red-500 cursor-pointer"
             onClick={() => router.push("/pinboard")}
           >
             Calendar
           </h1>
-          <button
-            onClick={() => router.push("/pinboard")}
-            className="text-sm bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent hover:underline"
-          >
-            Back to Pinboard
-          </button>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={handleAddButtonClick}
+              className="bg-red-500 text-white p-2 rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
+            >
+              +
+            </button>
+            <button
+              onClick={() => router.push("/pinboard")}
+              className="text-gray-300 hover:text-red-500 transition-colors"
+            >
+              Back to Pinboard
+            </button>
+          </div>
         </div>
 
-        {/* Calendar Grid Component */}
-        <CalendarGrid
-          selectedDate={selectedDate}
-          handleDateClick={handleDateClick}
-          setIsModalOpen={setIsModalOpen}
-        />
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          {/* Compact Sidebar */}
+          <div className="lg:col-span-1 bg-gray-800 rounded-xl p-4 border border-gray-700 shadow-xl">
+            <h2 className="text-xl font-semibold mb-4 text-red-500">
+              Upcoming
+            </h2>
+            <div className="space-y-4">
+              {Object.entries(events)
+                .flatMap(([dateKey, events]) =>
+                  events.map((event) => ({ ...event, dateKey }))
+                )
+                .slice(0, 14)
+                .map((event, index, arr) => {
+                  const date = new Date(event.dateKey);
+                  const showDateHeader =
+                    index === 0 || event.dateKey !== arr[index - 1].dateKey;
 
-        {/* Event Details Pane */}
-        {isLoading ? (
-          <div className="flex justify-center items-center mt-10">
-            <div className="border-t-4 border-red-500 border-solid w-16 h-16 rounded-full animate-spin"></div>
+                  return (
+                    <div key={index} className="group">
+                      {showDateHeader && (
+                        <h3 className="text-sm font-medium mb-1 text-gray-400">
+                          {formatDayHeading(date)}
+                        </h3>
+                      )}
+                      <div
+                        className="p-2 bg-gray-700/50 rounded-md hover:bg-gray-600/50 transition-colors cursor-pointer border-l-2 border-red-500"
+                        onClick={() => handleEditEvent(event)}
+                      >
+                        <p className="text-xs font-medium truncate text-red-400">
+                          {event.title}
+                        </p>
+                        <p className="text-xs text-gray-300 mt-1">
+                          {event.startTime}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
           </div>
-        ) : events[format(selectedDate, "yyyy-MM-dd")]?.length > 0 ? (
-          <ul className="mt-4 space-y-3">
-            {events[format(selectedDate, "yyyy-MM-dd")].map((event, index) => (
-              <EventCard
-                key={index}
-                event={event}
-                onEdit={handleEditEvent}
-                onDelete={handleDeleteEvent}
-              />
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-400">No events for this date.</p>
-        )}
-      </div>
 
-      {/* Floating Button */}
-      <button
-        onClick={handleAddButtonClick}
-        className="text-[50px] fixed bottom-10 right-10 bg-gradient-to-r from-red-500 to-red-400 text-white w-20 rounded-full shadow-lg hover:from-red-600 hover:to-red-500 transition"
-      >
-        +
-      </button>
+          {/* Main Calendar Area */}
+          <div className="lg:col-span-4">
+            {/* Calendar Grid Component */}
+            <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl">
+              <CalendarGrid
+                selectedDate={selectedDate}
+                currentDate={currentDate}
+                handleDateClick={handleDateClick}
+                setIsModalOpen={setIsModalOpen}
+                events={events}
+                onNavigate={{
+                  handlePrevWeek,
+                  handleNextWeek,
+                  handlePrevMonth,
+                  handleNextMonth,
+                }}
+              />
+            </div>
+
+            {/* Selected Date Events */}
+            <div className="mt-6">
+              <h2 className="text-xl font-semibold mb-4 text-red-500">
+                {format(selectedDate, "EEEE, MMMM d")} Events
+              </h2>
+              {isLoading ? (
+                <div className="flex justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500"></div>
+                </div>
+              ) : events[format(selectedDate, "yyyy-MM-dd")]?.length > 0 ? (
+                <div className="grid grid-cols-1 gap-3">
+                  {events[format(selectedDate, "yyyy-MM-dd")]
+                    .sort((a, b) => {
+                      if (a.allDay && !b.allDay) return -1;
+                      if (!a.allDay && b.allDay) return 1;
+                      return a.startTime.localeCompare(b.startTime);
+                    })
+                    .map((event, index) => (
+                      <EventCard
+                        key={index}
+                        event={event}
+                        onEdit={handleEditEvent}
+                        onDelete={handleDeleteEvent}
+                      />
+                    ))}
+                </div>
+              ) : (
+                <div className="text-center p-6 bg-gray-800/50 rounded-xl border border-dashed border-gray-700">
+                  <p className="text-gray-400">No events scheduled</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Modal */}
       {isModalOpen && (

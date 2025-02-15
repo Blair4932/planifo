@@ -194,7 +194,7 @@ export default function LoginPage() {
         }}
       />
       <motion.img
-        src="/assets/post-it(1).png"
+        src="/assets/project-plan(2)(1).png"
         className="absolute top-40 left-1/4 h-20 opacity-50"
         alt="Post-it"
         initial={{ y: -30, rotate: 5 }}
@@ -237,7 +237,7 @@ export default function LoginPage() {
 
       {/* Tables */}
       <motion.img
-        src="/assets/cells.png"
+        src="/assets/project-plan(2)(1).png"
         className="absolute top-1/4 right-10 h-24 opacity-50"
         alt="Table"
         initial={{ y: -20, rotate: -5 }}
@@ -250,7 +250,7 @@ export default function LoginPage() {
         }}
       />
       <motion.img
-        src="/assets/cells.png"
+        src="/assets/menu(1).png"
         className="absolute top-1/2 left-10 h-20 opacity-50"
         alt="Table"
         initial={{ y: 20, rotate: 10 }}
