@@ -4,13 +4,18 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizeCss: false,
   },
-  poweredByHeader: false,
-  reactStrictMode: true,
-  typescript: {
-    ignoreBuildErrors: false,
-  },
+  transpilePackages: ["swiper", "ssr-window", "dom7"],
   webpack: (config) => {
-    return config;
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "swiper/css": require.resolve("swiper/swiper.min.css"),
+      "swiper/css/navigation": require.resolve(
+        "swiper/modules/navigation/navigation.min.css"
+      ),
+      "swiper/css/pagination": require.resolve(
+        "swiper/modules/pagination/pagination.min.css"
+      ),
+    };
   },
 
   async headers() {
