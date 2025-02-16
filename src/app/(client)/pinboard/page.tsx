@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { apps } from "../(global-components)/apps";
-import WhatsNew from "./(whats-new)/page";
+import WhatsNew from "../(whats-new)/whatsNewCarousel";
 import { updateMessage } from "@/update";
 import { format } from "date-fns";
 
