@@ -168,6 +168,11 @@ export default function CalendarPage() {
             <h2 className="text-xl font-semibold mb-4 text-red-500">
               Upcoming
             </h2>
+            {isLoading && (
+              <div className="flex justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500"></div>
+              </div>
+            )}
             <div className="space-y-4">
               {Object.entries(events)
                 .flatMap(([dateKey, events]) =>
@@ -194,7 +199,11 @@ export default function CalendarPage() {
                           {event.title}
                         </p>
                         <p className="text-xs text-gray-300 mt-1">
-                          {event.startTime}
+                          {event.reminder
+                            ? event.startTime
+                            : event.allDay
+                              ? "All Day"
+                              : `${event.startTime} - ${event.endTime}`}
                         </p>
                       </div>
                     </div>

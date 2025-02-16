@@ -25,7 +25,9 @@
     "quill": "^2.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-slick": "^0.30.3",
     "react-toastify": "^11.0.3",
+    "slick-carousel": "^1.8.1",
     "sqlite3": "^5.1.7",
     "swiper": "^11.2.2",
     "uuid": "^11.0.5"

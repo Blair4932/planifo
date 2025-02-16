@@ -1,18 +1,11 @@
 "use client";
 import React from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import { useRouter } from "next/navigation";
+import Slider from "react-slick";
 import { updateMessage } from "@/update";
 
-// Import Swiper styles
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-
-// Register Swiper modules
-import { register } from "swiper/element/bundle";
-register();
+// Import Slick Carousel styles
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const WhatsNew: React.FC<any> = ({ events }) => {
   const getNextThreeDays = () => {
@@ -31,18 +24,22 @@ const WhatsNew: React.FC<any> = ({ events }) => {
     );
   };
 
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 6000,
+    pauseOnHover: true,
+  };
+
   return (
-    <div className="border border-gray-700 w-[40%] h-[500px] rounded-lg p-5 bg-gray-900/80 backdrop-blur-lg shadow-xl">
-      <Swiper
-        modules={[Navigation, Pagination, Autoplay]}
-        spaceBetween={10}
-        slidesPerView={1}
-        pagination={{ clickable: true }}
-        autoplay={{ delay: 6000, disableOnInteraction: false }}
-        className="w-full h-full relative group"
-      >
+    <div className="border select-none border-gray-700 w-[40%] h-[500px] rounded-lg p-5 bg-gray-900/80 backdrop-blur-lg shadow-xl">
+      <Slider {...settings} className="w-full h-full relative group">
         {/* Slide 1: Updates */}
-        <SwiperSlide>
+        <div>
           <div className="flex flex-col h-full p-6 bg-gray-900/50 rounded-lg shadow-lg">
             <h3 className="text-2xl font-bold text-gray-100 mb-4">
               What's New
@@ -62,10 +59,10 @@ const WhatsNew: React.FC<any> = ({ events }) => {
               </p>
             </div>
           </div>
-        </SwiperSlide>
+        </div>
 
         {/* Slide 2: Upcoming Events */}
-        <SwiperSlide>
+        <div>
           <div className="flex flex-col h-full overflow-auto p-6 bg-gray-900/50 rounded-lg shadow-lg">
             <h3 className="text-2xl font-bold text-gray-100 mb-4">
               Upcoming Events
@@ -125,8 +122,8 @@ const WhatsNew: React.FC<any> = ({ events }) => {
               ))}
             </div>
           </div>
-        </SwiperSlide>
-      </Swiper>
+        </div>
+      </Slider>
     </div>
   );
 };
