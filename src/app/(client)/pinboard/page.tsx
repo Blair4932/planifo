@@ -121,7 +121,7 @@ export default function Dashboard() {
       return;
     }
     if (type === "note") {
-      router.push(`/notes/${id}`);
+      router.push(`/editor/${id}`);
     } else {
       router.push(`/tables/${id}`);
     }

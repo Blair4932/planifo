@@ -179,7 +179,7 @@ export default function LoginPage() {
       </motion.div>
 
       {/* Floating Icons for Quirky Charm */}
-      {/* Post-it Notes */}
+      {/* Post-it Editor */}
       <motion.img
         src="/assets/post-it(1).png"
         className="absolute top-10 left-10 h-24 opacity-50"

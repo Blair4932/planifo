@@ -31,7 +31,7 @@ const WhatsNew: React.FC<any> = ({ events }) => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 6000,
-    pauseOnHover: false,
+    pauseOnHover: true,
   };
 
   return (

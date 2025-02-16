@@ -12,10 +12,10 @@ export const apps = {
     description: "Generate information and mindmaps from files ",
   },
   notes: {
-    name: "Notes",
+    name: "Editor",
     iconFilepath: "assets/post-it(1).png",
-    route: "/notes",
-    description: "Create and keep track of your thoughts.",
+    route: "/editor",
+    description: "Create and design text documents.",
   },
   calendar: {
     name: "Calendar",

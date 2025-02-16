@@ -2,7 +2,7 @@
 import { SettingTab } from "./settingsTabs";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-// import { handleLogout } from "./settingsLogic";
+import { handleLogout } from "./settingsLogic";
 
 export default function SettingView({
   selectedTab,
@@ -149,7 +149,7 @@ export default function SettingView({
             </h2>
             <button
               className="w-64 rounded-md bg-red-500 p-2 text-white hover:bg-red-600"
-              // onClick={() => handleLogout(router)}
+              onClick={() => handleLogout(router)}
             >
               Logout
             </button>

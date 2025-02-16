@@ -179,7 +179,7 @@ export default function NoteDetails() {
       });
 
       if (res.ok) {
-        router.push("/notes");
+        router.push("/editor");
       }
     } catch (e) {
       console.error("Error deleting note: ", e);
@@ -276,25 +276,25 @@ export default function NoteDetails() {
             </button>
             <p
               className="cursor-pointer text-white"
-              onClick={() => router.push("/notes")}
+              onClick={() => router.push("/editor")}
             >
-              Back to Notes
+              Back to Editor
             </p>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto grid grid-cols-12 gap-8 p-4">
-        {/* Recent Notes Sidebar */}
+        {/* Recent Editor Sidebar */}
         <div className="col-span-2 bg-gray-800/50 backdrop-blur-md rounded-lg p-4 border border-gray-700">
           <h3 className="text-sm font-semibold text-yellow-400 mb-4">
-            Recent Notes
+            Recent Editor
           </h3>
           <div className="space-y-2">
             {recentNotes.map((note) => (
               <div
                 key={note.id}
-                onClick={() => router.push(`/notes/${note.id}`)}
+                onClick={() => router.push(`/editor/${note.id}`)}
                 className="p-2 hover:bg-gray-700/50 rounded cursor-pointer transition group"
               >
                 <p className="text-sm text-gray-300 truncate group-hover:text-white">

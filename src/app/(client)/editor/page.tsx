@@ -5,7 +5,7 @@ import Modal from "./modal";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 
-export default function Notes() {
+export default function Editor() {
   const [user, setUser] = useState<any>(null);
   const [notes, setNotes] = useState<any[]>([]);
   const [filteredNotes, setFilteredNotes] = useState<any[]>([]);
@@ -159,10 +159,7 @@ export default function Notes() {
             className="text-4xl font-extralight cursor-pointer"
             onClick={() => router.push("/pinboard")}
           >
-            Notes{" "}
-            <span className="bg-gradient-to-r from-yellow-400 to-yellow-200 bg-clip-text text-transparent">
-              Manager
-            </span>
+            Editor{" "}
           </h1>
           <div className="flex items-center gap-4">
             <input
@@ -184,7 +181,7 @@ export default function Notes() {
         </div>
       </header>
 
-      {/* Notes */}
+      {/* Editor */}
       <main className="pt-28">
         <div className="container mx-auto px-6 py-12">
           <div
@@ -194,7 +191,7 @@ export default function Notes() {
               filteredNotes.map((note: any) => (
                 <motion.div
                   key={note.id}
-                  onClick={() => router.push(`/notes/${note.id}`)}
+                  onClick={() => router.push(`/editor/${note.id}`)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className={`relative p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300 bg-gradient-to-br from-gray-800/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50 border-2 border-yellow-400`}
