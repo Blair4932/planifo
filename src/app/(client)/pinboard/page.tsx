@@ -21,7 +21,7 @@ export default function Dashboard() {
   useEffect(() => {
     const exampleTask = {
       title: "Task Exmple",
-      lastUpdatedAt: new Date(),
+      lastUpdatedAt: new Date().toISOString(),
       project: "Project Example",
     };
     const items = [];
@@ -39,7 +39,7 @@ export default function Dashboard() {
         const data = await res.json();
 
         if (res.ok) {
-          await setUser(data.user);
+          setUser(data.user);
           await sortContinueWorking(data.user.id);
         } else {
           setError("Failed to get user.");
@@ -67,6 +67,27 @@ export default function Dashboard() {
     }
   };
 
+  const formatDate = (dateString: string | Date | undefined) => {
+    if (!dateString) return "Unknown Date";
+
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return "Invalid Date";
+      }
+      return new Intl.DateTimeFormat("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }).format(date);
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "Invalid Date";
+    }
+  };
+
   const sortContinueWorking = async (userId: string) => {
     setFetchingData(true);
     try {
@@ -90,23 +111,28 @@ export default function Dashboard() {
       const eventsData = await eventsResponse.json();
       setEvents(eventsData.events);
 
-      let continueWorking = notesData.notes.concat(eventsData.events);
+      const notes = Array.isArray(notesData.notes) ? notesData.notes : [];
+      const events = Array.isArray(eventsData.events) ? eventsData.events : [];
 
-      continueWorking.sort((a, b) => {
-        return (
-          new Date(b.lastUpdatedAt).getTime() -
-          new Date(a.lastUpdatedAt).getTime()
-        );
-      });
+      let continueWorking = [...notes];
 
-      continueWorking = continueWorking.slice(0, 12);
+      if (continueWorking.length > 0) {
+        continueWorking.sort((a, b) => {
+          const dateA = a?.lastUpdatedAt
+            ? new Date(a.lastUpdatedAt)
+            : new Date(0);
+          const dateB = b?.lastUpdatedAt
+            ? new Date(b.lastUpdatedAt)
+            : new Date(0);
+          return dateB.getTime() - dateA.getTime();
+        });
+      }
 
-      const topFiles = continueWorking.slice(0, 3);
-      const rows = continueWorking.slice(3);
-      console.log(topFiles, rows);
+      const maxItems = 12;
+      continueWorking = continueWorking.slice(0, maxItems);
 
-      setTopFiles(topFiles);
-      setResume(rows);
+      setTopFiles(continueWorking.slice(0, 3));
+      setResume(continueWorking.slice(3));
     } catch (error) {
       console.error("Error fetching data:", error);
       setError("Error fetching data");
@@ -195,51 +221,45 @@ export default function Dashboard() {
             <div className="flex flex-col items-start justify-start w-[600px]">
               {/* Top Files */}
               <div className="flex flex-col gap-4 w-full">
-                {topFiles.map((item, index) => {
-                  const type =
-                    "content" in item
-                      ? "note"
-                      : "date" in item
-                        ? "event"
-                        : "table";
-                  return (
-                    <div
-                      key={index}
-                      className={`w-[600px] ${type === "note" ? "border-yellow-500" : ""} border-2 bg-gradient-to-br from-gray-800/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50 transition-all duration-100 p-4 rounded-xl shadow-lg cursor-pointer flex items-center`}
-                      onClick={() => handleClick(item.id, type)}
-                    >
-                      <img
-                        src={
-                          type === "note"
-                            ? "assets/post-it(1).png"
-                            : type === "event"
-                              ? "assets/calendar.png"
-                              : "assets/cells.png"
-                        }
-                        alt={
-                          type === "note"
-                            ? "Note"
-                            : type === "event"
-                              ? "Event"
-                              : "Table"
-                        }
-                        className="w-9 h-9 mr-4"
-                      />
-                      <p className="text-left font-bold">
-                        {item.title},{" "}
-                        <span className="text-sm text-gray-400">
-                          {new Intl.DateTimeFormat("en-GB", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          }).format(new Date(item.lastUpdatedAt))}
-                        </span>
-                      </p>
-                    </div>
-                  );
-                })}
+                {topFiles.length === 0 ? (
+                  <div className="w-[600px] border-2 border-dashed border-gray-600 bg-gradient-to-br from-gray-800/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm p-4 rounded-xl shadow-lg flex items-center justify-center">
+                    <p className="text-gray-400 text-center">
+                      No files or projects found.{" "}
+                      <span
+                        className="text-teal-400 cursor-pointer hover:underline"
+                        onClick={() => router.push("/editor")}
+                      >
+                        Create one now!
+                      </span>
+                    </p>
+                  </div>
+                ) : (
+                  topFiles.map((item, index) => {
+                    const lastUpdatedAt = item.lastUpdatedAt
+                      ? formatDate(item.lastUpdatedAt)
+                      : "Unknown Date";
+
+                    return (
+                      <div
+                        key={index}
+                        className={`w-[600px] border-yellow-500 border-2 bg-gradient-to-br from-gray-800/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50 transition-all duration-100 p-4 rounded-xl shadow-lg cursor-pointer flex items-center`}
+                        onClick={() => handleClick(item.id, "note")}
+                      >
+                        <img
+                          src="assets/post-it(1).png"
+                          alt="Editor Icon"
+                          className="w-9 h-9 mr-4"
+                        />
+                        <p className="text-left font-bold">
+                          {item.title},{" "}
+                          <span className="text-sm text-gray-400">
+                            {lastUpdatedAt}
+                          </span>
+                        </p>
+                      </div>
+                    );
+                  })
+                )}
               </div>
               {/* Tasks List */}
               <div className=" mt-10 grid grid-cols-2 ml-4 gap-5 gap-x-6">
@@ -264,7 +284,7 @@ export default function Dashboard() {
                     </p>
                     <br />
                     <p className="text-left text-gray-400 text-[10px]">
-                      {item.lastUpdatedAt.toDateString()}{" "}
+                      {item.lastUpdatedAt}{" "}
                     </p>
                   </div>
                 ))}
