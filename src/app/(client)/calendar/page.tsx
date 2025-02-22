@@ -88,6 +88,7 @@ export default function CalendarPage() {
   const handleDateClick = async (date: Date) => {
     if (!user?.id) return;
 
+    setCurrentDate(date);
     setSelectedDate(date);
     const dateKey = format(date, "yyyy-MM-dd");
 

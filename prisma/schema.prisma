@@ -14,17 +14,21 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid()) // UUID for User ID
-  username  String    @unique // Username must be unique
-  password  String // Hashed password
-  email     String    @unique // User's email
-  notes     Note[] // User's notes
-  tables    Table[] // User's tables
-  events    Event[] // User's events
-  createdAt DateTime  @default(now()) // Timestamp of creation
-  Session   Session[]
-  resetToken String? // for resetting password
-  resetTokenExpiry DateTime? // for resetting password
+  id               String      @id @default(uuid())
+  username         String      @unique
+  password         String
+  email            String      @unique
+  notes            Note[]
+  tables           Table[]
+  events           Event[]
+  projects         Project[]
+  tasks            Task[]
+  sprints          Sprint[]
+  milestones       Milestone[]
+  createdAt        DateTime    @default(now())
+  Session          Session[]
+  resetToken       String?
+  resetTokenExpiry DateTime?
 }
 
 model Session {
@@ -44,7 +48,7 @@ model Note {
   lastUpdatedAt DateTime @updatedAt // Timestamp of last update
 
   // Relationship with User model
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Table {
@@ -57,7 +61,7 @@ model Table {
   lastUpdatedAt DateTime @updatedAt // Timestamp of last update
 
   // Relationship with User model
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Row {
@@ -100,4 +104,67 @@ model Event {
   userId      String // User who created the event
   user        User     @relation(fields: [userId], references: [id]) // Relation to User
   createdAt   DateTime @default(now()) // Timestamp of creation
+}
+
+model Project {
+  id         String      @id @default(uuid())
+  title      String
+  icon       String? // Can be an emoji or icon URL
+  status     Boolean // Determines if the Project is active
+  description String // Description of Project
+  tasks      Task[] // Relation to Task
+  sprints    Sprint[] // Relation to Sprint
+  milestones Milestone[] // Relation to Milestone
+  userId     String // Foreign key to User
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt()
+}
+
+model Task {
+  id          String     @id @default(uuid())
+  title       String
+  description String? // Detailed task description
+  tags        String[] // For filtering/categorization
+  points      Int? // Story points estimation
+  status      String     @default("Todo") // e.g., Todo, In Progress, Done
+  userId      String // Foreign key to User (Task owner/creator)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String // Foreign key to Project
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sprintId    String? // Foreign key to Sprint (optional)
+  sprint      Sprint?    @relation(fields: [sprintId], references: [id], onDelete: SetNull)
+  milestoneId String? // Foreign key to Milestone (optional)
+  milestone   Milestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  dueDate     DateTime? // Optional deadline
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt()
+}
+
+model Sprint {
+  id        String   @id @default(uuid())
+  title     String
+  startDate DateTime
+  endDate   DateTime
+  status    String   @default("Planned") // Planned, Active, Completed
+  projectId String // Foreign key to Project
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks     Task[] // Relation to Task
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model Milestone {
+  id         String    @id @default(uuid())
+  title      String
+  targetDate DateTime? // Target completion date
+  projectId  String // Foreign key to Project
+  project    Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks      Task[] // Relation to Task
+  userId     String // Foreign key to User (Responsible user)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt()
 }

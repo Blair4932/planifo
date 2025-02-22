@@ -32,7 +32,6 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    console.log(updateMessage);
     const fetchUser = async () => {
       try {
         const res = await fetch("/api/user");

@@ -17,6 +17,7 @@ export default function EventModal({
   const [description, setDescription] = useState("");
   const [duration, setDuration] = useState("");
   const [allDay, setAllDay] = useState(false);
+  65;
   const [reminder, setReminder] = useState(false);
   const [startTime, setStartTime] = useState<string>("");
   const [endTime, setEndTime] = useState<string>("");

@@ -8,7 +8,7 @@ import "slick-carousel/slick/slick-theme.css";
 
 const WhatsNew: React.FC<any> = ({ events }) => {
   const getNextThreeDays = () => {
-    return Array.from({ length: 5 }, (_, i) => {
+    return Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() + i);
       return date;
@@ -36,10 +36,10 @@ const WhatsNew: React.FC<any> = ({ events }) => {
 
   return (
     <div className="border select-none border-gray-700 w-[40%] h-[600px] rounded-lg p-5 bg-gray-900/80 backdrop-blur-lg shadow-xl">
-      <Slider {...settings} className="w-full h-full relative group">
+      <Slider {...settings} className="w-full h-[600px] relative group">
         {/* Slide 1: Updates */}
         <div>
-          <div className="flex flex-col h-full p-6 bg-gray-900/50 rounded-lg shadow-lg">
+          <div className="flex flex-col h-full overflow-y-scroll p-6 bg-gray-900/50 rounded-lg shadow-lg">
             <h3 className="text-2xl font-bold text-gray-100 mb-4">
               What's New
             </h3>
@@ -62,7 +62,7 @@ const WhatsNew: React.FC<any> = ({ events }) => {
 
         {/* Slide 2: Upcoming Events */}
         <div>
-          <div className="flex flex-col h-full overflow-auto p-6 bg-gray-900/50 rounded-lg shadow-lg">
+          <div className="flex flex-col h-[550px] overflow-auto p-6 bg-gray-900/50 rounded-lg shadow-lg">
             <h3 className="text-2xl font-bold text-gray-100 mb-4">
               Upcoming Events
             </h3>

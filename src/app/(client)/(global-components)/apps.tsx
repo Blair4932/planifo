@@ -2,7 +2,7 @@ export const apps = {
   hub: {
     name: "Hub",
     iconFilepath: "assets/project-plan(2)(1).png",
-    route: "/construction",
+    route: "/hub",
     description: "Plan your next big personal or business project",
   },
   dashboard: {

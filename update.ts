@@ -14,10 +14,10 @@ export const updateMessage: UpdateMessage = {
   // UPDATE THIS
   date: "15 Feb 2025",
   // UPDATE THIS
-  title: "New Look and Feel",
+  title: "Project Template",
   // UPDATE THIS
   content:
-    "Hello Manifonians, We have made changes to the UI of Pinboard as you will see. This features a new layout which prepares us for upcoming features. You'll notice that we you have 6 new rectangles. Don't worry. These will soon be replaced with REAL working links to your own data. In this update, we have also added new UI and functionality to notes. This makes notes more powerful, not just a simple place you can write down text and leave it there. Now, you can design whole documents with images, headers, colour and more. I hope you enjoy the update and as always, if you have any issues, please contact me at admin@manifo.uk. Thanks, Blair.",
+    "Hello Manifonians, The hub page is now underway! You'll notice that clicking on the hub button in the pinboard nav bar will take you to a template layout of project creation. Stay tuned for this becoming more functional!",
   // UPDATE THIS
   extra: "",
 };
