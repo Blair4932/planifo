@@ -3,8 +3,9 @@ import EmojiPicker, { EmojiStyle, Theme } from "emoji-picker-react";
 import { InputSwitch } from "primereact/inputswitch";
 import "primereact/resources/primereact.css";
 import { colourVars } from "../(variables)/colourVars";
+import { fetchProjects, createNewProject } from "../(logic)/projectAPI";
 
-const CreateProjectModal = ({ onClose }) => {
+const CreateProjectModal = ({ userId, setProjects, onClose }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [icon, setIcon] = useState("");
@@ -18,7 +19,25 @@ const CreateProjectModal = ({ onClose }) => {
     setShowEmojiPicker(false);
   };
 
-  const createProject = async () => {};
+  const createProject = async () => {
+    try {
+      const newProject = await createNewProject({
+        title,
+        description,
+        icon,
+        templateSprint,
+        autoStart,
+        defaultTags,
+        userId,
+      });
+
+      const updatedProjects = await fetchProjects(userId);
+      setProjects(updatedProjects);
+      onClose();
+    } catch (error) {
+      console.error("Error in project creation:", error);
+    }
+  };
 
   const handleOutsideClick = (e) => {
     if (e.target === e.currentTarget) {

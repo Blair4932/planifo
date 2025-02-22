@@ -107,18 +107,18 @@ model Event {
 }
 
 model Project {
-  id         String      @id @default(uuid())
-  title      String
-  icon       String? // Can be an emoji or icon URL
-  status     Boolean // Determines if the Project is active
-  description String // Description of Project
-  tasks      Task[] // Relation to Task
-  sprints    Sprint[] // Relation to Sprint
-  milestones Milestone[] // Relation to Milestone
-  userId     String // Foreign key to User
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt()
+  id          String     @id @default(uuid())
+  title       String
+  icon        String    // Can be an emoji or icon URL
+  status      Boolean    // Determines if the Project is active
+  description String     // Description of Project
+  tasks       Task[]     // Relation to Task
+  sprints     Sprint[]   // Relation to Sprint
+  milestones  Milestone[] // Relation to Milestone
+  userId      String     // Foreign key to User
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt()
 }
 
 model Task {

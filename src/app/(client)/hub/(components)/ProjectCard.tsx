@@ -11,7 +11,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   return (
     <div
       onClick={() => console.log("Clicked")}
-      className="w-[1255px] overflow-hidden bg-gray-50 bg-opacity-[3%] h-[250px] p-10 border rounded-md mt-10 flex justify-between hover:scale-[101%] transition-all hover:shadow-lg select-none"
+      className="w-[1280px] overflow-hidden bg-gray-50 bg-opacity-[3%] h-[250px] p-10 border rounded-md mt-6 flex justify-between hover:scale-[101%] transition-all hover:shadow-lg select-none"
       style={{ borderColor: colourVars.hubPurple, transitionDuration: "0.2s" }}
     >
       <Ripple
@@ -19,7 +19,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           root: {
             style: {
               background: "rgba(255, 255, 2556, 0.1)",
-              animationDuration: "1s",
+              animationDuration: "0.45s",
             },
           },
         }}
@@ -30,11 +30,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           <h1 className="text-3xl">{project.icon}</h1>
           <h1 className="text-3xl font-extralight">{project.title}</h1>
         </div>
-        <p className="mt-5 text-[14px] text-gray-400">{project.description}</p>
+        <p className="mt-5 w-[75%] text-[14px] text-gray-400">
+          {project.description}
+        </p>
         <div className="mt-12 text-gray-400 flex">
-          <h1 className="text-[14px]">Total Tasks: {project.tasks.length}</h1>
+          <h1 className="text-[14px]">
+            Total Tasks: {project.tasks?.length || 0}
+          </h1>
           <h1 className="text-[14px] ml-4">
-            Created: {project.createdAt.toLocaleDateString()}
+            Created: {new Date(project.createdAt).toLocaleDateString()}
           </h1>
         </div>
       </div>
@@ -45,36 +49,68 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
       ></div>
       {/* Right Side */}
       <div className="w-[40%] ml-5 flex">
-        <div className="flex flex-col">
-          <h2 className="text-2xl">
-            {" "}
-            Sprint:{" "}
-            <span style={{ color: colourVars.hubGreen }}>
-              {" "}
-              {project.sprints[0].status}
-            </span>
-          </h2>
-          <div className="text-gray-400 mt-1 text-[14px]">
-            {project.sprints[0].startDate.toLocaleDateString()} -{" "}
-            {project.sprints[0].endDate.toLocaleDateString()}
+        {project.sprints && project.sprints.length > 0 ? (
+          // If there are sprints, show sprint information
+          <div className="flex flex-col">
+            <h2 className="text-2xl">
+              Sprint:{" "}
+              <span style={{ color: colourVars.hubGreen }}>
+                {project.sprints[0].status}
+              </span>
+            </h2>
+            <div className="text-gray-400 mt-1 text-[14px]">
+              {new Date(project.sprints[0].startDate).toLocaleDateString()} -{" "}
+              {new Date(project.sprints[0].endDate).toLocaleDateString()}
+            </div>
+            <div className="flex flex-col mt-4 text-[14px] text-gray-300">
+              <p>
+                Tasks Completed:{" "}
+                {project.sprints[0].tasks?.filter(
+                  (task) => task.status === "Done"
+                ).length || 0}
+              </p>
+              <p>
+                Total Tasks in sprint: {project.sprints[0].tasks?.length || 0}
+              </p>
+              <p>
+                Total sprint Points:{" "}
+                {project.sprints[0].tasks?.reduce(
+                  (acc, task) => acc + (task.points || 0),
+                  0
+                ) || 0}
+              </p>
+            </div>
+            <div className="mt-4">
+              <p className="text-[14px] text-gray-400">
+                Recently Completed: <br />
+                {project.sprints[0].tasks?.find(
+                  (task) => task.status === "Done"
+                )?.title || "No completed tasks"}
+              </p>
+            </div>
           </div>
-          <div className="flex flex-col mt-4 text-[14px] text-gray-300">
-            <p>Tasks Completed: 1</p>
-            <p>Total Tasks in sprint: 2</p>
-            <p>Total sprint Points: 16</p>
-          </div>
-          <div className="mt-4">
-            <p className="text-[14px] text-gray-400">
-              Recently Completed: <br />
-              {project.sprints[0].tasks[0].title}
+        ) : (
+          // If no sprints, show placeholder content
+          <div className="flex flex-col">
+            <h2 className="text-2xl">No Active Sprint</h2>
+            <p className="text-gray-400 mt-1 text-[14px]">
+              Create a sprint to start tracking progress
             </p>
           </div>
-        </div>
-        <div className=" ml-24 flex items-center justify-center">
-          <CircularProgress
-            current={1}
-            target={project.sprints[0].tasks.length}
-          />
+        )}
+        <div className="ml-24 flex items-center justify-center">
+          {project.sprints ? (
+            <CircularProgress
+              current={
+                project.sprints[0]?.tasks?.filter(
+                  (task) => task.status === "Done"
+                ).length || 0
+              }
+              target={project.sprints[0]?.tasks?.length || 1} // Set minimum target to 1 to avoid 0/0
+            />
+          ) : (
+            <CircularProgress current={0} target={1} />
+          )}
         </div>
       </div>
     </div>

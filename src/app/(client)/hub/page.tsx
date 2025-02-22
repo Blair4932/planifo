@@ -1,5 +1,4 @@
 "use client";
-import placeholderProject from "./placeholder";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Button from "./(components)/Button";
@@ -7,9 +6,11 @@ import Label from "./(components)/Label";
 import { colourVars } from "./(variables)/colourVars";
 import ProjectCard from "./(components)/ProjectCard";
 import CreateProjectModal from "./(components)/CreateProjectModal";
+import { fetchProjects } from "./(logic)/projectAPI";
+import { LoadingSpinner } from "../(global-components)/loadingSpinner";
 
 export default function Hub() {
-  const [projects, setProjects] = useState([placeholderProject]);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
@@ -18,11 +19,14 @@ export default function Hub() {
   const router = useRouter();
 
   useEffect(() => {
+    setLoading(true);
     const fetchUser = async () => {
       const res = await fetch("/api/user");
       const data = await res.json();
       if (res.ok) {
         setUser(data.user);
+        console.log(await fetchProjects(data.user.id));
+        setProjects(await fetchProjects(data.user.id));
         setLoading(false);
       } else {
         router.replace("/login");
@@ -33,18 +37,22 @@ export default function Hub() {
     fetchUser();
   }, []);
 
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <>
       {/* Header */}
       <header className="bg-gradient-to-r from-gray-900/70 via-gray-800/70 to-gray-900/70 backdrop-blur-md shadow-lg fixed w-full z-50">
-        <div className="container mx-auto flex justify-between items-center h-28 px-32">
+        <div className="container mx-auto flex justify-between items-center h-28 px-40 max-w-[1600px]">
           <h1 className="text-4xl font-extralight">
             Project <span className="text-teal-400">Hub</span>
           </h1>
           <div className="flex items-center w-[15%]">
-            {/* Logout Button */}
+            {/* Return Button */}
             <button
-              className="w-full p-2 rounded-md text-white hover:text-purple-300 transition-colors"
+              className="w-full text-right rounded-md text-white hover:text-purple-300 transition-colors"
               onClick={() => router.push("/pinboard")}
             >
               Return to pinboard
@@ -54,23 +62,48 @@ export default function Hub() {
       </header>
 
       {/* Main Content */}
-      <div className="flex flex-col ml-44 justify-center items-center top-28 relative h-full w-[77%]">
-        {/* Label & Button Container */}
-        <div className="flex justify-between mt-10 w-[97%]">
-          <Label children={"Active"} color={colourVars.hubGreen}></Label>
-          <Button
-            onClick={() => setModalOpen(true)}
-            children={"Create Project"}
-            color={colourVars.hubPurple}
-          ></Button>
-        </div>
+      <div className="flex flex-col justify-center items-center relative top-28 w-full">
+        <div className="container mx-auto max-w-[1600px] px-40">
+          {/* Label & Button Container */}
+          <div className="flex justify-between mt-10 w-full">
+            <Label children={"Active"} color={colourVars.hubGreen}></Label>
+            <Button
+              onClick={() => setModalOpen(true)}
+              children={"Create Project"}
+              color={colourVars.hubPurple}
+            ></Button>
+          </div>
 
-        {/* Project Cards */}
-        <div>
-          <ProjectCard project={projects[0]}></ProjectCard>
+          {/* Project Cards */}
+          <div className="mt-5 w-[1600px]">
+            {projects.length > 0 ? (
+              projects.map((project, index) => (
+                <ProjectCard key={index} project={project} />
+              ))
+            ) : (
+              <div className="w-[80%] flex flex-col items-center justify-center p-6 border border-dashed border-gray-300 rounded-lg">
+                <p className="text-gray-500 text-lg mb-4">No projects found.</p>
+                <button
+                  className="px-4 py-2 underline text-blue-500 rounded-lg transition-colors"
+                  onClick={() => {
+                    setModalOpen(true);
+                  }}
+                >
+                  Create a New Project
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      {modalOpen && <CreateProjectModal onClose={() => setModalOpen(false)} />}
+
+      {modalOpen && (
+        <CreateProjectModal
+          userId={user.id}
+          setProjects={setProjects}
+          onClose={() => setModalOpen(false)}
+        />
+      )}
     </>
   );
 }

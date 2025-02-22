@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Modal from "./modal";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
+import { LoadingSpinner } from "../(global-components)/loadingSpinner";
 
 export default function Editor() {
   const [user, setUser] = useState<any>(null);
@@ -139,12 +140,6 @@ export default function Editor() {
       setShowModal(false);
     }
   };
-
-  const LoadingSpinner = () => (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="border-t-4 border-yellow-400 border-solid w-16 h-16 rounded-full animate-spin"></div>
-    </div>
-  );
 
   if (loading) {
     return <LoadingSpinner />;
