@@ -63,48 +63,55 @@ export default function Dashboard() {
     setLoadingEvents(true);
 
     try {
-      // Fetch notes
-      const notesResponse = await fetch("/api/get-notes", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          userId: userId.toString(),
-        },
-      });
-      const notesData = await notesResponse.json();
-
-      // Fetch events
       const date = format(new Date(), "yyyy-MM-dd");
-      const eventsResponse = await fetch("/api/events/get-events", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          data: JSON.stringify({ date, userId }),
-        },
-      });
-      const eventsData = await eventsResponse.json();
-      setEvents(eventsData.events);
 
-      // Sort and set top files
-      const notes = Array.isArray(notesData.notes) ? notesData.notes : [];
-      let continueWorking = [...notes];
-      if (continueWorking.length > 0) {
-        continueWorking.sort((a, b) => {
-          const dateA = a?.lastUpdatedAt
-            ? new Date(a.lastUpdatedAt)
-            : new Date(0);
-          const dateB = b?.lastUpdatedAt
-            ? new Date(b.lastUpdatedAt)
-            : new Date(0);
-          return dateB.getTime() - dateA.getTime();
-        });
+      const [notesResponse, eventsResponse] = await Promise.all([
+        fetch("/api/get-notes", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            userId: userId.toString(),
+          },
+        }),
+        fetch("/api/events/get-events", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            data: JSON.stringify({ date, userId }),
+          },
+        }),
+      ]);
+
+      // Log response status & errors
+      if (!notesResponse.ok) {
+        const notesText = await notesResponse.text();
+        console.error("Notes API Error:", notesResponse.status, notesText);
+        throw new Error("Failed to fetch notes");
+      }
+      if (!eventsResponse.ok) {
+        const eventsText = await eventsResponse.text();
+        console.error("Events API Error:", eventsResponse.status, eventsText);
+        throw new Error("Failed to fetch events");
       }
 
-      const maxItems = 12;
-      continueWorking = continueWorking.slice(0, maxItems);
+      const [notesData, eventsData] = await Promise.all([
+        notesResponse.json(),
+        eventsResponse.json(),
+      ]);
 
-      setTopFiles(continueWorking.slice(0, 3));
-      setResume(continueWorking.slice(3));
+      setEvents(eventsData.events || []);
+
+      // Sort notes by lastUpdatedAt (descending)
+      const notes = (notesData.notes || [])
+        .filter((note) => note?.lastUpdatedAt)
+        .sort(
+          (a, b) =>
+            new Date(b.lastUpdatedAt).getTime() -
+            new Date(a.lastUpdatedAt).getTime()
+        )
+        .slice(0, 12);
+
+      setTopFiles(notes.slice(0, 3));
     } catch (error) {
       console.error("Error fetching data:", error);
       setError("Error fetching data");

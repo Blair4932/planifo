@@ -229,7 +229,7 @@ export default function Editor() {
                 {loading ? (
                   <div className="border-t-4 border-yellow-400 border-solid w-16 h-16 rounded-full animate-spin mx-auto"></div>
                 ) : (
-                  "No notes found"
+                  <LoadingSpinner />
                 )}
               </div>
             )}
