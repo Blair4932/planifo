@@ -102,7 +102,7 @@ export default function Editor() {
       }
     } catch (error) {
       toast.error(
-        "An unexpected error occurred. Try again. If this continues, contact admin@manifo.uk"
+        "An unexpected error occurred. Try again. If this continues, contact admin@planifo.com"
       );
       console.error("Error creating note:", error);
     }

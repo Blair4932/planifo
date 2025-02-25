@@ -134,9 +134,9 @@ export default function SettingView({
         return (
           <div className="p-4 flex mt-3 flex-col items-center gap-4 rounded-md shadow-sm">
             <h2 className="text-lg font-semibold mb-2">Contact us via email</h2>
-            <a href="mailto:admin@manifo.uk">
+            <a href="mailto:admin@planifo.com">
               <button className="w-64 rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600">
-                Contact Manifo
+                Contact Planifo
               </button>
             </a>
           </div>
@@ -145,7 +145,7 @@ export default function SettingView({
         return (
           <div className="p-4 flex mt-3 flex-col items-center gap-4 rounded-md shadow-sm">
             <h2 className="text-lg font-semibold mb-2">
-              Are you sure you want to log out of your Manifo?
+              Are you sure you want to log out of your Planifo?
             </h2>
             <button
               className="w-64 rounded-md bg-red-500 p-2 text-white hover:bg-red-600"

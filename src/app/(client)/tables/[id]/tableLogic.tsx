@@ -84,7 +84,7 @@ export function useTableLogic() {
     } catch (error) {
       console.error("Error saving table:", error);
       toast.error(
-        "An unexpected error occurred. Try again. If this continues, contact admin@manifo.uk"
+        "An unexpected error occurred. Try again. If this continues, contact admin@planifo.com"
       );
     } finally {
       setSaving(false);

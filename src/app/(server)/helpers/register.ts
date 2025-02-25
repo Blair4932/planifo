@@ -32,16 +32,16 @@ export async function registerUser(
       Messages: [
         {
           From: {
-            Email: "admin@manifo.uk",
-            Name: "Manifo",
+            Email: "admin@planifo.com",
+            Name: "Planifo",
           },
           To: [
             {
               Email: email,
             },
           ],
-          Subject: "Welcome to Manifo!",
-          TextPart: `Hello ${username},\n\nWelcome to our Manifo! We're excited to have you with us.`,
+          Subject: "Welcome to Planifo!",
+          TextPart: `Hello ${username},\n\nWelcome to our Planifo! We're excited to have you with us.`,
           HTMLPart: `<!DOCTYPE html>  
                       <html lang="en">  
                       <head>  
@@ -84,12 +84,12 @@ export async function registerUser(
 <body>  
   <div class="container">  
     <h3>Hello ${username},</h3>  
-    <p>Welcome to <strong>Manifo</strong>! We’re thrilled to have you join our community. Get ready to take your projects to the next level with us.</p>  
+    <p>Welcome to <strong>Planifo</strong>! We’re thrilled to have you join our community. Get ready to take your projects to the next level with us.</p>  
     <p>Let’s make it extraordinary,</p>  
-    <p><strong>The Manifo Team</strong></p>  
+    <p><strong>The Planifo Team</strong></p>  
   </div>  
   <div class="footer">  
-    <p>© 2025 Manifo. All rights reserved.</p>  
+    <p>© 2025 Planifo. All rights reserved.</p>  
   </div>  
 </body>  
 </html>  `,

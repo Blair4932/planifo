@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     const resetEmail = {
       Messages: [
         {
-          From: { Email: "admin@manifo.uk", Name: "Manifo" },
+          From: { Email: "admin@planifo.com", Name: "Planifo" },
           To: [{ Email: email }],
           Subject: "Password Reset Request",
           TextPart: `Hello,\n\nYour password reset token is:\n\n${resetToken}\n\nThis token will expire in 1 hour.\n\nIf you didn’t request this, you can ignore this email.`,
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
           <p>If you didn’t request this, you can ignore this email.</p>
         </div>
         <div class="footer">
-          <p>© 2025 Manifo. All rights reserved.</p>
+          <p>© 2025 planifo.com. All rights reserved.</p>
         </div>
       </body>
       </html>`,

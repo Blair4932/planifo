@@ -33,6 +33,6 @@ export const apps = {
     name: "User Settings",
     iconFilepath: "assets/admin.png",
     route: "/user-settings",
-    description: "Manage your Manifo",
+    description: "Manage your Planifo",
   },
 };

@@ -186,7 +186,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-4 w-[20%]">
                 <div className="p-5 w-full">
                   <a
-                    href="mailto:admin@manifo.uk"
+                    href="mailto:admin@planifo.com"
                     className="text-gray-300 hover:text-teal-400 transition-colors w-10"
                   >
                     Report a bug

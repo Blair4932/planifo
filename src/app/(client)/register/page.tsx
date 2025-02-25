@@ -57,9 +57,9 @@ export default function RegisterPage() {
         transition={{ duration: 0.5 }}
         className="text-gray-200 flex justify-between items-center h-28 bg-gray-900 shadow-lg"
       >
-        <h1 className="text-[45px] font-extralight ml-7">Manifo.uk</h1>
+        <h1 className="text-[45px] font-extralight ml-7">Planifo</h1>
         <h3 className="mr-10 cursor-pointer hover:text-teal-400 transition-colors">
-          <a href="mailto:admin@manifo.uk">Report a bug</a>
+          <a href="mailto:admin@planifo.com">Report a bug</a>
         </h3>
       </motion.header>
 
@@ -85,11 +85,11 @@ export default function RegisterPage() {
             <motion.img
               src="/assets/layers(1).png"
               className="h-32 mb-4"
-              alt="Manifo Logo"
+              alt="Planifo Logo"
               whileHover={{ scale: 1.1 }}
               transition={{ type: "spring", stiffness: 300 }}
             />
-            <h1 className="text-4xl font-light mb-4">Manifo</h1>
+            <h1 className="text-4xl font-light mb-4">Planifo</h1>
             <p className="text-center font-extralight mb-8">
               Join millions - not really - of users today in turning their life
               into more than just a 'what if'.
@@ -199,8 +199,8 @@ export default function RegisterPage() {
         className="bg-gray-900 text-gray-200 p-4 shadow-lg"
       >
         <div className="flex justify-between items-center">
-          <p className="text-sm">© 2025 Manifo.uk - All rights reserved</p>
-          <p className="text-sm">Contact: admin@manifo.uk</p>
+          <p className="text-sm">© 2025 planifo.com - All rights reserved</p>
+          <p className="text-sm">Contact: admin@planifo.com</p>
         </div>
       </motion.footer>
     </>

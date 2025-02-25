@@ -80,7 +80,7 @@ export default function LoginPage() {
           transition={{ duration: 0.5, delay: 0.4 }}
           onClick={() => router.push("/register")}
         >
-          Your Manifo
+          Your Planifo
           <motion.img
             src="assets/layers(1).png"
             className="h-11 px-5"
@@ -171,7 +171,7 @@ export default function LoginPage() {
             Forgot password?
           </p>
           <p className="text-[10px] mt-2 text-gray-400 transition-colors">
-            Manifo is currently a work in progress. You may experience bugs or
+            Planifo is currently a work in progress. You may experience bugs or
             poor performance. Please support me by using the "Report Bug" option
             if you encounter an issue
           </p>

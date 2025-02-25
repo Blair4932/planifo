@@ -370,8 +370,8 @@ export default function NoteDetails() {
       `}</style>
       <footer className="bg-gray-900 text-gray-200 p-4 shadow-lg">
         <div className="flex justify-between items-center">
-          <p className="text-sm">© 2025 Manifo.uk - All rights reserved</p>
-          <p className="text-sm">Contact: admin@manifo.uk</p>
+          <p className="text-sm">© 2025 planifo.com - All rights reserved</p>
+          <p className="text-sm">Contact: admin@planifo.com</p>
         </div>
       </footer>
     </div>

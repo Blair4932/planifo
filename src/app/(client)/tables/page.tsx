@@ -106,7 +106,7 @@ export default function Tables() {
     } catch (error) {
       console.error("Error creating table:", error);
       toast.error(
-        "An unexpected error occurred. Try again. If this continues, contact admin@manifo.uk"
+        "An unexpected error occurred. Try again. If this continues, contact admin@planifo.com"
       );
     }
   };

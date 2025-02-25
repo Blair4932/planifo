@@ -207,7 +207,7 @@ export default function ForgotPassword() {
         >
           <p className="text-sm text-gray-400">
             <a
-              href="mailto:admin@manifo.uk"
+              href="mailto:admin@planifo.com"
               className="hover:text-teal-400 transition-colors"
             >
               <span className="font-bold">Issue resetting?</span>
