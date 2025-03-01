@@ -62,8 +62,8 @@ export default function Hub() {
       </header>
 
       {/* Main Content */}
-      <div className="flex flex-col justify-center items-center relative top-28 w-full">
-        <div className="container mx-auto max-w-[1600px] px-40">
+      <div className="flex flex-col justify-center items-center relative top-28 w-full h-[calc(100vh-7rem)]">
+        <div className="container mx-auto max-w-[1600px] px-40 flex flex-col h-full">
           {/* Label & Button Container */}
           <div className="flex justify-between mt-10 w-full">
             <Label children={"Active"} color={colourVars.hubGreen}></Label>
@@ -74,8 +74,8 @@ export default function Hub() {
             ></Button>
           </div>
 
-          {/* Project Cards */}
-          <div className="mt-5 w-[1600px]">
+          {/* Scrollable Project List */}
+          <div className="mt-5 w-full flex-grow overflow-y-auto">
             {projects.length > 0 ? (
               projects.map((project, index) => (
                 <ProjectCard key={index} project={project} />

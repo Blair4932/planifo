@@ -166,9 +166,8 @@ export default function Editor() {
             />
             <motion.button
               onClick={toggleView}
-              className="p-2 bg-gradient-to-r from-yellow-400 to-yellow-200 text-gray-900 rounded-md shadow-md hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-300 transition"
+              className="p-2 bg-yellow-300 text-gray-800 rounded-md shadow-md transition"
               whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
               {isGridView ? "List View" : "Grid View"}
             </motion.button>
@@ -189,7 +188,7 @@ export default function Editor() {
                   onClick={() => router.push(`/editor/${note.id}`)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`relative p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300 bg-gradient-to-br from-gray-800/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50 border-2 border-yellow-400`}
+                  className={`relative p-6 rounded-xl shadow-lg cursor-pointer transition-all duration-300 bg-gradient-to-br from-gray-800/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50 border-2 border-yellow-300`}
                 >
                   <div className="flex items-center gap-3">
                     <img
@@ -240,7 +239,7 @@ export default function Editor() {
       {/* Floating Action Button */}
       <motion.button
         onClick={toggleShowModal}
-        className="fixed bottom-10 right-10 bg-gradient-to-r from-yellow-400 to-yellow-200 text-gray-900 w-16 h-16 rounded-full shadow-lg hover:bg-gradient-to-r hover:from-yellow-500 hover:to-yellow-300 transition text-4xl flex items-center justify-center"
+        className="fixed bottom-10 right-10 bg-yellow-300 text-gray-900 w-16 h-16 rounded-full shadow-lg text-4xl flex items-center justify-center"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >

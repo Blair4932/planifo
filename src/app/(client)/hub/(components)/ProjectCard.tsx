@@ -1,4 +1,5 @@
 import React from "react";
+import { useRouter } from "next/navigation";
 import { colourVars } from "../(variables)/colourVars";
 import { Ripple } from "primereact/ripple";
 import CircularProgress from "./CardChart";
@@ -8,10 +9,11 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+  const router = useRouter();
   return (
     <div
-      onClick={() => console.log("Clicked")}
-      className="w-[1280px] overflow-hidden bg-gray-50 bg-opacity-[3%] h-[250px] p-10 border rounded-md mt-6 flex justify-between hover:scale-[101%] transition-all hover:shadow-lg select-none"
+      onClick={() => router.push(`/hub/${project.id}`)}
+      className="w-[1280px] overflow-hidden bg-gray-50 bg-opacity-[3%] h-[250px] p-10 border rounded-md mt-6 flex justify-between hover:scale-[100%] hover:bg-slate-700 transition-all hover:shadow-lg select-none"
       style={{ borderColor: colourVars.hubPurple, transitionDuration: "0.2s" }}
     >
       <Ripple

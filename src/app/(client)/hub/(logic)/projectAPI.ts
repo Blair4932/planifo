@@ -1,4 +1,6 @@
 // src/api/projectApi.ts
+import { FormData } from "../(interfaces)/formData";
+
 export const fetchProjects = async (userId: string) => {
   console.log("fetching");
   try {
@@ -47,5 +49,32 @@ export const createNewProject = async (projectData: {
   } catch (error) {
     console.error("Failed to create Project:", error);
     throw error;
+  }
+};
+
+export const createTask = async (
+  e: any,
+  formData: FormData,
+  userId: string,
+  projectId: string,
+  onTaskCreated: any,
+  onClose: any
+) => {
+  e.preventDefault();
+  const res = await fetch("/api/hub/tasks/create-task", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ...formData,
+      userId,
+      projectId,
+      points: formData.points ? formData.points : undefined,
+    }),
+  });
+
+  if (res.ok) {
+    const newTask = await res.json();
+    onTaskCreated(newTask);
+    onClose();
   }
 };

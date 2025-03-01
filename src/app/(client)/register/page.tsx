@@ -104,7 +104,9 @@ export default function RegisterPage() {
                 >
                   <img src={app.iconFilepath} className="h-16" alt="Icon" />
                   <div>
-                    <span className="text-lg font-semibold">{app.name}</span>
+                    <span className="text-lg font-semibold text-teal-300">
+                      {app.name}
+                    </span>
                     <p className="text-sm">{app.description}</p>
                   </div>
                 </motion.div>

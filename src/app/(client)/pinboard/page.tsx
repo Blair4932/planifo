@@ -186,7 +186,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-4 w-[20%]">
                 <div className="p-5 w-full">
                   <a
-                    href="mailto:admin@planifo.com"
+                    href="mailto:admin@manifo.uk"
                     className="text-gray-300 hover:text-teal-400 transition-colors w-10"
                   >
                     Report a bug
@@ -230,7 +230,7 @@ export default function Dashboard() {
             </div>
 
             {/* Main Page */}
-            <div className="flex relative justify-around top-44">
+            <div className="flex relative justify-between top-44">
               {/* Left Side */}
               <div className="flex flex-col items-start justify-start w-[600px]">
                 {/* Top Files */}
@@ -292,7 +292,7 @@ export default function Dashboard() {
                       return (
                         <div
                           key={index}
-                          className={`w-[600px] border-yellow-500 border-2 bg-gradient-to-br from-gray-800/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50 transition-all duration-100 p-4 rounded-xl shadow-lg cursor-pointer flex items-center`}
+                          className={`w-[600px] border-yellow-300 border-2 bg-gradient-to-br from-gray-800/50 via-gray-700/50 to-gray-800/50 backdrop-blur-sm hover:bg-gray-700/50 transition-all duration-100 p-4 rounded-xl shadow-lg cursor-pointer flex items-center`}
                           onClick={() => handleClick(item.id, "note")}
                         >
                           <img

@@ -35,3 +35,69 @@ body {
 .skeleton-animated {
   animation: pulse 1.5s infinite;
 }
+
+@keyframes fadeIn {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 1000px;
+    opacity: 1;
+  }
+}
+
+.ql-container {
+  border: none !important;
+}
+
+.ql-editor:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure elements don't overflow on small screens */
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Make text and buttons more touch-friendly */
+body {
+  font-size: 16px;
+  line-height: 1.5;
+  touch-action: manipulation;
+}
+
+/* Responsive images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make sure inputs are easily clickable */
+input,
+button,
+textarea {
+  font-size: 16px;
+  padding: 10px;
+}
+
+/* Ensure main content doesn’t have horizontal scroll */
+html,
+body {
+  overflow-x: hidden;
+}
+
+/* Responsive Flexbox/Grid adjustments */
+@media (max-width: 768px) {
+  .some-container {
+    flex-direction: column; /* Stack elements on smaller screens */
+  }
+
+  .some-element {
+    padding: 10px;
+    text-align: center;
+  }
+}
