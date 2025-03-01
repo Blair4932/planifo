@@ -9,13 +9,13 @@ export const apps = {
     name: "Dashboard",
     iconFilepath: "assets/menu(1).png",
     route: "/construction",
-    description: "Generate information and mindmaps from files ",
+    description: "Customise your Planifo to match your needs",
   },
   notes: {
     name: "Editor",
     iconFilepath: "assets/post-it(1).png",
     route: "/editor",
-    description: "Create and design text documents.",
+    description: "Create and design your documents",
   },
   calendar: {
     name: "Calendar",
@@ -27,7 +27,7 @@ export const apps = {
     name: "Gallery",
     iconFilepath: "assets/image.png",
     route: "/construction",
-    description: "Store and view your photos in one place.",
+    description: "Store and view your photos/PDFs in one place.",
   },
   settings: {
     name: "User Settings",
