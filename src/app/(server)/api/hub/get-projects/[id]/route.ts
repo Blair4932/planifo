@@ -1,20 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/prisma/lib/prisma";
 
-interface Params {
-  params: {
-    id: string;
-  };
-}
-
-export async function GET(request: Request, { params }: Params) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   if (!params.id) {
     return NextResponse.json(
       { error: "Project ID is required" },
       { status: 400 }
     );
   }
-
   try {
     const project = await prisma.project.findUnique({
       where: { id: params.id },
@@ -24,13 +20,10 @@ export async function GET(request: Request, { params }: Params) {
         milestones: true,
       },
     });
-
     console.log(project);
-
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
-
     return NextResponse.json(project);
   } catch (error) {
     console.error("Error fetching project:", error);
