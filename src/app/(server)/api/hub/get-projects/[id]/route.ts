@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/prisma/lib/prisma";
 
 export async function GET(request: NextRequest, { params }: any) {
-  const { id } = await params.id;
+  const { id } = await params;
   if (!id) {
     return NextResponse.json(
       { error: "Project ID is required" },
