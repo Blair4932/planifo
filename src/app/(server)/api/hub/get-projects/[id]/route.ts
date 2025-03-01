@@ -1,11 +1,16 @@
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/prisma/lib/prisma";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  if (!params.id) {
+type Context = {
+  params: {
+    id: string;
+  };
+};
+
+export async function GET(request: NextRequest, context: Context) {
+  const { id } = context.params;
+
+  if (!id) {
     return NextResponse.json(
       { error: "Project ID is required" },
       { status: 400 }
@@ -13,7 +18,7 @@ export async function GET(
   }
   try {
     const project = await prisma.project.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: {
         tasks: true,
         sprints: true,
