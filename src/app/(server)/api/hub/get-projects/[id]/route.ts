@@ -1,10 +1,13 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import prisma from "@/prisma/lib/prisma";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+interface Params {
+  params: {
+    id: string;
+  };
+}
+
+export async function GET(request: Request, { params }: Params) {
   if (!params.id) {
     return NextResponse.json(
       { error: "Project ID is required" },
@@ -21,6 +24,8 @@ export async function GET(
         milestones: true,
       },
     });
+
+    console.log(project);
 
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
