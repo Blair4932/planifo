@@ -74,7 +74,7 @@ export default function LoginPage() {
         transition={{ duration: 0.8, delay: 0.2 }}
       >
         <motion.h1
-          className="text-4xl font-light text-center flex justify-center mb-6 text-gray-200 font-sans cursor-pointer"
+          className="text-4xl flex items-center font-light text-center flex justify-center mb-6 text-gray-200 font-sans cursor-pointer"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
@@ -82,8 +82,8 @@ export default function LoginPage() {
         >
           Your Planifo
           <motion.img
-            src="assets/layers(1).png"
-            className="h-11 px-5"
+            src="assets/PlanifoLogo.png"
+            className="h-20 px-5"
             initial={{ scale: 0.7 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.7, delay: 0.6 }}

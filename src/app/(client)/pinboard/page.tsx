@@ -230,7 +230,7 @@ export default function Dashboard() {
             </div>
 
             {/* Main Page */}
-            <div className="flex relative justify-between top-44">
+            <div className="flex relative justify-around top-44">
               {/* Left Side */}
               <div className="flex flex-col items-start justify-start w-[600px]">
                 {/* Top Files */}

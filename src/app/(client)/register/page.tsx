@@ -83,8 +83,8 @@ export default function RegisterPage() {
             className="flex flex-col items-center justify-center w-[45%] p-8 mb-56"
           >
             <motion.img
-              src="/assets/layers(1).png"
-              className="h-32 mb-4"
+              src="/assets/PlanifoLogo.png"
+              className="h-44 mb-4"
               alt="Planifo Logo"
               whileHover={{ scale: 1.1 }}
               transition={{ type: "spring", stiffness: 300 }}
