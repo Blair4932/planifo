@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { LoadingSpinner } from "../../(global-components)/loadingSpinner";
 import TaskView from "./(TaskView)/taskView";
 import { projectNavs } from "../(variables)/projectNavs";
@@ -18,7 +18,9 @@ export default function TaskManager() {
   const [activeView, setActiveView] = useState("Tasks");
 
   const router = useRouter();
+  const searchParams = useSearchParams();
   const params = useParams();
+
   useEffect(() => {
     setLoading(true);
     if (!params.id) return;
@@ -45,6 +47,7 @@ export default function TaskManager() {
         setProject(projectData);
         setTasks(tasksData);
       } catch (err) {
+        router.push("/login");
         setError(err.message);
       } finally {
         setLoading(false);
@@ -54,22 +57,17 @@ export default function TaskManager() {
     loadData();
   }, [params?.id]);
 
-  const filteredTasks = tasks.filter((task) => {
-    const matchesSearch =
-      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      selectedStatus === "All" || task.status === selectedStatus;
-
-    return matchesSearch && matchesStatus;
-  });
+  useEffect(() => {
+    const viewParam = searchParams.get("view");
+    if (viewParam) setActiveView(viewParam);
+  }, []);
 
   if (loading) return <LoadingSpinner />;
   if (!project)
     return <div className="text-center py-12">Project not found</div>;
 
   return (
-    <div className="text-white h-svh bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="text-white h-screen">
       {/* Header */}
       <header className="bg-gradient-to-r from-gray-900/70 via-gray-800/70 to-gray-900/70 backdrop-blur-md shadow-lg fixed w-full z-50">
         <div className="container mx-auto flex justify-between items-center h-28 px-40 max-w-[1600px]">
@@ -87,13 +85,14 @@ export default function TaskManager() {
         </div>
       </header>
       <div className="w-full flex justify-center items-center">
-        <div className="w-full mx-0 flex justify-center gap-x-32 relative top-32">
+        <div className="w-full mx-0 flex justify-center gap-x-40 relative top-32">
           {projectNavs.map((name, index) => (
             <div
               key={index}
               className="flex gap-2 justify-center px-10 py-2 items-center cursor-pointer relative group"
               onClick={() => {
                 setActiveView(name);
+                router.push(`?view=${name}`, { scroll: false });
               }}
             >
               <p className="text-gray-400 underline hover:text-teal-300 transition-colors">
@@ -105,7 +104,6 @@ export default function TaskManager() {
       </div>
       {activeView == "Tasks" ? (
         <TaskView
-          filteredTasks={filteredTasks}
           setModalOpen={setModalOpen}
           modalOpen={modalOpen}
           searchQuery={searchQuery}
@@ -119,9 +117,7 @@ export default function TaskManager() {
           user={user}
           params={params}
         />
-      ) : (
-        <></>
-      )}
+      ) : null}
     </div>
   );
 }

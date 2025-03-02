@@ -16,10 +16,6 @@ body {
   scrollbar-width: none; /* Firefox */
 }
 
-::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
-}
-
 @keyframes pulse {
   0% {
     opacity: 0.5;

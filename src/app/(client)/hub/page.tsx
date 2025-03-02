@@ -44,7 +44,7 @@ export default function Hub() {
   return (
     <>
       {/* Header */}
-      <header className="bg-gradient-to-r from-gray-900/70 via-gray-800/70 to-gray-900/70 backdrop-blur-md shadow-lg fixed w-full z-50">
+      <header className=" text-white bg-gradient-to-r from-gray-900/70 via-gray-800/70 to-gray-900/70 backdrop-blur-md shadow-lg fixed w-full z-50">
         <div className="container mx-auto flex justify-between items-center h-28 px-40 max-w-[1600px]">
           <h1 className="text-4xl font-extralight">
             Project <span className="text-teal-400">Hub</span>
@@ -62,7 +62,7 @@ export default function Hub() {
       </header>
 
       {/* Main Content */}
-      <div className="flex flex-col justify-center items-center relative top-28 w-full h-[calc(100vh-7rem)]">
+      <div className="flex text-white flex-col justify-center items-center relative top-28 w-full ">
         <div className="container mx-auto max-w-[1600px] px-40 flex flex-col h-full">
           {/* Label & Button Container */}
           <div className="flex justify-between mt-10 w-full">

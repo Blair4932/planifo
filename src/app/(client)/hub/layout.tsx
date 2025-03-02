@@ -4,10 +4,8 @@ export default function RegisterLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div
-      className={` text-white h-svh bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900`}
-    >
-      {children}
+    <div>
+      <div className="h-full overflow-scroll">{children}</div>
     </div>
   );
 }

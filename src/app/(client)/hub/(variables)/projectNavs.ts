@@ -1,6 +1,1 @@
-export const projectNavs = [
-  "Tasks",
-  "Sprints",
-  "Milestones",
-  "Project Settings",
-];
+export const projectNavs = ["Tasks", "Sprints", "Milestones", "Settings"];

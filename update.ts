@@ -12,12 +12,12 @@ interface UpdateMessage {
 export const updateMessage: UpdateMessage = {
   version: APP_VERSION,
   // UPDATE THIS
-  date: "22 Feb 2025",
+  date: "2 Mar 2025",
   // UPDATE THIS
-  title: "Project Template",
+  title: "TASKS, TASKS AND MORE TASKS",
   // UPDATE THIS
   content:
-    "Hello Manifonians, The hub page is now underway! You'll notice the ability to create a new project in HUB. Currently you cannot interact with these projects but stay tuned for this becoming more functional!",
+    "Hello Planifonians, The first large wave of the Project Hub is released. This introduces Tasks and the ability to keep track of your projects more clearly. The next addition will be milestones. Keep an eye out!",
   // UPDATE THIS
   extra: "",
 };

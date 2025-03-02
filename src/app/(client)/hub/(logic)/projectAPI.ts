@@ -68,7 +68,6 @@ export const createTask = async (
       ...formData,
       userId,
       projectId,
-      points: formData.points ? formData.points : undefined,
     }),
   });
 
@@ -77,4 +76,54 @@ export const createTask = async (
     onTaskCreated(newTask);
     onClose();
   }
+};
+
+export const updateTask = async (
+  event: React.FormEvent,
+  formData: Record<string, any>,
+  taskId: string,
+  onTaskUpdated: (task: any) => void,
+  onClose: () => void
+) => {
+  event.preventDefault();
+
+  try {
+    const response = await fetch("/api/hub/tasks/update-task", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...formData,
+        taskId,
+      }),
+    });
+
+    if (response.ok) {
+      const updatedTask = await response.json();
+      onTaskUpdated(updatedTask);
+      onClose();
+    } else {
+      throw new Error(`Failed to update task: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error("Error updating task:", error);
+  }
+};
+
+export const deleteTask = async (
+  id: string,
+  onTaskDeleted: (task: any) => void
+) => {
+  try {
+    const response = await fetch("/api/hub/tasks/delete-task", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json", id: id },
+    });
+
+    if (response.ok) {
+      console.log(response);
+      onTaskDeleted(id);
+    } else {
+      throw new Error(`Failed to delete task: ${response.statusText}`);
+    }
+  } catch (e) {}
 };
