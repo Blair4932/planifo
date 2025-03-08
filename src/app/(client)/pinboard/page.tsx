@@ -56,7 +56,12 @@ export default function Pinboard() {
 
   return (
     <>
-      <Header user={user} viewMode={viewMode} />
+      <Header
+        viewMode={viewMode}
+        first={"Hey,"}
+        second={user.username}
+        nav={""}
+      />
       <BackgroundIcons />
       <div className="flex flex-col md:flex-row md:justify-center min-h-screen">
         <section className="w-full md:w-[65%] flex ">

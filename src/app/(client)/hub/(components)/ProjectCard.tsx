@@ -1,20 +1,24 @@
 import React from "react";
 import { useRouter } from "next/navigation";
-import { colourVars } from "../(variables)/colourVars";
 import { Ripple } from "primereact/ripple";
 import CircularProgress from "./CardChart";
 
 interface ProjectCardProps {
   project: any;
+  viewMode: any;
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, viewMode }) => {
   const router = useRouter();
   return (
     <div
       onClick={() => router.push(`/hub/${project.id}`)}
-      className="w-[1280px] overflow-hidden bg-gray-50 bg-opacity-[3%] h-[250px] p-10 border rounded-md mt-6 flex justify-between hover:scale-[100%] hover:bg-slate-700 transition-all hover:shadow-lg select-none"
-      style={{ borderColor: colourVars.hubPurple, transitionDuration: "0.2s" }}
+      className="w-full bg-opacity-[3%] p-6 border rounded-md mt-6 flex flex-col hover:scale-[100%] hover:bg-slate-700 transition-all hover:shadow-lg select-none"
+      style={{
+        borderColor: viewMode.highlight,
+        transitionDuration: "0.2s",
+        backgroundColor: viewMode.darkBackground,
+      }}
     >
       <Ripple
         pt={{
@@ -27,44 +31,63 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         }}
       />
       {/* Left Side */}
-      <div className="w-[60%] flex-col flex">
+      <div className="w-full flex-col flex">
         <div className="flex gap-4 items-center">
-          <h1 className="text-3xl">{project.icon}</h1>
-          <h1 className="text-3xl font-extralight">{project.title}</h1>
+          <h1 className="text-2xl md:text-3xl">{project.icon}</h1>
+          <h1 className="text-2xl md:text-3xl font-extralight">
+            {project.title}
+          </h1>
         </div>
-        <p className="mt-5 w-[75%] text-[14px] text-gray-400">
+        <p
+          className="mt-5 w-full text-[12px] md:text-[14px]"
+          style={{ color: viewMode.highlight }}
+        >
           {project.description}
         </p>
-        <div className="mt-12 text-gray-400 flex">
-          <h1 className="text-[14px]">
+        <div className="mt-8 md:mt-12 flex flex-col md:flex-row gap-2 md:gap-4">
+          <h1
+            className="text-[12px] md:text-[14px]"
+            style={{ color: viewMode.highlight }}
+          >
             Total Tasks: {project.tasks?.length || 0}
           </h1>
-          <h1 className="text-[14px] ml-4">
+          <h1
+            className="text-[12px] md:text-[14px]"
+            style={{ color: viewMode.highlight }}
+          >
             Created: {new Date(project.createdAt).toLocaleDateString()}
           </h1>
         </div>
       </div>
-      {/* Vertical Line */}
+
+      {/* Divider */}
       <div
-        className="h-[248px] relative bottom-10 w-[1.5px]"
-        style={{ backgroundColor: colourVars.hubPurple }}
+        className="w-full h-[1.5px] my-4"
+        style={{ backgroundColor: viewMode.highlight }}
       ></div>
+
       {/* Right Side */}
-      <div className="w-[40%] ml-5 flex">
+      <div className="w-full flex flex-col">
         {project.sprints && project.sprints.length > 0 ? (
           // If there are sprints, show sprint information
           <div className="flex flex-col">
-            <h2 className="text-2xl">
+            <h2 className="text-xl md:text-2xl">
               Sprint:{" "}
-              <span style={{ color: colourVars.hubGreen }}>
+              <span style={{ color: viewMode.secondary }}>
                 {project.sprints[0].status}
               </span>
             </h2>
-            <div className="text-gray-400 mt-1 text-[14px]">
+            <div
+              className="mt-1 text-[12px] md:text-[14px]"
+              style={{ color: viewMode.highlight }}
+            >
               {new Date(project.sprints[0].startDate).toLocaleDateString()} -{" "}
               {new Date(project.sprints[0].endDate).toLocaleDateString()}
             </div>
-            <div className="flex flex-col mt-4 text-[14px] text-gray-300">
+            <div
+              className="flex flex-col mt-4 text-[12px] md:text-[14px]"
+              style={{ color: viewMode.highlight }}
+            >
               <p>
                 Tasks Completed:{" "}
                 {project.sprints[0].tasks?.filter(
@@ -83,7 +106,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
               </p>
             </div>
             <div className="mt-4">
-              <p className="text-[14px] text-gray-400">
+              <p
+                className="text-[12px] md:text-[14px]"
+                style={{ color: viewMode.highlight }}
+              >
                 Recently Completed: <br />
                 {project.sprints[0].tasks?.find(
                   (task) => task.status === "Done"
@@ -94,13 +120,16 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         ) : (
           // If no sprints, show placeholder content
           <div className="flex flex-col">
-            <h2 className="text-2xl">No Active Sprint</h2>
-            <p className="text-gray-400 mt-1 text-[14px]">
+            <h2 className="text-xl md:text-2xl">No Active Sprint</h2>
+            <p
+              className="mt-1 text-[12px] md:text-[14px]"
+              style={{ color: viewMode.highlight }}
+            >
               Create a sprint to start tracking progress
             </p>
           </div>
         )}
-        <div className="ml-24 flex items-center justify-center">
+        <div className="mt-4 flex items-center justify-center">
           {project.sprints ? (
             <CircularProgress
               current={

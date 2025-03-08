@@ -101,7 +101,7 @@ const TaskView: React.FC<TaskViewProps> = ({
   return (
     <>
       {/* Main Content */}
-      <main className="pt-28 px-40 max-w-[1600px] mx-auto h-[calc(100vh-7rem)]">
+      <main className="pt-28 px-40 mx-auto h-[calc(100vh-7rem)]">
         {/* Controls Section */}
         <div className=" mt-10 flex flex-col gap-6 mb-8">
           <div className="flex justify-between items-center">
