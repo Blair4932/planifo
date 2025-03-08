@@ -59,7 +59,11 @@ export default function RegisterPage() {
       >
         <h1 className="text-[45px] font-extralight ml-7">Planifo</h1>
         <h3 className="mr-10 cursor-pointer hover:text-teal-400 transition-colors">
-          <a href="mailto:admin@planifo.com">Report a bug</a>
+          <a
+            href={`mailto:admin@planifo.com?subject=Bug%20report%20- ${username}%20${new Date().toLocaleDateString()}%20`}
+          >
+            Report a bug
+          </a>
         </h3>
       </motion.header>
 

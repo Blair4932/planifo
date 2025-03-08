@@ -7,7 +7,6 @@ export default function HomePage() {
 
   useEffect(() => {
     router.push("/login");
-    localStorage.clear();
   }, [router]);
 
   return null;

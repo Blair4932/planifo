@@ -207,7 +207,7 @@ export default function ForgotPassword() {
         >
           <p className="text-sm text-gray-400">
             <a
-              href="mailto:admin@planifo.com"
+              href={`mailto:admin@planifo.com?subject=Bug%20report%20${new Date().toLocaleDateString()}%20`}
               className="hover:text-teal-400 transition-colors"
             >
               <span className="font-bold">Issue resetting?</span>

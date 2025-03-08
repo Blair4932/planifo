@@ -15,6 +15,7 @@ export default function SettingView({
   const [newPassword, setNewPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [darkMode, setDarkMode] = useState<boolean>(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -63,6 +64,11 @@ export default function SettingView({
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const toggleViewMode = () => {
+    setDarkMode(!darkMode);
+    localStorage.setItem("darkMode", darkMode.toString());
   };
 
   const renderTabContent = () => {
@@ -127,14 +133,22 @@ export default function SettingView({
       case "Accessibility Settings":
         return (
           <div className="p-4 flex mt-3 flex-col items-center gap-4 rounded-md shadow-sm">
-            <h2 className="text-lg font-semibold mb-2">Coming Soon!</h2>
+            <h2 className="text-lg font-semibold mb-2">Toggle View Mode</h2>
+            <button
+              onClick={toggleViewMode}
+              className={`w-64 rounded-md p-2 text-white ${darkMode ? "bg-gray-800" : "bg-slate-300"}`}
+            >
+              {darkMode ? <span>☀️</span> : <>🌑</>}
+            </button>
           </div>
         );
       case "Contact":
         return (
           <div className="p-4 flex mt-3 flex-col items-center gap-4 rounded-md shadow-sm">
             <h2 className="text-lg font-semibold mb-2">Contact us via email</h2>
-            <a href="mailto:admin@planifo.com">
+            <a
+              href={`mailto:admin@planifo.com?subject=Bug%20report%20- ${user.username}%20${new Date().toLocaleDateString()}%20`}
+            >
               <button className="w-64 rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600">
                 Contact Planifo
               </button>
@@ -149,7 +163,7 @@ export default function SettingView({
             </h2>
             <button
               className="w-64 rounded-md bg-red-500 p-2 text-white hover:bg-red-600"
-              onClick={() => handleLogout(router)}
+              onClick={() => handleLogout()}
             >
               Logout
             </button>

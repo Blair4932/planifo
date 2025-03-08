@@ -181,8 +181,8 @@ export default function LoginPage() {
       {/* Floating Icons for Quirky Charm */}
       {/* Post-it Editor */}
       <motion.img
-        src="/assets/post-it(1).png"
-        className="absolute top-10 left-10 h-24 opacity-50"
+        src="/assets/editor.png"
+        className="absolute hidden md:block top-10 left-10 h-24 opacity-50"
         alt="Post-it"
         initial={{ y: -20, rotate: -10 }}
         animate={{ y: 0, rotate: 10 }}
@@ -194,7 +194,7 @@ export default function LoginPage() {
         }}
       />
       <motion.img
-        src="/assets/project-plan(2)(1).png"
+        src="/assets/hub.png"
         className="absolute top-40 left-1/4 h-20 opacity-50"
         alt="Post-it"
         initial={{ y: -30, rotate: 5 }}
@@ -210,7 +210,7 @@ export default function LoginPage() {
       {/* Calendars */}
       <motion.img
         src="/assets/calendar.png"
-        className="absolute bottom-20 right-10 h-24 opacity-50"
+        className="absolute hidden md:block bottom-20 right-10 h-24 opacity-50"
         alt="Calendar"
         initial={{ y: 20, rotate: 10 }}
         animate={{ y: 0, rotate: -10 }}
@@ -237,7 +237,7 @@ export default function LoginPage() {
 
       {/* Tables */}
       <motion.img
-        src="/assets/project-plan(2)(1).png"
+        src="/assets/hub.png"
         className="absolute top-1/4 right-10 h-24 opacity-50"
         alt="Table"
         initial={{ y: -20, rotate: -5 }}
@@ -250,7 +250,7 @@ export default function LoginPage() {
         }}
       />
       <motion.img
-        src="/assets/menu(1).png"
+        src="/assets/dashboard.png"
         className="absolute top-1/2 left-10 h-20 opacity-50"
         alt="Table"
         initial={{ y: 20, rotate: 10 }}
@@ -265,7 +265,7 @@ export default function LoginPage() {
 
       {/* Gallery Images */}
       <motion.img
-        src="/assets/image.png"
+        src="/assets/gallery.png"
         className="absolute bottom-10 left-1/4 h-24 opacity-50"
         alt="Gallery"
         initial={{ y: -20, rotate: -10 }}
@@ -278,7 +278,7 @@ export default function LoginPage() {
         }}
       />
       <motion.img
-        src="/assets/image.png"
+        src="/assets/gallery.png"
         className="absolute bottom-[80%] right-1/4 h-20 opacity-50"
         alt="Gallery"
         initial={{ y: 30, rotate: 5 }}
