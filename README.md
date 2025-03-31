@@ -1,6 +1,6 @@
 # https://www.planifo.com
 
-Planifo - the all in one personal project planner. 
+Planifo - the all in one project planner made simple. 
 
 After trying to use other project planning softwares like Jira and Clickup, I found a lot of their functionality overkill.
 That's where Planifo comes in. Create and manage your projects with tasks, sprints and milestones - perfect for individuals looking to boost their portfolio or even small businesses. 
